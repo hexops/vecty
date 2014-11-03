@@ -16,7 +16,7 @@ type Event struct {
 }
 
 func main() {
-	doc, err := goquery.NewDocument("https://developer.mozilla.org/en-US/docs/Web/Events")
+	doc, err := goquery.NewDocument("https://developer.mozilla.org/docs/Web/Events")
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +49,7 @@ func main() {
 	defer file.Close()
 
 	fmt.Fprint(file, `// Documentation source: 
-// "Event reference" (https://developer.mozilla.org/en-US/docs/Web/Events) by Mozilla Contributors, licensed under CC-BY-SA 2.5.
+// "Event reference" (https://developer.mozilla.org/docs/Web/Events) by Mozilla Contributors, licensed under CC-BY-SA 2.5.
 package event
 
 import (
@@ -65,6 +65,6 @@ import (
 func %s(f func()) *dom.EventAspect {
   return dom.Event("%s", f)
 }
-`, e.Desc, e.Link, name, e.Name)
+`, e.Desc, e.Link[6:], name, e.Name)
 	}
 }
