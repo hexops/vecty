@@ -2,8 +2,6 @@ package dom
 
 import "github.com/gopherjs/gopherjs/js"
 
-type Node interface{}
-
 type ElemAspect struct {
 	TagName string
 	Aspects []Aspect
