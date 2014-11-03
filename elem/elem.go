@@ -89,12 +89,6 @@ func Blockquote(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("blockquote", aspects...)
 }
 
-// The HTML <body> element represents the content of an HTML document. There is only one <body> element in a document.
-// https://developer.mozilla.org/docs/Web/HTML/Element/body
-func Body(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("body", aspects...)
-}
-
 // The HTML <br> Element (or HTML Line Break Element) produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant.
 // https://developer.mozilla.org/docs/Web/HTML/Element/br
 func Br(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -299,12 +293,6 @@ func H6(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("h6", aspects...)
 }
 
-// The HTML Head Element (<head>) provides general information (metadata) about the document, including its title and links to or definitions of scripts and style sheets
-// https://developer.mozilla.org/docs/Web/HTML/Element/head
-func Head(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("head", aspects...)
-}
-
 // The HTML <header> Element represents a group of introductory or navigational aids. It may contain some heading elements but also other elements like a logo, wrapped section's header, a search form, and so on.
 // https://developer.mozilla.org/docs/Web/HTML/Element/header
 func Header(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -315,12 +303,6 @@ func Header(aspects ...dom.Aspect) *dom.ElemAspect {
 // https://developer.mozilla.org/docs/Web/HTML/Element/hr
 func Hr(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("hr", aspects...)
-}
-
-// The HTML root element (<html>) represents the root of an HTML document. All other elements must be descendants of this element.
-// https://developer.mozilla.org/docs/Web/HTML/Element/html
-func Html(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("html", aspects...)
 }
 
 // The HTML <i> Element represents a range of text that is set off from the normal text for some reason, for example, technical terms, foreign language phrases, or fictional character thoughts. It is typically displayed in italic type.

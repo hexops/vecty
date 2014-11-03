@@ -46,6 +46,9 @@ import (
 			return
 		}
 		name = name[1 : len(name)-1]
+		if name == "html" || name == "head" || name == "body" {
+			return
+		}
 		desc, _ := s.Attr("title")
 		link, _ := s.Attr("href")
 		fmt.Fprintf(file, `
