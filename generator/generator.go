@@ -16,6 +16,49 @@ type Event struct {
 }
 
 func main() {
+	generateElemPkg()
+	generateEventPkg()
+}
+
+func generateElemPkg() {
+	doc, err := goquery.NewDocument("https://developer.mozilla.org/en-US/docs/Web/HTML/Element")
+	if err != nil {
+		panic(err)
+	}
+
+	file, err := os.Create("../elem/elem.go")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	fmt.Fprint(file, `// Documentation source: "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
+package elem
+
+import (
+  "github.com/neelance/dom"
+)
+`)
+
+	doc.Find(".index a").Each(func(i int, s *goquery.Selection) {
+		name := s.Find("code").Text()
+		if name == "" {
+			return
+		}
+		name = name[1 : len(name)-1]
+		desc, _ := s.Attr("title")
+		link, _ := s.Attr("href")
+		fmt.Fprintf(file, `
+// %s
+// https://developer.mozilla.org%s
+func %s(aspects ...dom.Aspect) *dom.ElemAspect {
+  return dom.Elem("%s", aspects...)
+}
+`, desc, link[6:], capitalize(name), name)
+	})
+}
+
+func generateEventPkg() {
 	doc, err := goquery.NewDocument("https://developer.mozilla.org/docs/Web/Events")
 	if err != nil {
 		panic(err)
@@ -33,7 +76,7 @@ func main() {
 		e.Name = link.Text()
 		e.Link, _ = link.Attr("href")
 		e.Desc = cols.Eq(3).Text()
-		events[strings.ToUpper(e.Name[:1])+e.Name[1:]] = &e
+		events[capitalize(e.Name)] = &e
 	})
 
 	var names []string
@@ -66,4 +109,8 @@ func %s(f func()) *dom.EventAspect {
 }
 `, e.Desc, e.Link[6:], name, e.Name)
 	}
+}
+
+func capitalize(s string) string {
+	return strings.ToUpper(s[:1]) + s[1:]
 }
