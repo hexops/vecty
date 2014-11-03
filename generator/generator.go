@@ -101,6 +101,83 @@ func %s(aspects ...dom.Aspect) *dom.ElemAspect {
 }
 
 func generateEventPkg() {
+	nameMap := map[string]string{
+		"afterprint":              "AfterPrint",
+		"animationend":            "AnimationEnd",
+		"animationiteration":      "AnimationIteration",
+		"animationstart":          "AnimationStart",
+		"audioprocess":            "AudioProcess",
+		"beforeprint":             "BeforePrint",
+		"beforeunload":            "BeforeUnload",
+		"canplay":                 "CanPlay",
+		"canplaythrough":          "CanPlayThrough",
+		"chargingchange":          "ChargingChange",
+		"chargingtimechange":      "ChargingTimeChange",
+		"compassneedscalibration": "CompassNeedsCalibration",
+		"compositionend":          "CompositionEnd",
+		"compositionstart":        "CompositionStart",
+		"compositionupdate":       "CompositionUpdate",
+		"contextmenu":             "ContextMenu",
+		"dblclick":                "DblClick",
+		"devicelight":             "DeviceLight",
+		"devicemotion":            "DeviceMotion",
+		"deviceorientation":       "DeviceOrientation",
+		"deviceproximity":         "DeviceProximity",
+		"dischargingtimechange":   "DischargingTimeChange",
+		"dragend":                 "DragEnd",
+		"dragenter":               "DragEnter",
+		"dragleave":               "DragLeave",
+		"dragover":                "DragOver",
+		"dragstart":               "DragStart",
+		"durationchange":          "DurationChange",
+		"focusin":                 "FocusIn",
+		"focusout":                "FocusOut",
+		"fullscreenchange":        "FullScreenChange",
+		"fullscreenerror":         "FullScreenError",
+		"gamepadconnected":        "GamepadConnected",
+		"gamepaddisconnected":     "GamepadDisconnected",
+		"hashchange":              "HashChange",
+		"keydown":                 "KeyDown",
+		"keypress":                "KeyPress",
+		"keyup":                   "KeyUp",
+		"languagechange":          "LanguageChange",
+		"levelchange":             "LevelChange",
+		"loadeddata":              "LoadedData",
+		"loadedmetadata":          "LoadedMetadata",
+		"loadend":                 "LoadEnd",
+		"loadstart":               "LoadStart",
+		"mousedown":               "MouseDown",
+		"mouseenter":              "MouseEnter",
+		"mouseleave":              "MouseLeave",
+		"mousemove":               "MouseMove",
+		"mouseout":                "MouseOut",
+		"mouseover":               "MouseOver",
+		"mouseup":                 "MouseUp",
+		"noupdate":                "NoUpdate",
+		"orientationchange":       "OrientationChange",
+		"pagehide":                "PageHide",
+		"pageshow":                "PageShow",
+		"pointerlockchange":       "PointerLockChange",
+		"pointerlockerror":        "PointerLockError",
+		"popstate":                "PopState",
+		"ratechange":              "RateChange",
+		"readystatechange":        "ReadystateChange",
+		"timeupdate":              "TimeUpdate",
+		"touchcancel":             "TouchCancel",
+		"touchend":                "TouchEnd",
+		"touchenter":              "TouchEnter",
+		"touchleave":              "TouchLeave",
+		"touchmove":               "TouchMove",
+		"touchstart":              "TouchStart",
+		"transitionend":           "TransitionEnd",
+		"updateready":             "UpdateReady",
+		"upgradeneeded":           "UpgradeNeeded",
+		"userproximity":           "UserProximity",
+		"versionchange":           "VersionChange",
+		"visibilitychange":        "VisibilityChange",
+		"volumechange":            "VolumeChange",
+	}
+
 	doc, err := goquery.NewDocument("https://developer.mozilla.org/docs/Web/Events")
 	if err != nil {
 		panic(err)
@@ -118,7 +195,13 @@ func generateEventPkg() {
 		e.Name = link.Text()
 		e.Link, _ = link.Attr("href")
 		e.Desc = cols.Eq(3).Text()
-		events[capitalize(e.Name)] = &e
+
+		funName := nameMap[e.Name]
+		if funName == "" {
+			funName = capitalize(e.Name)
+		}
+
+		events[funName] = &e
 	})
 
 	var names []string
