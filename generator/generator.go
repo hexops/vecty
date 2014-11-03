@@ -42,7 +42,7 @@ import (
 
 	doc.Find(".index a").Each(func(i int, s *goquery.Selection) {
 		name := s.Find("code").Text()
-		if name == "" {
+		if name == "" || s.Parent().Is(".obsoleteElement") {
 			return
 		}
 		name = name[1 : len(name)-1]

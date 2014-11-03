@@ -17,22 +17,10 @@ func Abbr(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("abbr", aspects...)
 }
 
-// The HTML Acronym Element (<acronym>) allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word.
-// https://developer.mozilla.org/docs/Web/HTML/Element/acronym
-func Acronym(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("acronym", aspects...)
-}
-
 // The HTML <address> Element may be used by authors to supply contact information for its nearest <article> or <body> ancestor; in the latter case, it applies to the whole document.
 // https://developer.mozilla.org/docs/Web/HTML/Element/address
 func Address(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("address", aspects...)
-}
-
-// The HTML Applet Element (<applet>) identifies the inclusion of a Java applet.
-// https://developer.mozilla.org/docs/Web/HTML/Element/applet
-func Applet(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("applet", aspects...)
 }
 
 // The HTML <area> element defines a hot-spot region on an image, and optionally associates it with a hypertext link. This element is used only within a <map> element.
@@ -71,12 +59,6 @@ func Base(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("base", aspects...)
 }
 
-// The HTML basefont element (<basefont>) establishes a default font size for a document. Font size then can be varied relative to the base font size using the <font> element.
-// https://developer.mozilla.org/docs/Web/HTML/Element/basefont
-func Basefont(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("basefont", aspects...)
-}
-
 // The HTML <bdi> Element (or Bi-Directional Isolation Element) isolates a span of text that might be formatted in a different direction from other text outside it.
 // https://developer.mozilla.org/docs/Web/HTML/Element/bdi
 func Bdi(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -93,12 +75,6 @@ func Bdo(aspects ...dom.Aspect) *dom.ElemAspect {
 // https://developer.mozilla.org/docs/Web/HTML/Element/bgsound
 func Bgsound(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("bgsound", aspects...)
-}
-
-// The HTML Big Element (<big>) makes the text font size one size bigger (for example, from small to medium, or from large to x-large) up to the browser's maximum font size.
-// https://developer.mozilla.org/docs/Web/HTML/Element/big
-func Big(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("big", aspects...)
 }
 
 // The HTML Blink Element (<blink>) is a non-standard element causing the enclosed text to flash slowly.
@@ -141,12 +117,6 @@ func Canvas(aspects ...dom.Aspect) *dom.ElemAspect {
 // https://developer.mozilla.org/docs/Web/HTML/Element/caption
 func Caption(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("caption", aspects...)
-}
-
-// The HTML Center Element (<center>) is a block-level element that can contain paragraphs and other block-level and inline elements. The entire content of this element is centered horizontally within its containing element (typically, the <body>). This tag has been deprecated in HTML 4 (and XHTML 1) in favor of the CSS text-align property, which can be applied to the <div> element or to an individual <p>.
-// https://developer.mozilla.org/docs/Web/HTML/Element/center
-func Center(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("center", aspects...)
 }
 
 // The HTML <cite> Element (or HTML Citation Element) represents a reference to a creative work. It must include the title of a work, the name of the author, or a URL reference, which may be in an abbreviated form according to the conventions used for the addition of citation metadata.
@@ -227,12 +197,6 @@ func Dialog(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("dialog", aspects...)
 }
 
-// The HTML directory element (<dir>) represents a directory, namely a collection of filenames.
-// https://developer.mozilla.org/docs/Web/HTML/Element/dir
-func Dir(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("dir", aspects...)
-}
-
 // The HTML <div> element (or HTML Document Division Element) is the generic container for flow content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element (such as <article> or <nav>) is appropriate.
 // https://developer.mozilla.org/docs/Web/HTML/Element/div
 func Div(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -287,12 +251,6 @@ func Figure(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("figure", aspects...)
 }
 
-// The HTML Font Element (<font>) defines the font size, color and face for its content.
-// https://developer.mozilla.org/docs/Web/HTML/Element/font
-func Font(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("font", aspects...)
-}
-
 // The HTML <footer> Element represents a footer for its nearest sectioning content or sectioning root element (i.e, its nearest parent <article>, <aside>, <nav>, <section>, <blockquote>, <body>, <details>, <fieldset>, <figure>, <td>). A footer typically contains information about the author of the section, copyright data or links to related documents.
 // https://developer.mozilla.org/docs/Web/HTML/Element/footer
 func Footer(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -303,18 +261,6 @@ func Footer(aspects ...dom.Aspect) *dom.ElemAspect {
 // https://developer.mozilla.org/docs/Web/HTML/Element/form
 func Form(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("form", aspects...)
-}
-
-// <frame> is an HTML element which defines a particular area in which another HTML document can be displayed. A frame should be used within a <frameset>.
-// https://developer.mozilla.org/docs/Web/HTML/Element/frame
-func Frame(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("frame", aspects...)
-}
-
-// <frameset> is an HTML element which is used to contain <frame> elements.
-// https://developer.mozilla.org/docs/Web/HTML/Element/frameset
-func Frameset(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("frameset", aspects...)
 }
 
 // Heading elements implement six levels of document headings, <h1> is the most important and <h6> is the least. A heading element briefly describes the topic of the section it introduces. Heading information may be used by user agents, for example, to construct a table of contents for a document automatically.
@@ -365,12 +311,6 @@ func Header(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("header", aspects...)
 }
 
-// The HTML <hgroup> Element (HTML Headings Group Element) represents the heading of a section. It defines a single title that participates in the outline of the document as the heading of the implicit or explicit section that it belongs to.
-// https://developer.mozilla.org/docs/Web/HTML/Element/hgroup
-func Hgroup(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("hgroup", aspects...)
-}
-
 // The HTML <hr> element represents a thematic break between paragraph-level elements (for example, a change of scene in a story, or a shift of topic with a section). In previous versions of HTML, it represented a horizontal rule. It may still be displayed as a horizontal rule in visual browsers, but is now defined in semantic terms, rather than presentational terms.
 // https://developer.mozilla.org/docs/Web/HTML/Element/hr
 func Hr(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -413,12 +353,6 @@ func Ins(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("ins", aspects...)
 }
 
-// <isindex> is an HTML element which is used for putting a text field in the document for querying document. <isindex> is intented to use inside of <head> element by W3C, however browsers provide support wherever it is used in the document.
-// https://developer.mozilla.org/docs/Web/HTML/Element/isindex
-func Isindex(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("isindex", aspects...)
-}
-
 // The HTML <kbd> Element (or HTML Keyboard Input Element) represents user input and produces an inline element displayed in the browser's default monospace font.
 // https://developer.mozilla.org/docs/Web/HTML/Element/kbd
 func Kbd(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -453,12 +387,6 @@ func Li(aspects ...dom.Aspect) *dom.ElemAspect {
 // https://developer.mozilla.org/docs/Web/HTML/Element/link
 func Link(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("link", aspects...)
-}
-
-// The HTML Listing Element (<listing>) renders text between the start and end tags without interpreting the HTML in between and using a monospaced font. The HTML 2 standard recommended that lines shouldn't be broken when not greater than 132 characters.
-// https://developer.mozilla.org/docs/Web/HTML/Element/listing
-func Listing(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("listing", aspects...)
 }
 
 // The HTML <main> element represents the main content of  the <body> of a document or application. The main content area consists of content that is directly related to, or expands upon the central topic of a document or the central functionality of an application. This content should be unique to the document, excluding any content that is repeated across a set of documents such as sidebars, navigation links, copyright information, site logos, and search forms (unless, of course, the document's main function is as a search form).
@@ -521,12 +449,6 @@ func Nobr(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("nobr", aspects...)
 }
 
-// <noframes> is an HTML element which is used to supporting browsers which are not able to support <frame> elements or configured to do so.
-// https://developer.mozilla.org/docs/Web/HTML/Element/noframes
-func Noframes(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("noframes", aspects...)
-}
-
 // The HTML <noscript> Element defines a section of html to be inserted if a script type on the page is unsupported or if scripting is currently turned off in the browser.
 // https://developer.mozilla.org/docs/Web/HTML/Element/noscript
 func Noscript(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -579,12 +501,6 @@ func Param(aspects ...dom.Aspect) *dom.ElemAspect {
 // https://developer.mozilla.org/docs/Web/HTML/Element/picture
 func Picture(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("picture", aspects...)
-}
-
-// The HTML Plaintext Element (<plaintext>) renders everything following the start tag as raw text, without interpreting any HTML. There is no closing tag, since everything after it is considered raw text.
-// https://developer.mozilla.org/docs/Web/HTML/Element/plaintext
-func Plaintext(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("plaintext", aspects...)
 }
 
 // The HTML <pre> Element (or HTML Preformatted Text) represents preformatted text. Text within this element is typically displayed in a non-proportional font exactly as it is laid out in the file. Whitespaces inside this element are displayed as typed.
@@ -681,12 +597,6 @@ func Spacer(aspects ...dom.Aspect) *dom.ElemAspect {
 // https://developer.mozilla.org/docs/Web/HTML/Element/span
 func Span(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("span", aspects...)
-}
-
-// The HTML Strikethrough Element (<strike>) renders text with a strikethrough, or a line through it.
-// https://developer.mozilla.org/docs/Web/HTML/Element/strike
-func Strike(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("strike", aspects...)
 }
 
 // The HTML Strong Element (<strong>) gives text strong importance, and is typically displayed in bold.
@@ -791,12 +701,6 @@ func Track(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("track", aspects...)
 }
 
-// The HTML Teletype Text Element (<tt>) produces an inline element displayed in the browser's default monotype font. This element was intended to style text as it would display on a fixed width display, such as a teletype. It probably is more common to display fixed width type using the <code> element.
-// https://developer.mozilla.org/docs/Web/HTML/Element/tt
-func Tt(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("tt", aspects...)
-}
-
 // The HTML Underline Element (<u>) renders text with an underline, a line under the baseline of its content.
 // https://developer.mozilla.org/docs/Web/HTML/Element/u
 func U(aspects ...dom.Aspect) *dom.ElemAspect {
@@ -825,10 +729,4 @@ func Video(aspects ...dom.Aspect) *dom.ElemAspect {
 // https://developer.mozilla.org/docs/Web/HTML/Element/wbr
 func Wbr(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("wbr", aspects...)
-}
-
-// The HTML Example Element (<xmp>) renders text between the start and end tags without interpreting the HTML in between and using a monospaced font. The HTML2 specification recommended that it should be rendered wide enough to allow 80 characters per line.
-// https://developer.mozilla.org/docs/Web/HTML/Element/xmp
-func Xmp(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("xmp", aspects...)
 }
