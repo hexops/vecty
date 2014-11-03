@@ -105,5 +105,5 @@ func ItemIndex(item *Item) int {
 			return i
 		}
 	}
-	return -1
+	panic("item not found")
 }

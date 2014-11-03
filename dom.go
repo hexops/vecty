@@ -84,10 +84,12 @@ func Event(eventType string, fun func()) *EventAspect {
 }
 
 func (l *EventAspect) Apply(parent *ElemAspect) {
-	l.Element = parent
-	parent.Node.Call("addEventListener", l.EventType, func() {
-		l.Fun()
-	})
+	if l.Element == nil {
+		l.Element = parent
+		parent.Node.Call("addEventListener", l.EventType, func() {
+			l.Fun()
+		})
+	}
 }
 
 type TextAspect struct {
