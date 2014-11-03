@@ -12,6 +12,11 @@ type Aspect interface {
 	Apply(parent *ElemAspect)
 }
 
+type RevokableAspect interface {
+	Aspect
+	Revoke()
+}
+
 func Elem(tagName string, mutators ...Aspect) *ElemAspect {
 	return &ElemAspect{
 		TagName: tagName,
@@ -27,6 +32,10 @@ func (e *ElemAspect) Apply(parent *ElemAspect) {
 		m.Apply(e)
 	}
 	parent.Node.Call("appendChild", e.Node)
+}
+
+func (e *ElemAspect) Revoke() {
+	e.Node.Call("remove")
 }
 
 type PropAspect struct {
@@ -63,19 +72,21 @@ func (s *StyleAspect) Apply(parent *ElemAspect) {
 
 type EventAspect struct {
 	EventType string
-	Func      func(*ElemAspect)
+	Fun       func()
+	Element   *ElemAspect
 }
 
-func Event(eventType string, f func(*ElemAspect)) *EventAspect {
+func Event(eventType string, fun func()) *EventAspect {
 	return &EventAspect{
 		EventType: eventType,
-		Func:      f,
+		Fun:       fun,
 	}
 }
 
 func (l *EventAspect) Apply(parent *ElemAspect) {
+	l.Element = parent
 	parent.Node.Call("addEventListener", l.EventType, func() {
-		l.Func(parent)
+		l.Fun()
 	})
 }
 

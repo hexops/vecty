@@ -36,9 +36,67 @@ func (b *TextBinding) Apply(parent *dom.ElemAspect) {
 	})
 }
 
-func InputValue(ptr *string, scope *Scope) *dom.EventAspect {
-	return event.Input(func(e *dom.ElemAspect) {
-		*ptr = e.Node.Get("value").Str()
+func InputValue(ptr *string, scope *Scope) (a *dom.EventAspect) {
+	a = event.Input(func() {
+		*ptr = a.Element.Node.Get("value").Str()
 		scope.Digest()
 	})
+	return
+}
+
+type Aspects struct {
+	Current  []dom.Aspect
+	OldCache map[interface{}]dom.Aspect
+	NewCache map[interface{}]dom.Aspect
+}
+
+func (a *Aspects) Add(key interface{}, aspect dom.Aspect) {
+	a.Current = append(a.Current, aspect)
+	a.NewCache[key] = aspect
+}
+
+func (a *Aspects) Reuse(key interface{}) bool {
+	if cached, ok := a.OldCache[key]; ok {
+		a.Add(key, cached)
+		delete(a.OldCache, key)
+		return true
+	}
+	return false
+}
+
+type DynamicAspect struct {
+	Scope *Scope
+	Fun   func(*Aspects)
+	cache map[interface{}]dom.Aspect
+}
+
+func (d *DynamicAspect) Apply(parent *dom.ElemAspect) {
+	update := func() {
+		aspects := &Aspects{
+			OldCache: d.cache,
+			NewCache: make(map[interface{}]dom.Aspect),
+		}
+
+		d.Fun(aspects)
+		d.cache = aspects.NewCache
+
+		for _, a := range aspects.OldCache {
+			if ra, ok := a.(dom.RevokableAspect); ok {
+				ra.Revoke()
+			}
+		}
+
+		for _, a := range aspects.Current {
+			a.Apply(parent)
+		}
+	}
+	update()
+	d.Scope.Listeners = append(d.Scope.Listeners, update)
+}
+
+func Dynamic(scope *Scope, fun func(*Aspects)) *DynamicAspect {
+	return &DynamicAspect{
+		Scope: scope,
+		Fun:   fun,
+	}
 }
