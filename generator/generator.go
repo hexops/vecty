@@ -48,7 +48,8 @@ func main() {
 	}
 	defer file.Close()
 
-	fmt.Fprint(file, `// Documentation source: "Event reference" (https://developer.mozilla.org/en-US/docs/Web/Events) by Mozilla Contributors is licensed under CC-BY-SA 2.5.
+	fmt.Fprint(file, `// Documentation source: 
+// "Event reference" (https://developer.mozilla.org/en-US/docs/Web/Events) by Mozilla Contributors, licensed under CC-BY-SA 2.5.
 package event
 
 import (
@@ -59,7 +60,8 @@ import (
 	for _, name := range names {
 		e := events[name]
 		fmt.Fprintf(file, `
-// %s (https://developer.mozilla.org%s)
+// %s
+// https://developer.mozilla.org%s
 func %s(f func()) *dom.EventAspect {
   return dom.Event("%s", f)
 }
