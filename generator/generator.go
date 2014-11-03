@@ -21,6 +21,38 @@ func main() {
 }
 
 func generateElemPkg() {
+	nameMap := map[string]string{
+		"bdi":        "BDI",
+		"bdo":        "BDO",
+		"bgsound":    "BgSound",
+		"blockquote": "BlockQuote",
+		"colgroup":   "ColGroup",
+		"datalist":   "DataList",
+		"dl":         "DL",
+		"dt":         "DT",
+		"fieldset":   "FieldSet",
+		"figcaption": "FigCaption",
+		"hr":         "HR",
+		"iframe":     "IFrame",
+		"keygen":     "KeyGen",
+		"li":         "LI",
+		"menuitem":   "MenuItem",
+		"nobr":       "NoBr",
+		"noscript":   "NoScript",
+		"ol":         "OL",
+		"rp":         "RP",
+		"rt":         "RT",
+		"tbody":      "TBody",
+		"textarea":   "TextArea",
+		"td":         "TD",
+		"tfoot":      "TFoot",
+		"th":         "TH",
+		"thead":      "THead",
+		"tr":         "TR",
+		"ul":         "UL",
+		"wbr":        "WBr",
+	}
+
 	doc, err := goquery.NewDocument("https://developer.mozilla.org/en-US/docs/Web/HTML/Element")
 	if err != nil {
 		panic(err)
@@ -49,15 +81,22 @@ import (
 		if name == "html" || name == "head" || name == "body" {
 			return
 		}
+
+		funName := nameMap[name]
+		if funName == "" {
+			funName = capitalize(name)
+		}
+
 		desc, _ := s.Attr("title")
 		link, _ := s.Attr("href")
+
 		fmt.Fprintf(file, `
 // %s
 // https://developer.mozilla.org%s
 func %s(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("%s", aspects...)
 }
-`, desc, link[6:], capitalize(name), name)
+`, desc, link[6:], funName, name)
 	})
 }
 

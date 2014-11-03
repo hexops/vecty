@@ -52,11 +52,11 @@ func GreetingView() *dom.ElemAspect {
 
 func ItemsView() *dom.ElemAspect {
 	return elem.Div(
-		elem.Ul(
+		elem.UL(
 			bind.Dynamic(scope, func(aspects *bind.Aspects) {
 				for _, item := range items {
 					if !aspects.Reuse(item) {
-						aspects.Add(item, elem.Li(
+						aspects.Add(item, elem.LI(
 							bind.Text(&item.Label, scope),
 							dom.Text(" "),
 							elem.Button(

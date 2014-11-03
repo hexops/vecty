@@ -61,19 +61,19 @@ func Base(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <bdi> Element (or Bi-Directional Isolation Element) isolates a span of text that might be formatted in a different direction from other text outside it.
 // https://developer.mozilla.org/docs/Web/HTML/Element/bdi
-func Bdi(aspects ...dom.Aspect) *dom.ElemAspect {
+func BDI(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("bdi", aspects...)
 }
 
 // The HTML <bdo> Element (or HTML bidirectional override element) is used to override the current directionality of text. It causes the directionality of the characters to be ignored in favor of the specified directionality.
 // https://developer.mozilla.org/docs/Web/HTML/Element/bdo
-func Bdo(aspects ...dom.Aspect) *dom.ElemAspect {
+func BDO(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("bdo", aspects...)
 }
 
 // The HTML Background Sound Element () is an Internet Explorer element associating a background sound with a page.
 // https://developer.mozilla.org/docs/Web/HTML/Element/bgsound
-func Bgsound(aspects ...dom.Aspect) *dom.ElemAspect {
+func BgSound(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("bgsound", aspects...)
 }
 
@@ -85,7 +85,7 @@ func Blink(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <blockquote> Element (or HTML Block Quotation Element) indicates that the enclosed text is an extended quotation. Usually, this is rendered visually by indentation (see Notes for how to change it). A URL for the source of the quotation may be given using the cite attribute, while a text representation of the source can be given using the <cite> element.
 // https://developer.mozilla.org/docs/Web/HTML/Element/blockquote
-func Blockquote(aspects ...dom.Aspect) *dom.ElemAspect {
+func BlockQuote(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("blockquote", aspects...)
 }
 
@@ -133,7 +133,7 @@ func Col(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <colgroup> Element (or HTML Table Column Group Element) defines a group of columns within a table.
 // https://developer.mozilla.org/docs/Web/HTML/Element/colgroup
-func Colgroup(aspects ...dom.Aspect) *dom.ElemAspect {
+func ColGroup(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("colgroup", aspects...)
 }
 
@@ -151,7 +151,7 @@ func Data(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <datalist> Element contains a set of <option> elements that represent the values available for other controls.
 // https://developer.mozilla.org/docs/Web/HTML/Element/datalist
-func Datalist(aspects ...dom.Aspect) *dom.ElemAspect {
+func DataList(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("datalist", aspects...)
 }
 
@@ -199,13 +199,13 @@ func Div(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <dl> Element (or HTML Description List Element) encloses a list of pairs of terms and descriptions. Common uses for this element are to implement a glossary or to display metadata (a list of key-value pairs).
 // https://developer.mozilla.org/docs/Web/HTML/Element/dl
-func Dl(aspects ...dom.Aspect) *dom.ElemAspect {
+func DL(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("dl", aspects...)
 }
 
 // The HTML <dt> element (or HTML Definition Term Element) identifies a term in a definition list. This element can occur only as a child element of a <dl>. It is usually followed by a <dd> element; however, multiple <dt> elements in a row indicate several terms that are all defined by the immediate next <dd> element.
 // https://developer.mozilla.org/docs/Web/HTML/Element/dt
-func Dt(aspects ...dom.Aspect) *dom.ElemAspect {
+func DT(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("dt", aspects...)
 }
 
@@ -229,13 +229,13 @@ func Embed(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <fieldset> element is used to group several controls as well as labels (<label>) within a web form.
 // https://developer.mozilla.org/docs/Web/HTML/Element/fieldset
-func Fieldset(aspects ...dom.Aspect) *dom.ElemAspect {
+func FieldSet(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("fieldset", aspects...)
 }
 
 // The HTML <figcaption> Element represents a caption or a legend associated with a figure or an illustration described by the rest of the data of the <figure> element which is its immediate ancestor which means <figcaption> can be the first or last element inside a <figure> block. Also, the HTML Figcaption Element is optional; if not provided, then the parent figure element will have no caption.
 // https://developer.mozilla.org/docs/Web/HTML/Element/figcaption
-func Figcaption(aspects ...dom.Aspect) *dom.ElemAspect {
+func FigCaption(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("figcaption", aspects...)
 }
 
@@ -301,7 +301,7 @@ func Header(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <hr> element represents a thematic break between paragraph-level elements (for example, a change of scene in a story, or a shift of topic with a section). In previous versions of HTML, it represented a horizontal rule. It may still be displayed as a horizontal rule in visual browsers, but is now defined in semantic terms, rather than presentational terms.
 // https://developer.mozilla.org/docs/Web/HTML/Element/hr
-func Hr(aspects ...dom.Aspect) *dom.ElemAspect {
+func HR(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("hr", aspects...)
 }
 
@@ -313,7 +313,7 @@ func I(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <iframe> Element (or HTML inline frame element) represents a nested browsing context, effectively embedding another HTML page into the current page. In HTML 4.01, a document may contain a head and a body or a head and a frame-set, but not both a body and a frame-set. However, an <iframe> can be used within a normal document body. Each browsing context has its own session history and active document. The browsing context that contains the embedded content is called the parent browsing context. The top-level browsing context (which has no parent) is typically the browser window.
 // https://developer.mozilla.org/docs/Web/HTML/Element/iframe
-func Iframe(aspects ...dom.Aspect) *dom.ElemAspect {
+func IFrame(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("iframe", aspects...)
 }
 
@@ -343,7 +343,7 @@ func Kbd(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML keygen element exists to facilitate generation of key material, and submission of the public key as part of an HTML form. This mechanism is designed for use with Web-based certificate management systems. It is expected that the keygen element will be used in an HTML form along with other information needed to construct a certificate request, and that the result of the process will be a signed certificate.
 // https://developer.mozilla.org/docs/Web/HTML/Element/keygen
-func Keygen(aspects ...dom.Aspect) *dom.ElemAspect {
+func KeyGen(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("keygen", aspects...)
 }
 
@@ -361,7 +361,7 @@ func Legend(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML List item element (<li>) is used to represent a list item. It should be contained in an ordered list (<ol>), an unordered list (<ul>) or a menu (<menu>), where it represents a single entity in that list. In menus and unordered lists, list items are ordinarily displayed using bullet points. In ordered lists, they are usually displayed with some ascending counter on the left such as a number or letter
 // https://developer.mozilla.org/docs/Web/HTML/Element/li
-func Li(aspects ...dom.Aspect) *dom.ElemAspect {
+func LI(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("li", aspects...)
 }
 
@@ -403,7 +403,7 @@ func Menu(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <menuitem> element represents a command that a user is able to invoke through a popup menu. This includes context menus, as well as menus that might be attached to a menu button.
 // https://developer.mozilla.org/docs/Web/HTML/Element/menuitem
-func Menuitem(aspects ...dom.Aspect) *dom.ElemAspect {
+func MenuItem(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("menuitem", aspects...)
 }
 
@@ -427,13 +427,13 @@ func Nav(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <nobr> element prevents a text from breaking into a new line automagically, so it is displayed on one long line and scrolling might be necessary. This tag is not standard HTML and should not be used.
 // https://developer.mozilla.org/docs/Web/HTML/Element/nobr
-func Nobr(aspects ...dom.Aspect) *dom.ElemAspect {
+func NoBr(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("nobr", aspects...)
 }
 
 // The HTML <noscript> Element defines a section of html to be inserted if a script type on the page is unsupported or if scripting is currently turned off in the browser.
 // https://developer.mozilla.org/docs/Web/HTML/Element/noscript
-func Noscript(aspects ...dom.Aspect) *dom.ElemAspect {
+func NoScript(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("noscript", aspects...)
 }
 
@@ -445,7 +445,7 @@ func Object(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <ol> Element (or HTML Ordered List Element) represents an ordered list of items. Typically, ordered-list items are displayed with a preceding numbering, which can be of any form, like numerals, letters or Romans numerals or even simple bullets. This numbered style is not defined in the HTML description of the page, but in its associated CSS, using the list-style-type property.
 // https://developer.mozilla.org/docs/Web/HTML/Element/ol
-func Ol(aspects ...dom.Aspect) *dom.ElemAspect {
+func OL(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("ol", aspects...)
 }
 
@@ -505,13 +505,13 @@ func Q(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <rp> element is used to provide fall-back parenthesis for browsers non-supporting ruby annotations. Ruby annotations are for showing pronounciation of East Asian characters, like using Japanese furigana or Taiwainese bopomofo characters. The <rp> element is used in the case of lack of <ruby> element support its content has what should be displayed in order to indicate the presence of a ruby annotation, usually parentheses.
 // https://developer.mozilla.org/docs/Web/HTML/Element/rp
-func Rp(aspects ...dom.Aspect) *dom.ElemAspect {
+func RP(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("rp", aspects...)
 }
 
 // The HTML <rt> Element embraces pronunciation of character presented in a ruby annotations, which are for showing pronunciation of East Asian characters and the <rt> element is used inside of <ruby> element.
 // https://developer.mozilla.org/docs/Web/HTML/Element/rt
-func Rt(aspects ...dom.Aspect) *dom.ElemAspect {
+func RT(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("rt", aspects...)
 }
 
@@ -619,13 +619,13 @@ func Table(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML Table Body Element (<tbody>) defines one or more rows as the body of its parent <table> element when no <tr> elements are children of the parent.  In conjunction with a preceding <tfoot> and <thead> element, (<tbody>) provides additional semantic information for devices such as printers and displays. Of the parent table's child elements, (<tbody>) will represent the content, if longer than a page, that will most likely differ for each page printed. The <tfoot> and <thead> elements' content will be consistent for each page printed. For displays, (<tbody>) will enable separate scrolling from the <tfoot>, <thead> and <caption> elements of the same parent <table> element.
 // https://developer.mozilla.org/docs/Web/HTML/Element/tbody
-func Tbody(aspects ...dom.Aspect) *dom.ElemAspect {
+func TBody(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("tbody", aspects...)
 }
 
 // The Table cell HTML element (<td>) defines a cell of a table that contains data. It participates in the table model.
 // https://developer.mozilla.org/docs/Web/HTML/Element/td
-func Td(aspects ...dom.Aspect) *dom.ElemAspect {
+func TD(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("td", aspects...)
 }
 
@@ -637,25 +637,25 @@ func Template(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML <textarea> element represents a multi-line plain-text editing control.
 // https://developer.mozilla.org/docs/Web/HTML/Element/textarea
-func Textarea(aspects ...dom.Aspect) *dom.ElemAspect {
+func TextArea(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("textarea", aspects...)
 }
 
 // The HTML Table Foot Element (<tfoot>) defines a set of rows summarizing the columns of the table.
 // https://developer.mozilla.org/docs/Web/HTML/Element/tfoot
-func Tfoot(aspects ...dom.Aspect) *dom.ElemAspect {
+func TFoot(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("tfoot", aspects...)
 }
 
 // The HTML Table Header Cell Element (<th>) defines a cell that is a header for a group of cells of a table. The group of cells that the header refers to is defined by the scope and headers attribute.
 // https://developer.mozilla.org/docs/Web/HTML/Element/th
-func Th(aspects ...dom.Aspect) *dom.ElemAspect {
+func TH(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("th", aspects...)
 }
 
 // The HTML Table Head Element (<thead>) defines a set of rows defining the head of the columns of the table.
 // https://developer.mozilla.org/docs/Web/HTML/Element/thead
-func Thead(aspects ...dom.Aspect) *dom.ElemAspect {
+func THead(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("thead", aspects...)
 }
 
@@ -673,7 +673,7 @@ func Title(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML Table Row Element (<tr>) defines a row of cells in a table. Those can be a mix of <td> and <th> elements.
 // https://developer.mozilla.org/docs/Web/HTML/Element/tr
-func Tr(aspects ...dom.Aspect) *dom.ElemAspect {
+func TR(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("tr", aspects...)
 }
 
@@ -691,7 +691,7 @@ func U(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The HTML unordered list element (<ul>) represents an unordered list of items, namely a collection of items that do not have a numerical ordering, and their order in the list is meaningless. Typically, unordered-list items are displayed with a bullet, which can be of several forms, like a dot, a circle or a squared. The bullet style is not defined in the HTML description of the page, but in its associated CSS, using the list-style-type property.
 // https://developer.mozilla.org/docs/Web/HTML/Element/ul
-func Ul(aspects ...dom.Aspect) *dom.ElemAspect {
+func UL(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("ul", aspects...)
 }
 
@@ -709,6 +709,6 @@ func Video(aspects ...dom.Aspect) *dom.ElemAspect {
 
 // The Word Break Opportunity (<wbr>) HTML element represents a position within text where the browser may optionally break a line, though its line-breaking rules would not otherwise create a break at that location.
 // https://developer.mozilla.org/docs/Web/HTML/Element/wbr
-func Wbr(aspects ...dom.Aspect) *dom.ElemAspect {
+func WBr(aspects ...dom.Aspect) *dom.ElemAspect {
   return dom.Elem("wbr", aspects...)
 }
