@@ -4,14 +4,14 @@ import (
 	"github.com/neelance/dom"
 )
 
-func Div(mutators ...dom.Aspect) *dom.ElemAspect {
-	return dom.Elem("div", mutators...)
+func Div(aspects ...dom.Aspect) *dom.ElemAspect {
+	return dom.Elem("div", aspects...)
 }
 
-func H1(mutators ...dom.Aspect) *dom.ElemAspect {
-	return dom.Elem("h1", mutators...)
+func H1(aspects ...dom.Aspect) *dom.ElemAspect {
+	return dom.Elem("h1", aspects...)
 }
 
-func Input(mutators ...dom.Aspect) *dom.ElemAspect {
-	return dom.Elem("input", mutators...)
+func Input(aspects ...dom.Aspect) *dom.ElemAspect {
+	return dom.Elem("input", aspects...)
 }
