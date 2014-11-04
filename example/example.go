@@ -3,107 +3,47 @@ package main
 import (
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/bind"
-	"github.com/neelance/dom/elem"
-	"github.com/neelance/dom/event"
-	"github.com/neelance/dom/prop"
-	"github.com/neelance/dom/style"
+	"github.com/neelance/dom/example/model"
+	"github.com/neelance/dom/example/view"
 )
 
-type Item struct {
-	Label string
-}
-
-var name string
-var items []*Item
-var scope = bind.NewScope()
-
 func main() {
-	items = []*Item{
-		&Item{"First item"},
-		&Item{"Second item"},
-		&Item{"Third item"},
+	m := &model.Model{
+		Scope: bind.NewScope(),
+		Items: []*model.Item{
+			&model.Item{"First item"},
+			&model.Item{"Second item"},
+			&model.Item{"Third item"},
+		},
 	}
 
-	PageView().Apply(dom.Body())
-}
-
-func PageView() *dom.ElemAspect {
-	return elem.Div(
-		GreetingView(),
-		ItemsView(),
-	)
-}
-
-func GreetingView() *dom.ElemAspect {
-	return elem.Div(
-		dom.Text("Your name: "),
-		elem.Input(
-			prop.Type("text"),
-			bind.InputValue(&name, scope),
-		),
-		elem.H1(
-			style.Color("blue"),
-			dom.Text("Hello "),
-			bind.Text(&name, scope),
-			dom.Text("!"),
-		),
-	)
-}
-
-func ItemsView() *dom.ElemAspect {
-	return elem.Div(
-		elem.UL(
-			bind.Dynamic(scope, func(aspects *bind.Aspects) {
-				for _, item := range items {
-					if !aspects.Reuse(item) {
-						aspects.Add(item, elem.LI(
-							bind.Text(&item.Label, scope),
-							dom.Text(" "),
-							elem.Button(
-								dom.Text("Delete"),
-								event.Click(DeleteItem(item)),
-							),
-						))
-					}
-				}
-			}),
-		),
-
-		elem.Button(
-			dom.Text("Append item"),
-			event.Click(AppendItem),
-		),
-		elem.Button(
-			dom.Text("Prepend item"),
-			event.Click(PrependItem),
-		),
-	)
-}
-
-func AppendItem() {
-	items = append(items, &Item{"New item"})
-	scope.Digest()
-}
-
-func PrependItem() {
-	items = append([]*Item{{"New item"}}, items...)
-	scope.Digest()
-}
-
-func DeleteItem(item *Item) func() {
-	return func() {
-		i := ItemIndex(item)
-		copy(items[i:], items[i+1:])
-		items = items[:len(items)-1]
-		scope.Digest()
+	m.AppendItem = func() {
+		m.Items = append(m.Items, &model.Item{"New item"})
+		m.Scope.Digest()
 	}
-}
 
-func ItemIndex(item *Item) int {
-	for i, item2 := range items {
-		if item == item2 {
-			return i
+	m.PrependItem = func() {
+		m.Items = append([]*model.Item{{"New item"}}, m.Items...)
+		m.Scope.Digest()
+	}
+
+	itemIndex := func(item *model.Item) int {
+		for i, item2 := range m.Items {
+			if item == item2 {
+				return i
+			}
+		}
+		panic("item not found")
+	}
+
+	m.DeleteItem = func(item *model.Item) func() {
+		return func() {
+			i := itemIndex(item)
+			copy(m.Items[i:], m.Items[i+1:])
+			m.Items = m.Items[:len(m.Items)-1]
+			m.Scope.Digest()
 		}
 	}
-	panic("item not found")
+
+	view.PageView(m).Apply(dom.Body())
 }
