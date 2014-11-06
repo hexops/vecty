@@ -194,7 +194,10 @@ func generateEventPkg() {
 		var e Event
 		e.Name = link.Text()
 		e.Link, _ = link.Attr("href")
-		e.Desc = cols.Eq(3).Text()
+		e.Desc = strings.TrimSpace(cols.Eq(3).Text())
+		if e.Desc == "" {
+			e.Desc = "(no documentation)"
+		}
 
 		funName := nameMap[e.Name]
 		if funName == "" {

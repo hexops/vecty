@@ -47,7 +47,7 @@ func BeforePrint(f func()) *dom.EventAspect {
 	return dom.Event("beforeprint", f)
 }
 
-//  
+// (no documentation)
 // https://developer.mozilla.org/docs/Web/Events/beforeunload
 func BeforeUnload(f func()) *dom.EventAspect {
 	return dom.Event("beforeunload", f)
@@ -281,7 +281,7 @@ func EndEvent(f func()) *dom.EventAspect {
 	return dom.Event("endEvent", f)
 }
 
-//  
+// (no documentation)
 // https://developer.mozilla.org/docs/Web/Events/ended_(Web_Audio)
 func Ended(f func()) *dom.EventAspect {
 	return dom.Event("ended", f)
@@ -371,7 +371,7 @@ func KeyUp(f func()) *dom.EventAspect {
 	return dom.Event("keyup", f)
 }
 
-//  
+// (no documentation)
 // https://developer.mozilla.org/docs/Web/Events/languagechange
 func LanguageChange(f func()) *dom.EventAspect {
 	return dom.Event("languagechange", f)
@@ -695,7 +695,7 @@ func TimeUpdate(f func()) *dom.EventAspect {
 	return dom.Event("timeupdate", f)
 }
 
-//  
+// (no documentation)
 // https://developer.mozilla.org/docs/Web/Events/timeout
 func Timeout(f func()) *dom.EventAspect {
 	return dom.Event("timeout", f)
