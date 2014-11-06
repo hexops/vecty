@@ -68,7 +68,7 @@ func generateElemPkg() {
 package elem
 
 import (
-  "github.com/neelance/dom"
+	"github.com/neelance/dom"
 )
 `)
 
@@ -94,7 +94,7 @@ import (
 // %s
 // https://developer.mozilla.org%s
 func %s(aspects ...dom.Aspect) *dom.ElemAspect {
-  return dom.Elem("%s", aspects...)
+	return dom.Elem("%s", aspects...)
 }
 `, desc, link[6:], funName, name)
 	})
@@ -220,7 +220,7 @@ func generateEventPkg() {
 package event
 
 import (
-  "github.com/neelance/dom"
+	"github.com/neelance/dom"
 )
 `)
 
@@ -230,7 +230,7 @@ import (
 // %s
 // https://developer.mozilla.org%s
 func %s(f func()) *dom.EventAspect {
-  return dom.Event("%s", f)
+	return dom.Event("%s", f)
 }
 `, e.Desc, e.Link[6:], name, e.Name)
 	}

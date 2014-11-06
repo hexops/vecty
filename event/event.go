@@ -2,797 +2,797 @@
 package event
 
 import (
-  "github.com/neelance/dom"
+	"github.com/neelance/dom"
 )
 
 // A transaction has been aborted.
 // https://developer.mozilla.org/docs/Web/Reference/Events/abort_indexedDB
 func Abort(f func()) *dom.EventAspect {
-  return dom.Event("abort", f)
+	return dom.Event("abort", f)
 }
 
 // The associated document has started printing or the print preview has been closed.
 // https://developer.mozilla.org/docs/Web/Events/afterprint
 func AfterPrint(f func()) *dom.EventAspect {
-  return dom.Event("afterprint", f)
+	return dom.Event("afterprint", f)
 }
 
 // A CSS animation has completed.
 // https://developer.mozilla.org/docs/Web/Events/animationend
 func AnimationEnd(f func()) *dom.EventAspect {
-  return dom.Event("animationend", f)
+	return dom.Event("animationend", f)
 }
 
 // A CSS animation is repeated.
 // https://developer.mozilla.org/docs/Web/Events/animationiteration
 func AnimationIteration(f func()) *dom.EventAspect {
-  return dom.Event("animationiteration", f)
+	return dom.Event("animationiteration", f)
 }
 
 // A CSS animation has started.
 // https://developer.mozilla.org/docs/Web/Events/animationstart
 func AnimationStart(f func()) *dom.EventAspect {
-  return dom.Event("animationstart", f)
+	return dom.Event("animationstart", f)
 }
 
 // The input buffer of a ScriptProcessorNode is ready to be processed.
 // https://developer.mozilla.org/docs/Web/Events/audioprocess
 func AudioProcess(f func()) *dom.EventAspect {
-  return dom.Event("audioprocess", f)
+	return dom.Event("audioprocess", f)
 }
 
 // The associated document is about to be printed or previewed for printing.
 // https://developer.mozilla.org/docs/Web/Events/beforeprint
 func BeforePrint(f func()) *dom.EventAspect {
-  return dom.Event("beforeprint", f)
+	return dom.Event("beforeprint", f)
 }
 
 //  
 // https://developer.mozilla.org/docs/Web/Events/beforeunload
 func BeforeUnload(f func()) *dom.EventAspect {
-  return dom.Event("beforeunload", f)
+	return dom.Event("beforeunload", f)
 }
 
 // A SMIL animation element begins.
 // https://developer.mozilla.org/docs/Web/Events/beginEvent
 func BeginEvent(f func()) *dom.EventAspect {
-  return dom.Event("beginEvent", f)
+	return dom.Event("beginEvent", f)
 }
 
 // An open connection to a database is blocking a versionchange transaction on the same database.
 // https://developer.mozilla.org/docs/Web/Reference/Events/blocked_indexedDB
 func Blocked(f func()) *dom.EventAspect {
-  return dom.Event("blocked", f)
+	return dom.Event("blocked", f)
 }
 
 // An element has lost focus (does not bubble).
 // https://developer.mozilla.org/docs/Web/Events/blur
 func Blur(f func()) *dom.EventAspect {
-  return dom.Event("blur", f)
+	return dom.Event("blur", f)
 }
 
 // The resources listed in the manifest have been downloaded, and the application is now cached.
 // https://developer.mozilla.org/docs/Web/Events/cached
 func Cached(f func()) *dom.EventAspect {
-  return dom.Event("cached", f)
+	return dom.Event("cached", f)
 }
 
 // The user agent can play the media, but estimates that not enough data has been loaded to play the media up to its end without having to stop for further buffering of content.
 // https://developer.mozilla.org/docs/Web/Events/canplay
 func CanPlay(f func()) *dom.EventAspect {
-  return dom.Event("canplay", f)
+	return dom.Event("canplay", f)
 }
 
 // The user agent can play the media, and estimates that enough data has been loaded to play the media up to its end without having to stop for further buffering of content.
 // https://developer.mozilla.org/docs/Web/Events/canplaythrough
 func CanPlayThrough(f func()) *dom.EventAspect {
-  return dom.Event("canplaythrough", f)
+	return dom.Event("canplaythrough", f)
 }
 
 // An element loses focus and its value changed since gaining focus.
 // https://developer.mozilla.org/docs/Web/Events/change
 func Change(f func()) *dom.EventAspect {
-  return dom.Event("change", f)
+	return dom.Event("change", f)
 }
 
 // The battery begins or stops charging.
 // https://developer.mozilla.org/docs/Web/Events/chargingchange
 func ChargingChange(f func()) *dom.EventAspect {
-  return dom.Event("chargingchange", f)
+	return dom.Event("chargingchange", f)
 }
 
 // The chargingTime attribute has been updated.
 // https://developer.mozilla.org/docs/Web/Events/chargingtimechange
 func ChargingTimeChange(f func()) *dom.EventAspect {
-  return dom.Event("chargingtimechange", f)
+	return dom.Event("chargingtimechange", f)
 }
 
 // The user agent is checking for an update, or attempting to download the cache manifest for the first time.
 // https://developer.mozilla.org/docs/Web/Events/checking
 func Checking(f func()) *dom.EventAspect {
-  return dom.Event("checking", f)
+	return dom.Event("checking", f)
 }
 
 // A pointing device button has been pressed and released on an element.
 // https://developer.mozilla.org/docs/Web/Events/click
 func Click(f func()) *dom.EventAspect {
-  return dom.Event("click", f)
+	return dom.Event("click", f)
 }
 
 // A WebSocket connection has been closed.
 // https://developer.mozilla.org/docs/Web/Reference/Events/close_websocket
 func Close(f func()) *dom.EventAspect {
-  return dom.Event("close", f)
+	return dom.Event("close", f)
 }
 
 // The compass used to obtain orientation data is in need of calibration.
 // https://developer.mozilla.org/docs/Web/Events/compassneedscalibration
 func CompassNeedsCalibration(f func()) *dom.EventAspect {
-  return dom.Event("compassneedscalibration", f)
+	return dom.Event("compassneedscalibration", f)
 }
 
 // The rendering of an OfflineAudioContext is terminated.
 // https://developer.mozilla.org/docs/Web/Events/complete
 func Complete(f func()) *dom.EventAspect {
-  return dom.Event("complete", f)
+	return dom.Event("complete", f)
 }
 
 // The composition of a passage of text has been completed or canceled.
 // https://developer.mozilla.org/docs/Web/Events/compositionend
 func CompositionEnd(f func()) *dom.EventAspect {
-  return dom.Event("compositionend", f)
+	return dom.Event("compositionend", f)
 }
 
 // The composition of a passage of text is prepared (similar to keydown for a keyboard input, but works with other inputs such as speech recognition).
 // https://developer.mozilla.org/docs/Web/Events/compositionstart
 func CompositionStart(f func()) *dom.EventAspect {
-  return dom.Event("compositionstart", f)
+	return dom.Event("compositionstart", f)
 }
 
 // A character is added to a passage of text being composed.
 // https://developer.mozilla.org/docs/Web/Events/compositionupdate
 func CompositionUpdate(f func()) *dom.EventAspect {
-  return dom.Event("compositionupdate", f)
+	return dom.Event("compositionupdate", f)
 }
 
 // The right button of the mouse is clicked (before the context menu is displayed).
 // https://developer.mozilla.org/docs/Web/Events/contextmenu
 func ContextMenu(f func()) *dom.EventAspect {
-  return dom.Event("contextmenu", f)
+	return dom.Event("contextmenu", f)
 }
 
 // The text selection has been added to the clipboard.
 // https://developer.mozilla.org/docs/Web/Events/copy
 func Copy(f func()) *dom.EventAspect {
-  return dom.Event("copy", f)
+	return dom.Event("copy", f)
 }
 
 // The text selection has been removed from the document and added to the clipboard.
 // https://developer.mozilla.org/docs/Web/Events/cut
 func Cut(f func()) *dom.EventAspect {
-  return dom.Event("cut", f)
+	return dom.Event("cut", f)
 }
 
 // The document has finished loading (but not its dependent resources).
 // https://developer.mozilla.org/docs/Web/Events/DOMContentLoaded
 func DOMContentLoaded(f func()) *dom.EventAspect {
-  return dom.Event("DOMContentLoaded", f)
+	return dom.Event("DOMContentLoaded", f)
 }
 
 // A pointing device button is clicked twice on an element.
 // https://developer.mozilla.org/docs/Web/Events/dblclick
 func DblClick(f func()) *dom.EventAspect {
-  return dom.Event("dblclick", f)
+	return dom.Event("dblclick", f)
 }
 
 // Fresh data is available from a light sensor.
 // https://developer.mozilla.org/docs/Web/Events/devicelight
 func DeviceLight(f func()) *dom.EventAspect {
-  return dom.Event("devicelight", f)
+	return dom.Event("devicelight", f)
 }
 
 // Fresh data is available from a motion sensor.
 // https://developer.mozilla.org/docs/Web/Events/devicemotion
 func DeviceMotion(f func()) *dom.EventAspect {
-  return dom.Event("devicemotion", f)
+	return dom.Event("devicemotion", f)
 }
 
 // Fresh data is available from an orientation sensor.
 // https://developer.mozilla.org/docs/Web/Events/deviceorientation
 func DeviceOrientation(f func()) *dom.EventAspect {
-  return dom.Event("deviceorientation", f)
+	return dom.Event("deviceorientation", f)
 }
 
 // Fresh data is available from a proximity sensor (indicates an approximated distance between the device and a nearby object).
 // https://developer.mozilla.org/docs/Web/Events/deviceproximity
 func DeviceProximity(f func()) *dom.EventAspect {
-  return dom.Event("deviceproximity", f)
+	return dom.Event("deviceproximity", f)
 }
 
 // The dischargingTime attribute has been updated.
 // https://developer.mozilla.org/docs/Web/Events/dischargingtimechange
 func DischargingTimeChange(f func()) *dom.EventAspect {
-  return dom.Event("dischargingtimechange", f)
+	return dom.Event("dischargingtimechange", f)
 }
 
 // The user agent has found an update and is fetching it, or is downloading the resources listed by the cache manifest for the first time.
 // https://developer.mozilla.org/docs/Web/Events/downloading
 func Downloading(f func()) *dom.EventAspect {
-  return dom.Event("downloading", f)
+	return dom.Event("downloading", f)
 }
 
 // An element or text selection is being dragged (every 350ms).
 // https://developer.mozilla.org/docs/Web/Events/drag
 func Drag(f func()) *dom.EventAspect {
-  return dom.Event("drag", f)
+	return dom.Event("drag", f)
 }
 
 // A drag operation is being ended (by releasing a mouse button or hitting the escape key).
 // https://developer.mozilla.org/docs/Web/Events/dragend
 func DragEnd(f func()) *dom.EventAspect {
-  return dom.Event("dragend", f)
+	return dom.Event("dragend", f)
 }
 
 // A dragged element or text selection enters a valid drop target.
 // https://developer.mozilla.org/docs/Web/Events/dragenter
 func DragEnter(f func()) *dom.EventAspect {
-  return dom.Event("dragenter", f)
+	return dom.Event("dragenter", f)
 }
 
 // A dragged element or text selection leaves a valid drop target.
 // https://developer.mozilla.org/docs/Web/Events/dragleave
 func DragLeave(f func()) *dom.EventAspect {
-  return dom.Event("dragleave", f)
+	return dom.Event("dragleave", f)
 }
 
 // An element or text selection is being dragged over a valid drop target (every 350ms).
 // https://developer.mozilla.org/docs/Web/Events/dragover
 func DragOver(f func()) *dom.EventAspect {
-  return dom.Event("dragover", f)
+	return dom.Event("dragover", f)
 }
 
 // The user starts dragging an element or text selection.
 // https://developer.mozilla.org/docs/Web/Events/dragstart
 func DragStart(f func()) *dom.EventAspect {
-  return dom.Event("dragstart", f)
+	return dom.Event("dragstart", f)
 }
 
 // An element is dropped on a valid drop target.
 // https://developer.mozilla.org/docs/Web/Events/drop
 func Drop(f func()) *dom.EventAspect {
-  return dom.Event("drop", f)
+	return dom.Event("drop", f)
 }
 
 // The duration attribute has been updated.
 // https://developer.mozilla.org/docs/Web/Events/durationchange
 func DurationChange(f func()) *dom.EventAspect {
-  return dom.Event("durationchange", f)
+	return dom.Event("durationchange", f)
 }
 
 // The media has become empty; for example, this event is sent if the media has already been loaded (or partially loaded), and the load() method is called to reload it.
 // https://developer.mozilla.org/docs/Web/Events/emptied
 func Emptied(f func()) *dom.EventAspect {
-  return dom.Event("emptied", f)
+	return dom.Event("emptied", f)
 }
 
 // A SMIL animation element ends.
 // https://developer.mozilla.org/docs/Web/Events/endEvent
 func EndEvent(f func()) *dom.EventAspect {
-  return dom.Event("endEvent", f)
+	return dom.Event("endEvent", f)
 }
 
 //  
 // https://developer.mozilla.org/docs/Web/Events/ended_(Web_Audio)
 func Ended(f func()) *dom.EventAspect {
-  return dom.Event("ended", f)
+	return dom.Event("ended", f)
 }
 
 // A request caused an error and failed.
 // https://developer.mozilla.org/docs/Web/Events/error
 func Error(f func()) *dom.EventAspect {
-  return dom.Event("error", f)
+	return dom.Event("error", f)
 }
 
 // An element has received focus (does not bubble).
 // https://developer.mozilla.org/docs/Web/Events/focus
 func Focus(f func()) *dom.EventAspect {
-  return dom.Event("focus", f)
+	return dom.Event("focus", f)
 }
 
 // An element is about to receive focus (bubbles).
 // https://developer.mozilla.org/docs/Web/Events/focusin
 func FocusIn(f func()) *dom.EventAspect {
-  return dom.Event("focusin", f)
+	return dom.Event("focusin", f)
 }
 
 // An element is about to lose focus (bubbles).
 // https://developer.mozilla.org/docs/Web/Events/focusout
 func FocusOut(f func()) *dom.EventAspect {
-  return dom.Event("focusout", f)
+	return dom.Event("focusout", f)
 }
 
 // An element was turned to fullscreen mode or back to normal mode.
 // https://developer.mozilla.org/docs/Web/Events/fullscreenchange
 func FullScreenChange(f func()) *dom.EventAspect {
-  return dom.Event("fullscreenchange", f)
+	return dom.Event("fullscreenchange", f)
 }
 
 // It was impossible to switch to fullscreen mode for technical reasons or because the permission was denied.
 // https://developer.mozilla.org/docs/Web/Events/fullscreenerror
 func FullScreenError(f func()) *dom.EventAspect {
-  return dom.Event("fullscreenerror", f)
+	return dom.Event("fullscreenerror", f)
 }
 
 // A gamepad has been connected.
 // https://developer.mozilla.org/docs/Web/Events/gamepadconnected
 func GamepadConnected(f func()) *dom.EventAspect {
-  return dom.Event("gamepadconnected", f)
+	return dom.Event("gamepadconnected", f)
 }
 
 // A gamepad has been disconnected.
 // https://developer.mozilla.org/docs/Web/Events/gamepaddisconnected
 func GamepadDisconnected(f func()) *dom.EventAspect {
-  return dom.Event("gamepaddisconnected", f)
+	return dom.Event("gamepaddisconnected", f)
 }
 
 // The fragment identifier of the URL has changed (the part of the URL after the #).
 // https://developer.mozilla.org/docs/Web/Events/hashchange
 func HashChange(f func()) *dom.EventAspect {
-  return dom.Event("hashchange", f)
+	return dom.Event("hashchange", f)
 }
 
 // The value of an element changes or the content of an element with the attribute contenteditable is modified.
 // https://developer.mozilla.org/docs/Web/Events/input
 func Input(f func()) *dom.EventAspect {
-  return dom.Event("input", f)
+	return dom.Event("input", f)
 }
 
 // A submittable element has been checked and doesn't satisfy its constraints.
 // https://developer.mozilla.org/docs/Web/Events/invalid
 func Invalid(f func()) *dom.EventAspect {
-  return dom.Event("invalid", f)
+	return dom.Event("invalid", f)
 }
 
 // A key is pressed down.
 // https://developer.mozilla.org/docs/Web/Events/keydown
 func KeyDown(f func()) *dom.EventAspect {
-  return dom.Event("keydown", f)
+	return dom.Event("keydown", f)
 }
 
 // A key is pressed down and that key normally produces a character value (use input instead).
 // https://developer.mozilla.org/docs/Web/Events/keypress
 func KeyPress(f func()) *dom.EventAspect {
-  return dom.Event("keypress", f)
+	return dom.Event("keypress", f)
 }
 
 // A key is released.
 // https://developer.mozilla.org/docs/Web/Events/keyup
 func KeyUp(f func()) *dom.EventAspect {
-  return dom.Event("keyup", f)
+	return dom.Event("keyup", f)
 }
 
 //  
 // https://developer.mozilla.org/docs/Web/Events/languagechange
 func LanguageChange(f func()) *dom.EventAspect {
-  return dom.Event("languagechange", f)
+	return dom.Event("languagechange", f)
 }
 
 // The level attribute has been updated.
 // https://developer.mozilla.org/docs/Web/Events/levelchange
 func LevelChange(f func()) *dom.EventAspect {
-  return dom.Event("levelchange", f)
+	return dom.Event("levelchange", f)
 }
 
 // Progression has been successful.
 // https://developer.mozilla.org/docs/Web/Reference/Events/load_(ProgressEvent)
 func Load(f func()) *dom.EventAspect {
-  return dom.Event("load", f)
+	return dom.Event("load", f)
 }
 
 // Progress has stopped (after "error", "abort" or "load" have been dispatched).
 // https://developer.mozilla.org/docs/Web/Events/loadend
 func LoadEnd(f func()) *dom.EventAspect {
-  return dom.Event("loadend", f)
+	return dom.Event("loadend", f)
 }
 
 // Progress has begun.
 // https://developer.mozilla.org/docs/Web/Events/loadstart
 func LoadStart(f func()) *dom.EventAspect {
-  return dom.Event("loadstart", f)
+	return dom.Event("loadstart", f)
 }
 
 // The first frame of the media has finished loading.
 // https://developer.mozilla.org/docs/Web/Events/loadeddata
 func LoadedData(f func()) *dom.EventAspect {
-  return dom.Event("loadeddata", f)
+	return dom.Event("loadeddata", f)
 }
 
 // The metadata has been loaded.
 // https://developer.mozilla.org/docs/Web/Events/loadedmetadata
 func LoadedMetadata(f func()) *dom.EventAspect {
-  return dom.Event("loadedmetadata", f)
+	return dom.Event("loadedmetadata", f)
 }
 
 // A message is received through an event source.
 // https://developer.mozilla.org/docs/Web/Reference/Events/message_serversentevents
 func Message(f func()) *dom.EventAspect {
-  return dom.Event("message", f)
+	return dom.Event("message", f)
 }
 
 // A pointing device button (usually a mouse) is pressed on an element.
 // https://developer.mozilla.org/docs/Web/Events/mousedown
 func MouseDown(f func()) *dom.EventAspect {
-  return dom.Event("mousedown", f)
+	return dom.Event("mousedown", f)
 }
 
 // A pointing device is moved onto the element that has the listener attached.
 // https://developer.mozilla.org/docs/Web/Events/mouseenter
 func MouseEnter(f func()) *dom.EventAspect {
-  return dom.Event("mouseenter", f)
+	return dom.Event("mouseenter", f)
 }
 
 // A pointing device is moved off the element that has the listener attached.
 // https://developer.mozilla.org/docs/Web/Events/mouseleave
 func MouseLeave(f func()) *dom.EventAspect {
-  return dom.Event("mouseleave", f)
+	return dom.Event("mouseleave", f)
 }
 
 // A pointing device is moved over an element.
 // https://developer.mozilla.org/docs/Web/Events/mousemove
 func MouseMove(f func()) *dom.EventAspect {
-  return dom.Event("mousemove", f)
+	return dom.Event("mousemove", f)
 }
 
 // A pointing device is moved off the element that has the listener attached or off one of its children.
 // https://developer.mozilla.org/docs/Web/Events/mouseout
 func MouseOut(f func()) *dom.EventAspect {
-  return dom.Event("mouseout", f)
+	return dom.Event("mouseout", f)
 }
 
 // A pointing device is moved onto the element that has the listener attached or onto one of its children.
 // https://developer.mozilla.org/docs/Web/Events/mouseover
 func MouseOver(f func()) *dom.EventAspect {
-  return dom.Event("mouseover", f)
+	return dom.Event("mouseover", f)
 }
 
 // A pointing device button is released over an element.
 // https://developer.mozilla.org/docs/Web/Events/mouseup
 func MouseUp(f func()) *dom.EventAspect {
-  return dom.Event("mouseup", f)
+	return dom.Event("mouseup", f)
 }
 
 // The manifest hadn't changed.
 // https://developer.mozilla.org/docs/Web/Events/noupdate
 func NoUpdate(f func()) *dom.EventAspect {
-  return dom.Event("noupdate", f)
+	return dom.Event("noupdate", f)
 }
 
 // The manifest was found to have become a 404 or 410 page, so the application cache is being deleted.
 // https://developer.mozilla.org/docs/Web/Events/obsolete
 func Obsolete(f func()) *dom.EventAspect {
-  return dom.Event("obsolete", f)
+	return dom.Event("obsolete", f)
 }
 
 // The browser has lost access to the network.
 // https://developer.mozilla.org/docs/Web/Events/offline
 func Offline(f func()) *dom.EventAspect {
-  return dom.Event("offline", f)
+	return dom.Event("offline", f)
 }
 
 // The browser has gained access to the network (but particular websites might be unreachable).
 // https://developer.mozilla.org/docs/Web/Events/online
 func Online(f func()) *dom.EventAspect {
-  return dom.Event("online", f)
+	return dom.Event("online", f)
 }
 
 // An event source connection has been established.
 // https://developer.mozilla.org/docs/Web/Reference/Events/open_serversentevents
 func Open(f func()) *dom.EventAspect {
-  return dom.Event("open", f)
+	return dom.Event("open", f)
 }
 
 // The orientation of the device (portrait/landscape) has changed
 // https://developer.mozilla.org/docs/Web/Events/orientationchange
 func OrientationChange(f func()) *dom.EventAspect {
-  return dom.Event("orientationchange", f)
+	return dom.Event("orientationchange", f)
 }
 
 // A session history entry is being traversed from.
 // https://developer.mozilla.org/docs/Web/Events/pagehide
 func PageHide(f func()) *dom.EventAspect {
-  return dom.Event("pagehide", f)
+	return dom.Event("pagehide", f)
 }
 
 // A session history entry is being traversed to.
 // https://developer.mozilla.org/docs/Web/Events/pageshow
 func PageShow(f func()) *dom.EventAspect {
-  return dom.Event("pageshow", f)
+	return dom.Event("pageshow", f)
 }
 
 // Data has been transfered from the system clipboard to the document.
 // https://developer.mozilla.org/docs/Web/Events/paste
 func Paste(f func()) *dom.EventAspect {
-  return dom.Event("paste", f)
+	return dom.Event("paste", f)
 }
 
 // Playback has been paused.
 // https://developer.mozilla.org/docs/Web/Events/pause
 func Pause(f func()) *dom.EventAspect {
-  return dom.Event("pause", f)
+	return dom.Event("pause", f)
 }
 
 // Playback has begun.
 // https://developer.mozilla.org/docs/Web/Events/play
 func Play(f func()) *dom.EventAspect {
-  return dom.Event("play", f)
+	return dom.Event("play", f)
 }
 
 // Playback is ready to start after having been paused or delayed due to lack of data.
 // https://developer.mozilla.org/docs/Web/Events/playing
 func Playing(f func()) *dom.EventAspect {
-  return dom.Event("playing", f)
+	return dom.Event("playing", f)
 }
 
 // The pointer was locked or released.
 // https://developer.mozilla.org/docs/Web/Events/pointerlockchange
 func PointerLockChange(f func()) *dom.EventAspect {
-  return dom.Event("pointerlockchange", f)
+	return dom.Event("pointerlockchange", f)
 }
 
 // It was impossible to lock the pointer for technical reasons or because the permission was denied.
 // https://developer.mozilla.org/docs/Web/Events/pointerlockerror
 func PointerLockError(f func()) *dom.EventAspect {
-  return dom.Event("pointerlockerror", f)
+	return dom.Event("pointerlockerror", f)
 }
 
 // A session history entry is being navigated to (in certain cases).
 // https://developer.mozilla.org/docs/Web/Events/popstate
 func PopState(f func()) *dom.EventAspect {
-  return dom.Event("popstate", f)
+	return dom.Event("popstate", f)
 }
 
 // The user agent is downloading resources listed by the manifest.
 // https://developer.mozilla.org/docs/Web/Reference/Events/progress_(appcache_event)
 func Progress(f func()) *dom.EventAspect {
-  return dom.Event("progress", f)
+	return dom.Event("progress", f)
 }
 
 // The playback rate has changed.
 // https://developer.mozilla.org/docs/Web/Events/ratechange
 func RateChange(f func()) *dom.EventAspect {
-  return dom.Event("ratechange", f)
+	return dom.Event("ratechange", f)
 }
 
 // The readyState attribute of a document has changed.
 // https://developer.mozilla.org/docs/Web/Events/readystatechange
 func ReadystateChange(f func()) *dom.EventAspect {
-  return dom.Event("readystatechange", f)
+	return dom.Event("readystatechange", f)
 }
 
 // A SMIL animation element is repeated.
 // https://developer.mozilla.org/docs/Web/Events/repeatEvent
 func RepeatEvent(f func()) *dom.EventAspect {
-  return dom.Event("repeatEvent", f)
+	return dom.Event("repeatEvent", f)
 }
 
 // A form is reset.
 // https://developer.mozilla.org/docs/Web/Events/reset
 func Reset(f func()) *dom.EventAspect {
-  return dom.Event("reset", f)
+	return dom.Event("reset", f)
 }
 
 // The document view has been resized.
 // https://developer.mozilla.org/docs/Web/Events/resize
 func Resize(f func()) *dom.EventAspect {
-  return dom.Event("resize", f)
+	return dom.Event("resize", f)
 }
 
 // Page loading has been stopped before the SVG was loaded.
 // https://developer.mozilla.org/docs/Web/Events/SVGAbort
 func SVGAbort(f func()) *dom.EventAspect {
-  return dom.Event("SVGAbort", f)
+	return dom.Event("SVGAbort", f)
 }
 
 // An error has occurred before the SVG was loaded.
 // https://developer.mozilla.org/docs/Web/Events/SVGError
 func SVGError(f func()) *dom.EventAspect {
-  return dom.Event("SVGError", f)
+	return dom.Event("SVGError", f)
 }
 
 // An SVG document has been loaded and parsed.
 // https://developer.mozilla.org/docs/Web/Events/SVGLoad
 func SVGLoad(f func()) *dom.EventAspect {
-  return dom.Event("SVGLoad", f)
+	return dom.Event("SVGLoad", f)
 }
 
 // An SVG document is being resized.
 // https://developer.mozilla.org/docs/Web/Events/SVGResize
 func SVGResize(f func()) *dom.EventAspect {
-  return dom.Event("SVGResize", f)
+	return dom.Event("SVGResize", f)
 }
 
 // An SVG document is being scrolled.
 // https://developer.mozilla.org/docs/Web/Events/SVGScroll
 func SVGScroll(f func()) *dom.EventAspect {
-  return dom.Event("SVGScroll", f)
+	return dom.Event("SVGScroll", f)
 }
 
 // An SVG document has been removed from a window or frame.
 // https://developer.mozilla.org/docs/Web/Events/SVGUnload
 func SVGUnload(f func()) *dom.EventAspect {
-  return dom.Event("SVGUnload", f)
+	return dom.Event("SVGUnload", f)
 }
 
 // An SVG document is being zoomed.
 // https://developer.mozilla.org/docs/Web/Events/SVGZoom
 func SVGZoom(f func()) *dom.EventAspect {
-  return dom.Event("SVGZoom", f)
+	return dom.Event("SVGZoom", f)
 }
 
 // The document view or an element has been scrolled.
 // https://developer.mozilla.org/docs/Web/Events/scroll
 func Scroll(f func()) *dom.EventAspect {
-  return dom.Event("scroll", f)
+	return dom.Event("scroll", f)
 }
 
 // A seek operation completed.
 // https://developer.mozilla.org/docs/Web/Events/seeked
 func Seeked(f func()) *dom.EventAspect {
-  return dom.Event("seeked", f)
+	return dom.Event("seeked", f)
 }
 
 // A seek operation began.
 // https://developer.mozilla.org/docs/Web/Events/seeking
 func Seeking(f func()) *dom.EventAspect {
-  return dom.Event("seeking", f)
+	return dom.Event("seeking", f)
 }
 
 // Some text is being selected.
 // https://developer.mozilla.org/docs/Web/Events/select
 func Select(f func()) *dom.EventAspect {
-  return dom.Event("select", f)
+	return dom.Event("select", f)
 }
 
 // A contextmenu event was fired on/bubbled to an element that has a contextmenu attribute
 // https://developer.mozilla.org/docs/Web/Events/show
 func Show(f func()) *dom.EventAspect {
-  return dom.Event("show", f)
+	return dom.Event("show", f)
 }
 
 // The user agent is trying to fetch media data, but data is unexpectedly not forthcoming.
 // https://developer.mozilla.org/docs/Web/Events/stalled
 func Stalled(f func()) *dom.EventAspect {
-  return dom.Event("stalled", f)
+	return dom.Event("stalled", f)
 }
 
 // A storage area (localStorage or sessionStorage) has changed.
 // https://developer.mozilla.org/docs/Web/Events/storage
 func Storage(f func()) *dom.EventAspect {
-  return dom.Event("storage", f)
+	return dom.Event("storage", f)
 }
 
 // A form is submitted.
 // https://developer.mozilla.org/docs/Web/Events/submit
 func Submit(f func()) *dom.EventAspect {
-  return dom.Event("submit", f)
+	return dom.Event("submit", f)
 }
 
 // A request successfully completed.
 // https://developer.mozilla.org/docs/Web/Reference/Events/success_indexedDB
 func Success(f func()) *dom.EventAspect {
-  return dom.Event("success", f)
+	return dom.Event("success", f)
 }
 
 // Media data loading has been suspended.
 // https://developer.mozilla.org/docs/Web/Events/suspend
 func Suspend(f func()) *dom.EventAspect {
-  return dom.Event("suspend", f)
+	return dom.Event("suspend", f)
 }
 
 // The time indicated by the currentTime attribute has been updated.
 // https://developer.mozilla.org/docs/Web/Events/timeupdate
 func TimeUpdate(f func()) *dom.EventAspect {
-  return dom.Event("timeupdate", f)
+	return dom.Event("timeupdate", f)
 }
 
 //  
 // https://developer.mozilla.org/docs/Web/Events/timeout
 func Timeout(f func()) *dom.EventAspect {
-  return dom.Event("timeout", f)
+	return dom.Event("timeout", f)
 }
 
 // A touch point has been disrupted in an implementation-specific manners (too many touch points for example).
 // https://developer.mozilla.org/docs/Web/Events/touchcancel
 func TouchCancel(f func()) *dom.EventAspect {
-  return dom.Event("touchcancel", f)
+	return dom.Event("touchcancel", f)
 }
 
 // A touch point is removed from the touch surface.
 // https://developer.mozilla.org/docs/Web/Events/touchend
 func TouchEnd(f func()) *dom.EventAspect {
-  return dom.Event("touchend", f)
+	return dom.Event("touchend", f)
 }
 
 // A touch point is moved onto the interactive area of an element.
 // https://developer.mozilla.org/docs/Web/Events/touchenter
 func TouchEnter(f func()) *dom.EventAspect {
-  return dom.Event("touchenter", f)
+	return dom.Event("touchenter", f)
 }
 
 // A touch point is moved off the interactive area of an element.
 // https://developer.mozilla.org/docs/Web/Events/touchleave
 func TouchLeave(f func()) *dom.EventAspect {
-  return dom.Event("touchleave", f)
+	return dom.Event("touchleave", f)
 }
 
 // A touch point is moved along the touch surface.
 // https://developer.mozilla.org/docs/Web/Events/touchmove
 func TouchMove(f func()) *dom.EventAspect {
-  return dom.Event("touchmove", f)
+	return dom.Event("touchmove", f)
 }
 
 // A touch point is placed on the touch surface.
 // https://developer.mozilla.org/docs/Web/Events/touchstart
 func TouchStart(f func()) *dom.EventAspect {
-  return dom.Event("touchstart", f)
+	return dom.Event("touchstart", f)
 }
 
 // A CSS transition has completed.
 // https://developer.mozilla.org/docs/Web/Events/transitionend
 func TransitionEnd(f func()) *dom.EventAspect {
-  return dom.Event("transitionend", f)
+	return dom.Event("transitionend", f)
 }
 
 // The document or a dependent resource is being unloaded.
 // https://developer.mozilla.org/docs/Web/Events/unload
 func Unload(f func()) *dom.EventAspect {
-  return dom.Event("unload", f)
+	return dom.Event("unload", f)
 }
 
 // The resources listed in the manifest have been newly redownloaded, and the script can use swapCache() to switch to the new cache.
 // https://developer.mozilla.org/docs/Web/Events/updateready
 func UpdateReady(f func()) *dom.EventAspect {
-  return dom.Event("updateready", f)
+	return dom.Event("updateready", f)
 }
 
 // An attempt was made to open a database with a version number higher than its current version. A versionchange transaction has been created.
 // https://developer.mozilla.org/docs/Web/Reference/Events/upgradeneeded_indexedDB
 func UpgradeNeeded(f func()) *dom.EventAspect {
-  return dom.Event("upgradeneeded", f)
+	return dom.Event("upgradeneeded", f)
 }
 
 // Fresh data is available from a proximity sensor (indicates whether the nearby object is near the device or not).
 // https://developer.mozilla.org/docs/Web/Events/userproximity
 func UserProximity(f func()) *dom.EventAspect {
-  return dom.Event("userproximity", f)
+	return dom.Event("userproximity", f)
 }
 
 // A versionchange transaction completed.
 // https://developer.mozilla.org/docs/Web/Reference/Events/versionchange_indexedDB
 func VersionChange(f func()) *dom.EventAspect {
-  return dom.Event("versionchange", f)
+	return dom.Event("versionchange", f)
 }
 
 // The content of a tab has become visible or has been hidden.
 // https://developer.mozilla.org/docs/Web/Events/visibilitychange
 func VisibilityChange(f func()) *dom.EventAspect {
-  return dom.Event("visibilitychange", f)
+	return dom.Event("visibilitychange", f)
 }
 
 // The volume has changed.
 // https://developer.mozilla.org/docs/Web/Events/volumechange
 func VolumeChange(f func()) *dom.EventAspect {
-  return dom.Event("volumechange", f)
+	return dom.Event("volumechange", f)
 }
 
 // Playback has stopped because of a temporary lack of data.
 // https://developer.mozilla.org/docs/Web/Events/waiting
 func Waiting(f func()) *dom.EventAspect {
-  return dom.Event("waiting", f)
+	return dom.Event("waiting", f)
 }
 
 // A wheel button of a pointing device is rotated in any direction.
 // https://developer.mozilla.org/docs/Web/Events/wheel
 func Wheel(f func()) *dom.EventAspect {
-  return dom.Event("wheel", f)
+	return dom.Event("wheel", f)
 }
