@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/bind"
-	"github.com/neelance/dom/example/model"
-	"github.com/neelance/dom/example/view"
+	"github.com/neelance/dom/examples/simple/model"
+	"github.com/neelance/dom/examples/simple/view"
 )
 
 func main() {

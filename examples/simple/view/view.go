@@ -5,7 +5,7 @@ import (
 	"github.com/neelance/dom/bind"
 	"github.com/neelance/dom/elem"
 	"github.com/neelance/dom/event"
-	"github.com/neelance/dom/example/model"
+	"github.com/neelance/dom/examples/simple/model"
 	"github.com/neelance/dom/prop"
 	"github.com/neelance/dom/style"
 )
