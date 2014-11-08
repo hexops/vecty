@@ -4,6 +4,7 @@ import (
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/bind"
 	"github.com/neelance/dom/elem"
+	"github.com/neelance/dom/event"
 	"github.com/neelance/dom/examples/todomvc/model"
 	"github.com/neelance/dom/prop"
 )
@@ -48,6 +49,10 @@ func main(model *model.Model) dom.Aspect {
 		elem.Input(
 			prop.Id("toggle-all"),
 			prop.Type("checkbox"),
+			bind.IfFunc(func() bool { return model.CompletedItemCount() == len(model.Items) }, model.Scope,
+				prop.Checked(),
+			),
+			event.Change(model.ToggleAll),
 		),
 		elem.Label(
 			prop.For("toggle-all"),

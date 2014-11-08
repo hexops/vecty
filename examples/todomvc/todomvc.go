@@ -33,5 +33,13 @@ func main() {
 	model.IncompleteItemCount = count(false)
 	model.CompletedItemCount = count(true)
 
+	model.ToggleAll = func(c *dom.EventContext) {
+		checked := c.Node.Get("checked").Bool()
+		for _, item := range model.Items {
+			item.Completed = checked
+		}
+		scope.Digest()
+	}
+
 	view.Page(model).Apply(dom.Body())
 }

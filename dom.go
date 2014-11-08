@@ -58,6 +58,7 @@ func (e *elemAspect) Revert() {
 type propAspect struct {
 	name  string
 	value interface{}
+	node  js.Object
 }
 
 func Prop(name string, value interface{}) Aspect {
@@ -68,11 +69,12 @@ func Prop(name string, value interface{}) Aspect {
 }
 
 func (a *propAspect) Apply(node js.Object) {
+	a.node = node
 	node.Set(a.name, a.value)
 }
 
 func (a *propAspect) Revert() {
-	// TODO
+	a.node.Set(a.name, nil)
 }
 
 type styleAspect struct {

@@ -1,6 +1,9 @@
 package model
 
-import "github.com/neelance/dom/bind"
+import (
+	"github.com/neelance/dom"
+	"github.com/neelance/dom/bind"
+)
 
 type Model struct {
 	Scope *bind.Scope
@@ -10,6 +13,9 @@ type Model struct {
 	// derived
 	IncompleteItemCount func() int
 	CompletedItemCount  func() int
+
+	// listeners
+	ToggleAll dom.Listener
 }
 
 type Item struct {
