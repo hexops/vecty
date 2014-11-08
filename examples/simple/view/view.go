@@ -27,7 +27,7 @@ func greeting(model *model.Model) dom.Aspect {
 		elem.H1(
 			style.Color("blue"),
 			dom.Text("Hello "),
-			bind.Text(&model.Name, model.Scope),
+			bind.TextPtr(&model.Name, model.Scope),
 			dom.Text("!"),
 		),
 	)
@@ -40,7 +40,7 @@ func items(model *model.Model) dom.Aspect {
 				for _, item := range model.Items {
 					if !aspects.Reuse(item) {
 						aspects.Add(item, elem.LI(
-							bind.Text(&item.Label, model.Scope),
+							bind.TextPtr(&item.Label, model.Scope),
 							dom.Text(" "),
 							elem.Button(
 								dom.Text("Delete"),

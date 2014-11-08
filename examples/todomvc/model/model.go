@@ -6,6 +6,10 @@ type Model struct {
 	Scope *bind.Scope
 
 	Items []*Item
+
+	// derived
+	IncompleteItemCount func() string
+	CompletedItemCount  func() string
 }
 
 type Item struct {

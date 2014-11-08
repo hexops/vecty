@@ -74,7 +74,7 @@ func main(model *model.Model) dom.Aspect {
 									bind.Checked(&item.Completed, model.Scope),
 								),
 								elem.Label(
-									bind.Text(&item.Text, model.Scope),
+									bind.TextPtr(&item.Text, model.Scope),
 								),
 								elem.Button(
 									prop.Class("destroy"),
@@ -100,7 +100,7 @@ func footer(model *model.Model) dom.Aspect {
 			prop.Id("todo-count"),
 
 			elem.Strong(
-				dom.Text("1"),
+				bind.TextFunc(model.IncompleteItemCount, model.Scope),
 			),
 			dom.Text(" item left"),
 		),
@@ -131,7 +131,9 @@ func footer(model *model.Model) dom.Aspect {
 
 		elem.Button(
 			prop.Id("clear-completed"),
-			dom.Text("Clear completed (1)"),
+			dom.Text("Clear completed ("),
+			bind.TextFunc(model.CompletedItemCount, model.Scope),
+			dom.Text(")"),
 		),
 	)
 }

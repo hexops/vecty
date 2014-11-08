@@ -9,14 +9,40 @@ import (
 )
 
 type Scope struct {
-	listeners map[int]func()
-	counter   int
+	age             int
+	listeners       map[int]func()
+	listenerCounter int
+}
+
+func NewScope() *Scope {
+	return &Scope{
+		age:             0,
+		listeners:       make(map[int]func()),
+		listenerCounter: 0,
+	}
+}
+
+func (s *Scope) Age() int {
+	return s.age
+}
+
+func (s *Scope) Digest() {
+	s.age++
+	for _, l := range s.listeners {
+		l()
+	}
 }
 
 type Listener struct {
 	id    int
 	fun   func()
 	scope *Scope
+}
+
+func (s *Scope) NewListener(fun func()) *Listener {
+	s.listenerCounter++
+	s.listeners[s.listenerCounter] = fun
+	return &Listener{id: s.listenerCounter, fun: fun, scope: s}
 }
 
 func (l *Listener) Call() {
@@ -27,22 +53,16 @@ func (l *Listener) Remove() {
 	delete(l.scope.listeners, l.id)
 }
 
-func (s *Scope) NewListener(fun func()) *Listener {
-	s.counter++
-	s.listeners[s.counter] = fun
-	return &Listener{id: s.counter, fun: fun, scope: s}
-}
-
-func (s *Scope) Digest() {
-	for _, l := range s.listeners {
-		l()
-	}
-}
-
-func NewScope() *Scope {
-	return &Scope{
-		listeners: make(map[int]func()),
-		counter:   0,
+func (s *Scope) CacheString(fun func() string) func() string {
+	cachedAge := -1
+	cache := ""
+	return func() string {
+		age := s.Age()
+		if age != cachedAge {
+			cachedAge = age
+			cache = fun()
+		}
+		return cache
 	}
 }
 
@@ -144,18 +164,23 @@ func Dynamic(scope *Scope, fun func(*Aspects)) dom.Aspect {
 	}
 }
 
-func Text(ptr *string, scope *Scope) dom.Aspect {
+func TextFunc(fun func() string, scope *Scope) dom.Aspect {
 	var current string
 	return elem.Span(
 		Dynamic(scope, func(aspects *Aspects) {
-			if current == *ptr {
+			text := fun()
+			if text == current {
 				aspects.Reuse("")
 				return
 			}
-			current = *ptr
-			aspects.Add("", dom.Text(current))
+			aspects.Add("", dom.Text(text))
+			current = text
 		}),
 	)
+}
+
+func TextPtr(ptr *string, scope *Scope) dom.Aspect {
+	return TextFunc(func() string { return *ptr }, scope)
 }
 
 func InputValue(ptr *string, scope *Scope) dom.Aspect {
