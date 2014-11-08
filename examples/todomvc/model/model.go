@@ -8,17 +8,19 @@ import (
 type Model struct {
 	Scope *bind.Scope
 
-	Items []*Item
+	Items        []*Item
+	AddItemTitle string
 
 	// derived
 	IncompleteItemCount func() int
 	CompletedItemCount  func() int
 
 	// listeners
+	AddItem   dom.Listener
 	ToggleAll dom.Listener
 }
 
 type Item struct {
-	Text      string
+	Title     string
 	Completed bool
 }

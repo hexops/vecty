@@ -1,15 +1,29 @@
 package style
 
-import "github.com/neelance/dom"
+import (
+	"strconv"
 
-func Width(pixels int) dom.Aspect {
-	return dom.Style("width", pixels)
-}
+	"github.com/neelance/dom"
+)
 
-func Height(pixels int) dom.Aspect {
-	return dom.Style("height", pixels)
+type Size string
+
+func Px(pixels int) Size {
+	return Size(strconv.Itoa(pixels) + "px")
 }
 
 func Color(value string) dom.Aspect {
 	return dom.Style("color", value)
+}
+
+func Height(pixels Size) dom.Aspect {
+	return dom.Style("height", pixels)
+}
+
+func Margin(pixels Size) dom.Aspect {
+	return dom.Style("margin", pixels)
+}
+
+func Width(pixels Size) dom.Aspect {
+	return dom.Style("width", pixels)
 }

@@ -7,16 +7,17 @@ import (
 	"github.com/neelance/dom/event"
 	"github.com/neelance/dom/examples/todomvc/model"
 	"github.com/neelance/dom/prop"
+	"github.com/neelance/dom/style"
 )
 
-func Page(model *model.Model) dom.Aspect {
+func Page(m *model.Model) dom.Aspect {
 	return dom.Group(
 		elem.Section(
 			prop.Id("todoapp"),
 
-			header(model),
-			main(model),
-			footer(model),
+			header(m),
+			main(m),
+			footer(m),
 		),
 
 		info(),
@@ -27,32 +28,38 @@ func Page(model *model.Model) dom.Aspect {
 	)
 }
 
-func header(model *model.Model) dom.Aspect {
+func header(m *model.Model) dom.Aspect {
 	return elem.Header(
 		prop.Id("header"),
 
 		elem.H1(
 			dom.Text("todos"),
 		),
-		elem.Input(
-			prop.Id("new-todo"),
-			prop.Placeholder("What needs to be done?"),
-			prop.Autofocus(),
+		elem.Form(
+			style.Margin(style.Px(0)),
+			dom.PreventDefault(event.Submit(m.AddItem)),
+
+			elem.Input(
+				prop.Id("new-todo"),
+				prop.Placeholder("What needs to be done?"),
+				prop.Autofocus(),
+				bind.Value(&m.AddItemTitle, m.Scope),
+			),
 		),
 	)
 }
 
-func main(model *model.Model) dom.Aspect {
+func main(m *model.Model) dom.Aspect {
 	return elem.Section(
 		prop.Id("main"),
 
 		elem.Input(
 			prop.Id("toggle-all"),
 			prop.Type("checkbox"),
-			bind.IfFunc(func() bool { return model.CompletedItemCount() == len(model.Items) }, model.Scope,
+			bind.IfFunc(func() bool { return m.CompletedItemCount() == len(m.Items) }, m.Scope,
 				prop.Checked(),
 			),
-			event.Change(model.ToggleAll),
+			event.Change(m.ToggleAll),
 		),
 		elem.Label(
 			prop.For("toggle-all"),
@@ -62,11 +69,11 @@ func main(model *model.Model) dom.Aspect {
 		elem.UL(
 			prop.Id("todo-list"),
 
-			bind.Dynamic(model.Scope, func(aspects *bind.Aspects) {
-				for _, item := range model.Items {
+			bind.Dynamic(m.Scope, func(aspects *bind.Aspects) {
+				for _, item := range m.Items {
 					if !aspects.Reuse(item) {
 						aspects.Add(item, elem.LI(
-							bind.IfPtr(&item.Completed, model.Scope,
+							bind.IfPtr(&item.Completed, m.Scope,
 								prop.Class("Completed"),
 							),
 
@@ -76,10 +83,10 @@ func main(model *model.Model) dom.Aspect {
 								elem.Input(
 									prop.Class("toggle"),
 									prop.Type("checkbox"),
-									bind.Checked(&item.Completed, model.Scope),
+									bind.Checked(&item.Completed, m.Scope),
 								),
 								elem.Label(
-									bind.TextPtr(&item.Text, model.Scope),
+									bind.TextPtr(&item.Title, m.Scope),
 								),
 								elem.Button(
 									prop.Class("destroy"),
@@ -87,7 +94,7 @@ func main(model *model.Model) dom.Aspect {
 							),
 							elem.Input(
 								prop.Class("edit"),
-								prop.Value(item.Text), // TODO fixme
+								prop.Value(item.Title), // TODO fixme
 							),
 						))
 					}
@@ -97,7 +104,7 @@ func main(model *model.Model) dom.Aspect {
 	)
 }
 
-func footer(model *model.Model) dom.Aspect {
+func footer(m *model.Model) dom.Aspect {
 	return elem.Footer(
 		prop.Id("footer"),
 
@@ -105,7 +112,7 @@ func footer(model *model.Model) dom.Aspect {
 			prop.Id("todo-count"),
 
 			elem.Strong(
-				bind.TextFunc(bind.Itoa(model.IncompleteItemCount), model.Scope),
+				bind.TextFunc(bind.Itoa(m.IncompleteItemCount), m.Scope),
 			),
 			dom.Text(" item left"),
 		),
@@ -134,11 +141,11 @@ func footer(model *model.Model) dom.Aspect {
 			),
 		),
 
-		bind.IfFunc(func() bool { return model.CompletedItemCount() != 0 }, model.Scope,
+		bind.IfFunc(func() bool { return m.CompletedItemCount() != 0 }, m.Scope,
 			elem.Button(
 				prop.Id("clear-completed"),
 				dom.Text("Clear completed ("),
-				bind.TextFunc(bind.Itoa(model.CompletedItemCount), model.Scope),
+				bind.TextFunc(bind.Itoa(m.CompletedItemCount), m.Scope),
 				dom.Text(")"),
 			),
 		),

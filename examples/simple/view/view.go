@@ -22,7 +22,7 @@ func greeting(model *model.Model) dom.Aspect {
 		dom.Text("Your name: "),
 		elem.Input(
 			prop.Type("text"),
-			bind.InputValue(&model.Name, model.Scope),
+			bind.Value(&model.Name, model.Scope),
 		),
 		elem.H1(
 			style.Color("blue"),

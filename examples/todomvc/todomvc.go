@@ -11,18 +11,18 @@ import (
 func main() {
 	scope := bind.NewScope()
 
-	model := &model.Model{
+	m := &model.Model{
 		Scope: scope,
 		Items: []*model.Item{
-			&model.Item{Text: "Create a TodoMVC template", Completed: true},
-			&model.Item{Text: "Rule the web", Completed: false},
+			&model.Item{Title: "Create a TodoMVC template", Completed: true},
+			&model.Item{Title: "Rule the web", Completed: false},
 		},
 	}
 
 	count := func(completed bool) func() int {
 		return scope.CacheInt(func() int {
 			count := 0
-			for _, item := range model.Items {
+			for _, item := range m.Items {
 				if item.Completed == completed {
 					count++
 				}
@@ -30,16 +30,22 @@ func main() {
 			return count
 		})
 	}
-	model.IncompleteItemCount = count(false)
-	model.CompletedItemCount = count(true)
+	m.IncompleteItemCount = count(false)
+	m.CompletedItemCount = count(true)
 
-	model.ToggleAll = func(c *dom.EventContext) {
+	m.AddItem = func(c *dom.EventContext) {
+		m.Items = append(m.Items, &model.Item{Title: m.AddItemTitle, Completed: false})
+		m.AddItemTitle = ""
+		scope.Digest()
+	}
+
+	m.ToggleAll = func(c *dom.EventContext) {
 		checked := c.Node.Get("checked").Bool()
-		for _, item := range model.Items {
+		for _, item := range m.Items {
 			item.Completed = checked
 		}
 		scope.Digest()
 	}
 
-	view.Page(model).Apply(dom.Body())
+	view.Page(m).Apply(dom.Body())
 }

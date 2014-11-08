@@ -206,11 +206,16 @@ func TextPtr(ptr *string, scope *Scope) dom.Aspect {
 	return TextFunc(func() string { return *ptr }, scope)
 }
 
-func InputValue(ptr *string, scope *Scope) dom.Aspect {
-	return event.Input(func(c *dom.EventContext) {
-		*ptr = c.Node.Get("value").Str()
-		scope.Digest()
-	})
+func Value(ptr *string, scope *Scope) dom.Aspect {
+	return dom.Group(
+		Dynamic(scope, func(aspects *Aspects) {
+			aspects.Add("", prop.Value(*ptr))
+		}),
+		event.Input(func(c *dom.EventContext) {
+			*ptr = c.Node.Get("value").Str()
+			scope.Digest()
+		}),
+	)
 }
 
 func Checked(condition *bool, scope *Scope) dom.Aspect {

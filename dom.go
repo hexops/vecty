@@ -105,9 +105,10 @@ type EventContext struct {
 }
 
 type eventAspect struct {
-	eventType string
-	listener  func(event js.Object)
-	node      js.Object
+	eventType      string
+	listener       func(event js.Object)
+	preventDefault bool
+	node           js.Object
 }
 
 func Event(eventType string, listener Listener) Aspect {
@@ -115,13 +116,22 @@ func Event(eventType string, listener Listener) Aspect {
 	a = &eventAspect{
 		eventType: eventType,
 		listener: func(event js.Object) {
+			if a.preventDefault {
+				event.Call("preventDefault")
+			}
 			go listener(&EventContext{
 				Node:  a.node,
 				Event: event,
 			})
 		},
+		preventDefault: false,
 	}
 	return a
+}
+
+func PreventDefault(aspect Aspect) Aspect {
+	aspect.(*eventAspect).preventDefault = true
+	return aspect
 }
 
 func (a *eventAspect) Apply(node js.Object) {
