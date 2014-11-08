@@ -93,7 +93,7 @@ import (
 		fmt.Fprintf(file, `
 // %s
 // https://developer.mozilla.org%s
-func %s(aspects ...dom.Aspect) *dom.ElemAspect {
+func %s(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Elem("%s", aspects...)
 }
 `, desc, link[6:], funName, name)
@@ -232,7 +232,7 @@ import (
 		fmt.Fprintf(file, `
 // %s
 // https://developer.mozilla.org%s
-func %s(f func()) *dom.EventAspect {
+func %s(f dom.Listener) dom.Aspect {
 	return dom.Event("%s", f)
 }
 `, e.Desc, e.Link[6:], name, e.Name)

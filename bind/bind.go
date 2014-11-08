@@ -1,8 +1,11 @@
 package bind
 
 import (
+	"github.com/gopherjs/gopherjs/js"
 	"github.com/neelance/dom"
+	"github.com/neelance/dom/elem"
 	"github.com/neelance/dom/event"
+	"github.com/neelance/dom/prop"
 )
 
 type Scope struct {
@@ -19,102 +22,111 @@ func NewScope() *Scope {
 	return &Scope{}
 }
 
-type textBinding struct {
-	ptr   *string
-	scope *Scope
-	text  *dom.TextAspect
-}
-
-func Text(ptr *string, scope *Scope) dom.Aspect {
-	return &textBinding{ptr: ptr, scope: scope, text: dom.Text(*ptr)}
-}
-
-func (b *textBinding) Apply(parent *dom.ElemAspect) {
-	b.text.Apply(parent)
-	b.scope.Listeners = append(b.scope.Listeners, func() {
-		b.text.Node.Set("textContent", *b.ptr)
-	})
-}
-
-func InputValue(ptr *string, scope *Scope) (a *dom.EventAspect) {
-	a = event.Input(func() {
-		*ptr = a.Element.Node.Get("value").Str()
-		scope.Digest()
-	})
-	return
-}
-
 type ifBinding struct {
 	condition *bool
 	scope     *Scope
-	aspects   []dom.Aspect
+	aspect    dom.Aspect
 }
 
 func If(condition *bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
-	return &ifBinding{condition: condition, scope: scope, aspects: aspects}
+	return &ifBinding{condition: condition, scope: scope, aspect: dom.Group(aspects...)}
 }
 
-func (b *ifBinding) Apply(parent *dom.ElemAspect) {
-	if *b.condition {
-		for _, a := range b.aspects {
-			a.Apply(parent)
+func (b *ifBinding) Apply(node js.Object) {
+	l := func() {
+		switch *b.condition {
+		case true:
+			b.aspect.Apply(node)
+		case false:
+			if ra, ok := b.aspect.(dom.RevokableAspect); ok {
+				ra.Revoke()
+			}
 		}
 	}
+	b.scope.Listeners = append(b.scope.Listeners, l)
+	l()
 }
 
 type Aspects struct {
-	Current  []dom.Aspect
-	OldCache map[interface{}]dom.Aspect
-	NewCache map[interface{}]dom.Aspect
+	current  []dom.Aspect
+	oldCache map[interface{}]dom.Aspect
+	newCache map[interface{}]dom.Aspect
 }
 
 func (a *Aspects) Add(key interface{}, aspect dom.Aspect) {
-	a.Current = append(a.Current, aspect)
-	a.NewCache[key] = aspect
+	a.current = append(a.current, aspect)
+	a.newCache[key] = aspect
 }
 
 func (a *Aspects) Reuse(key interface{}) bool {
-	if cached, ok := a.OldCache[key]; ok {
+	if cached, ok := a.oldCache[key]; ok {
 		a.Add(key, cached)
-		delete(a.OldCache, key)
+		delete(a.oldCache, key)
 		return true
 	}
 	return false
 }
 
-type DynamicAspect struct {
-	Scope *Scope
-	Fun   func(*Aspects)
+type dynamicAspect struct {
+	scope *Scope
+	fun   func(*Aspects)
 	cache map[interface{}]dom.Aspect
 }
 
-func (d *DynamicAspect) Apply(parent *dom.ElemAspect) {
+func (d *dynamicAspect) Apply(node js.Object) {
 	update := func() {
 		aspects := &Aspects{
-			OldCache: d.cache,
-			NewCache: make(map[interface{}]dom.Aspect),
+			oldCache: d.cache,
+			newCache: make(map[interface{}]dom.Aspect),
 		}
 
-		d.Fun(aspects)
-		d.cache = aspects.NewCache
+		d.fun(aspects)
+		d.cache = aspects.newCache
 
-		for _, a := range aspects.OldCache {
+		for _, a := range aspects.oldCache {
 			if ra, ok := a.(dom.RevokableAspect); ok {
 				ra.Revoke()
 			}
 		}
 
-		for _, a := range aspects.Current {
-			a.Apply(parent)
+		for _, a := range aspects.current {
+			a.Apply(node)
 		}
 	}
 	update()
-	d.Scope.Listeners = append(d.Scope.Listeners, update)
+	d.scope.Listeners = append(d.scope.Listeners, update)
 }
 
-func Dynamic(scope *Scope, fun func(*Aspects)) *DynamicAspect {
-	return &DynamicAspect{
-		Scope: scope,
-		Fun:   fun,
+func Dynamic(scope *Scope, fun func(*Aspects)) dom.Aspect {
+	return &dynamicAspect{
+		scope: scope,
+		fun:   fun,
 	}
+}
+
+func Text(ptr *string, scope *Scope) dom.Aspect {
+	return elem.Span(
+		Dynamic(scope, func(aspects *Aspects) {
+			aspects.Add("", dom.Text(*ptr))
+		}),
+	)
+}
+
+func InputValue(ptr *string, scope *Scope) dom.Aspect {
+	return event.Input(func(c *dom.EventContext) {
+		*ptr = c.Node.Get("value").Str()
+		scope.Digest()
+	})
+}
+
+func Checked(condition *bool, scope *Scope) dom.Aspect {
+	return dom.Group(
+		If(condition, scope,
+			prop.Checked(),
+		),
+		event.Change(func(c *dom.EventContext) {
+			*condition = c.Node.Get("checked").Bool()
+			scope.Digest()
+		}),
+	)
 }

@@ -8,8 +8,8 @@ import (
 	"github.com/neelance/dom/prop"
 )
 
-func Page(model *model.Model) *dom.ElemAspect {
-	return elem.Div(
+func Page(model *model.Model) dom.Aspect {
+	return dom.Group(
 		elem.Section(
 			prop.Id("todoapp"),
 
@@ -26,7 +26,7 @@ func Page(model *model.Model) *dom.ElemAspect {
 	)
 }
 
-func header(model *model.Model) *dom.ElemAspect {
+func header(model *model.Model) dom.Aspect {
 	return elem.Header(
 		prop.Id("header"),
 
@@ -41,7 +41,7 @@ func header(model *model.Model) *dom.ElemAspect {
 	)
 }
 
-func main(model *model.Model) *dom.ElemAspect {
+func main(model *model.Model) dom.Aspect {
 	return elem.Section(
 		prop.Id("main"),
 
@@ -71,9 +71,7 @@ func main(model *model.Model) *dom.ElemAspect {
 								elem.Input(
 									prop.Class("toggle"),
 									prop.Type("checkbox"),
-									bind.If(&item.Completed, model.Scope,
-										prop.Checked(),
-									),
+									bind.Checked(&item.Completed, model.Scope),
 								),
 								elem.Label(
 									dom.Text(item.Text),
@@ -94,7 +92,7 @@ func main(model *model.Model) *dom.ElemAspect {
 	)
 }
 
-func footer(model *model.Model) *dom.ElemAspect {
+func footer(model *model.Model) dom.Aspect {
 	return elem.Footer(
 		prop.Id("footer"),
 
@@ -138,7 +136,7 @@ func footer(model *model.Model) *dom.ElemAspect {
 	)
 }
 
-func info() *dom.ElemAspect {
+func info() dom.Aspect {
 	return elem.Footer(
 		prop.Id("info"),
 

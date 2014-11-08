@@ -10,14 +10,14 @@ import (
 	"github.com/neelance/dom/style"
 )
 
-func Page(model *model.Model) *dom.ElemAspect {
+func Page(model *model.Model) dom.Aspect {
 	return elem.Div(
 		greeting(model),
 		items(model),
 	)
 }
 
-func greeting(model *model.Model) *dom.ElemAspect {
+func greeting(model *model.Model) dom.Aspect {
 	return elem.Div(
 		dom.Text("Your name: "),
 		elem.Input(
@@ -33,7 +33,7 @@ func greeting(model *model.Model) *dom.ElemAspect {
 	)
 }
 
-func items(model *model.Model) *dom.ElemAspect {
+func items(model *model.Model) dom.Aspect {
 	return elem.Div(
 		elem.UL(
 			bind.Dynamic(model.Scope, func(aspects *bind.Aspects) {

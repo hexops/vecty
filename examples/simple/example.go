@@ -17,12 +17,12 @@ func main() {
 		},
 	}
 
-	m.AppendItem = func() {
+	m.AppendItem = func(c *dom.EventContext) {
 		m.Items = append(m.Items, &model.Item{"New item"})
 		m.Scope.Digest()
 	}
 
-	m.PrependItem = func() {
+	m.PrependItem = func(c *dom.EventContext) {
 		m.Items = append([]*model.Item{{"New item"}}, m.Items...)
 		m.Scope.Digest()
 	}
@@ -36,8 +36,8 @@ func main() {
 		panic("item not found")
 	}
 
-	m.DeleteItem = func(item *model.Item) func() {
-		return func() {
+	m.DeleteItem = func(item *model.Item) dom.Listener {
+		return func(c *dom.EventContext) {
 			i := itemIndex(item)
 			copy(m.Items[i:], m.Items[i+1:])
 			m.Items = m.Items[:len(m.Items)-1]

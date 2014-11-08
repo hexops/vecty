@@ -1,15 +1,11 @@
 package dom
 
-import "github.com/gopherjs/gopherjs/js"
-
-type ElemAspect struct {
-	TagName string
-	Aspects []Aspect
-	Node    js.Object
-}
+import (
+	"github.com/gopherjs/gopherjs/js"
+)
 
 type Aspect interface {
-	Apply(parent *ElemAspect)
+	Apply(node js.Object)
 }
 
 type RevokableAspect interface {
@@ -17,102 +13,140 @@ type RevokableAspect interface {
 	Revoke()
 }
 
-func Elem(tagName string, mutators ...Aspect) *ElemAspect {
-	return &ElemAspect{
-		TagName: tagName,
-		Aspects: mutators,
+type groupAspect []Aspect
+
+func Group(aspects ...Aspect) Aspect {
+	if len(aspects) == 1 {
+		return aspects[0]
+	}
+	return groupAspect(aspects)
+}
+
+func (g groupAspect) Apply(node js.Object) {
+	for _, a := range g {
+		a.Apply(node)
 	}
 }
 
-func (e *ElemAspect) Apply(parent *ElemAspect) {
-	if e.Node == nil {
-		e.Node = js.Global.Get("document").Call("createElement", e.TagName)
-	}
-	for _, m := range e.Aspects {
-		m.Apply(e)
-	}
-	parent.Node.Call("appendChild", e.Node)
-}
-
-func (e *ElemAspect) Revoke() {
-	e.Node.Call("remove")
-}
-
-type PropAspect struct {
-	Name  string
-	Value interface{}
-}
-
-func Prop(name string, value interface{}) *PropAspect {
-	return &PropAspect{
-		Name:  name,
-		Value: value,
+func (g groupAspect) Revoke() {
+	for _, a := range g {
+		if ra, ok := a.(RevokableAspect); ok {
+			ra.Revoke()
+		}
 	}
 }
 
-func (p *PropAspect) Apply(parent *ElemAspect) {
-	parent.Node.Set(p.Name, p.Value)
+type elemAspect struct {
+	tagName string
+	aspect  Aspect
+	node    js.Object
 }
 
-type StyleAspect struct {
-	Name  string
-	Value interface{}
-}
-
-func Style(name string, value interface{}) *StyleAspect {
-	return &StyleAspect{
-		Name:  name,
-		Value: value,
+func Elem(tagName string, aspects ...Aspect) Aspect {
+	return &elemAspect{
+		tagName: tagName,
+		aspect:  Group(aspects...),
 	}
 }
 
-func (s *StyleAspect) Apply(parent *ElemAspect) {
-	parent.Node.Get("style").Set(s.Name, s.Value)
+func (e *elemAspect) Apply(node js.Object) {
+	if e.node == nil {
+		e.node = js.Global.Get("document").Call("createElement", e.tagName)
+	}
+	e.aspect.Apply(e.node)
+	node.Call("appendChild", e.node)
 }
 
-type EventAspect struct {
-	EventType string
-	Fun       func()
-	Element   *ElemAspect
+func (e *elemAspect) Revoke() {
+	e.node.Call("remove")
 }
 
-func Event(eventType string, fun func()) *EventAspect {
-	return &EventAspect{
-		EventType: eventType,
-		Fun:       fun,
+type propAspect struct {
+	name  string
+	value interface{}
+}
+
+func Prop(name string, value interface{}) Aspect {
+	return &propAspect{
+		name:  name,
+		value: value,
 	}
 }
 
-func (l *EventAspect) Apply(parent *ElemAspect) {
-	if l.Element == nil {
-		l.Element = parent
-		parent.Node.Call("addEventListener", l.EventType, func() {
-			l.Fun()
+func (p *propAspect) Apply(node js.Object) {
+	node.Set(p.name, p.value)
+}
+
+type styleAspect struct {
+	name  string
+	value interface{}
+}
+
+func Style(name string, value interface{}) Aspect {
+	return &styleAspect{
+		name:  name,
+		value: value,
+	}
+}
+
+func (s *styleAspect) Apply(node js.Object) {
+	node.Get("style").Set(s.name, s.value)
+}
+
+type Listener func(c *EventContext)
+
+type EventContext struct {
+	Node  js.Object
+	Event js.Object
+}
+
+type eventAspect struct {
+	eventType string
+	listener  Listener
+	node      js.Object
+}
+
+func Event(eventType string, listener Listener) Aspect {
+	return &eventAspect{
+		eventType: eventType,
+		listener:  listener,
+	}
+}
+
+func (l *eventAspect) Apply(node js.Object) {
+	if l.node == nil {
+		l.node = node
+		node.Call("addEventListener", l.eventType, func(event js.Object) {
+			go l.listener(&EventContext{
+				Node:  l.node,
+				Event: event,
+			})
 		})
 	}
 }
 
-type TextAspect struct {
-	Content string
-	Node    js.Object
+type textAspect struct {
+	content string
+	node    js.Object
 }
 
-func (m *TextAspect) Apply(parent *ElemAspect) {
-	if m.Node == nil {
-		m.Node = js.Global.Get("document").Call("createTextNode", m.Content)
+func (a *textAspect) Apply(node js.Object) {
+	if a.node == nil {
+		a.node = js.Global.Get("document").Call("createTextNode", a.content)
 	}
-	parent.Node.Call("appendChild", m.Node)
+	node.Call("appendChild", a.node)
 }
 
-func Text(content string) *TextAspect {
-	return &TextAspect{
-		Content: content,
+func (a *textAspect) Revoke() {
+	a.node.Call("remove")
+}
+
+func Text(content string) Aspect {
+	return &textAspect{
+		content: content,
 	}
 }
 
-func Body() *ElemAspect {
-	return &ElemAspect{
-		TagName: "body",
-		Node:    js.Global.Get("document").Get("body"),
-	}
+func Body() js.Object {
+	return js.Global.Get("document").Get("body")
 }

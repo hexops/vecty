@@ -1,6 +1,9 @@
 package prop
 
-import "github.com/neelance/dom"
+import (
+	"github.com/gopherjs/gopherjs/js"
+	"github.com/neelance/dom"
+)
 
 func Autofocus() dom.Aspect {
 	return dom.Prop("autofocus", true)
@@ -11,12 +14,23 @@ func Checked() dom.Aspect {
 }
 
 type classAspect struct {
-	classes []string
+	classes   []string
+	classList js.Object
 }
 
-func (a *classAspect) Apply(parent *dom.ElemAspect) {
+func (a *classAspect) Apply(node js.Object) {
+	a.classList = node.Get("classList")
 	for _, c := range a.classes {
-		parent.Node.Get("classList").Call("add", c)
+		a.classList.Call("add", c)
+	}
+}
+
+func (a *classAspect) Revoke() {
+	if a.classList == nil {
+		return
+	}
+	for _, c := range a.classes {
+		a.classList.Call("remove", c)
 	}
 }
 

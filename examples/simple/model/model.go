@@ -1,6 +1,9 @@
 package model
 
-import "github.com/neelance/dom/bind"
+import (
+	"github.com/neelance/dom"
+	"github.com/neelance/dom/bind"
+)
 
 type Item struct {
 	Label string
@@ -12,7 +15,7 @@ type Model struct {
 	Name  string
 	Items []*Item
 
-	AppendItem  func()
-	PrependItem func()
-	DeleteItem  func(*Item) func()
+	AppendItem  dom.Listener
+	PrependItem dom.Listener
+	DeleteItem  func(*Item) dom.Listener
 }
