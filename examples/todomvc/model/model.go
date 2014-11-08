@@ -8,8 +8,8 @@ type Model struct {
 	Items []*Item
 
 	// derived
-	IncompleteItemCount func() string
-	CompletedItemCount  func() string
+	IncompleteItemCount func() int
+	CompletedItemCount  func() int
 }
 
 type Item struct {

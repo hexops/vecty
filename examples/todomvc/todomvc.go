@@ -1,8 +1,6 @@
 package main
 
 import (
-	"strconv"
-
 	"github.com/neelance/dom/bind"
 	"github.com/neelance/dom/examples/todomvc/model"
 	"github.com/neelance/dom/examples/todomvc/view"
@@ -21,15 +19,15 @@ func main() {
 		},
 	}
 
-	count := func(completed bool) func() string {
-		return scope.CacheString(func() string {
+	count := func(completed bool) func() int {
+		return scope.CacheInt(func() int {
 			count := 0
 			for _, item := range model.Items {
 				if item.Completed == completed {
 					count++
 				}
 			}
-			return strconv.Itoa(count)
+			return count
 		})
 	}
 	model.IncompleteItemCount = count(false)

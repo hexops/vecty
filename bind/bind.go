@@ -1,6 +1,8 @@
 package bind
 
 import (
+	"strconv"
+
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/elem"
@@ -53,6 +55,19 @@ func (l *Listener) Remove() {
 	delete(l.scope.listeners, l.id)
 }
 
+func (s *Scope) CacheInt(fun func() int) func() int {
+	cachedAge := -1
+	cache := 0
+	return func() int {
+		age := s.Age()
+		if age != cachedAge {
+			cachedAge = age
+			cache = fun()
+		}
+		return cache
+	}
+}
+
 func (s *Scope) CacheString(fun func() string) func() string {
 	cachedAge := -1
 	cache := ""
@@ -67,26 +82,34 @@ func (s *Scope) CacheString(fun func() string) func() string {
 }
 
 type ifAspect struct {
-	condition *bool
+	condition func() bool
 	scope     *Scope
 	aspect    dom.Aspect
 	listener  *Listener
 }
 
-func If(condition *bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
+func IfFunc(condition func() bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
 	return &ifAspect{condition: condition, scope: scope, aspect: dom.Group(aspects...)}
+}
+
+func IfPtr(condition *bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
+	return IfFunc(func() bool { return *condition }, scope, aspects...)
 }
 
 func (a *ifAspect) Apply(node js.Object) {
 	if a.listener != nil {
 		return
 	}
+	current := false
 	a.listener = a.scope.NewListener(func() {
-		switch *a.condition {
-		case true:
+		value := a.condition()
+		if value && !current {
 			a.aspect.Apply(node)
-		case false:
+			current = true
+		}
+		if !value && current {
 			a.aspect.Revert()
+			current = false
 		}
 	})
 	a.listener.Call()
@@ -165,7 +188,7 @@ func Dynamic(scope *Scope, fun func(*Aspects)) dom.Aspect {
 }
 
 func TextFunc(fun func() string, scope *Scope) dom.Aspect {
-	var current string
+	current := ""
 	return elem.Span(
 		Dynamic(scope, func(aspects *Aspects) {
 			text := fun()
@@ -192,7 +215,7 @@ func InputValue(ptr *string, scope *Scope) dom.Aspect {
 
 func Checked(condition *bool, scope *Scope) dom.Aspect {
 	return dom.Group(
-		If(condition, scope,
+		IfPtr(condition, scope,
 			prop.Checked(),
 		),
 		event.Change(func(c *dom.EventContext) {
@@ -200,4 +223,10 @@ func Checked(condition *bool, scope *Scope) dom.Aspect {
 			scope.Digest()
 		}),
 	)
+}
+
+func Itoa(fun func() int) func() string {
+	return func() string {
+		return strconv.Itoa(fun())
+	}
 }

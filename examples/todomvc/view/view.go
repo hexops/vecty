@@ -61,7 +61,7 @@ func main(model *model.Model) dom.Aspect {
 				for _, item := range model.Items {
 					if !aspects.Reuse(item) {
 						aspects.Add(item, elem.LI(
-							bind.If(&item.Completed, model.Scope,
+							bind.IfPtr(&item.Completed, model.Scope,
 								prop.Class("Completed"),
 							),
 
@@ -100,7 +100,7 @@ func footer(model *model.Model) dom.Aspect {
 			prop.Id("todo-count"),
 
 			elem.Strong(
-				bind.TextFunc(model.IncompleteItemCount, model.Scope),
+				bind.TextFunc(bind.Itoa(model.IncompleteItemCount), model.Scope),
 			),
 			dom.Text(" item left"),
 		),
@@ -129,11 +129,13 @@ func footer(model *model.Model) dom.Aspect {
 			),
 		),
 
-		elem.Button(
-			prop.Id("clear-completed"),
-			dom.Text("Clear completed ("),
-			bind.TextFunc(model.CompletedItemCount, model.Scope),
-			dom.Text(")"),
+		bind.IfFunc(func() bool { return model.CompletedItemCount() != 0 }, model.Scope,
+			elem.Button(
+				prop.Id("clear-completed"),
+				dom.Text("Clear completed ("),
+				bind.TextFunc(bind.Itoa(model.CompletedItemCount), model.Scope),
+				dom.Text(")"),
+			),
 		),
 	)
 }
