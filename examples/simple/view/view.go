@@ -12,12 +12,12 @@ import (
 
 func Page(model *model.Model) *dom.ElemAspect {
 	return elem.Div(
-		Greeting(model),
-		Items(model),
+		greeting(model),
+		items(model),
 	)
 }
 
-func Greeting(model *model.Model) *dom.ElemAspect {
+func greeting(model *model.Model) *dom.ElemAspect {
 	return elem.Div(
 		dom.Text("Your name: "),
 		elem.Input(
@@ -33,7 +33,7 @@ func Greeting(model *model.Model) *dom.ElemAspect {
 	)
 }
 
-func Items(model *model.Model) *dom.ElemAspect {
+func items(model *model.Model) *dom.ElemAspect {
 	return elem.Div(
 		elem.UL(
 			bind.Dynamic(model.Scope, func(aspects *bind.Aspects) {

@@ -19,20 +19,20 @@ func NewScope() *Scope {
 	return &Scope{}
 }
 
-type TextBinding struct {
-	Ptr   *string
-	Scope *Scope
-	Text  *dom.TextAspect
+type textBinding struct {
+	ptr   *string
+	scope *Scope
+	text  *dom.TextAspect
 }
 
 func Text(ptr *string, scope *Scope) dom.Aspect {
-	return &TextBinding{Ptr: ptr, Scope: scope, Text: dom.Text(*ptr)}
+	return &textBinding{ptr: ptr, scope: scope, text: dom.Text(*ptr)}
 }
 
-func (b *TextBinding) Apply(parent *dom.ElemAspect) {
-	b.Text.Apply(parent)
-	b.Scope.Listeners = append(b.Scope.Listeners, func() {
-		b.Text.Node.Set("textContent", *b.Ptr)
+func (b *textBinding) Apply(parent *dom.ElemAspect) {
+	b.text.Apply(parent)
+	b.scope.Listeners = append(b.scope.Listeners, func() {
+		b.text.Node.Set("textContent", *b.ptr)
 	})
 }
 
@@ -42,6 +42,24 @@ func InputValue(ptr *string, scope *Scope) (a *dom.EventAspect) {
 		scope.Digest()
 	})
 	return
+}
+
+type ifBinding struct {
+	condition *bool
+	scope     *Scope
+	aspects   []dom.Aspect
+}
+
+func If(condition *bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
+	return &ifBinding{condition: condition, scope: scope, aspects: aspects}
+}
+
+func (b *ifBinding) Apply(parent *dom.ElemAspect) {
+	if *b.condition {
+		for _, a := range b.aspects {
+			a.Apply(parent)
+		}
+	}
 }
 
 type Aspects struct {
