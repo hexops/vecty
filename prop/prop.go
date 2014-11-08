@@ -25,7 +25,7 @@ func (a *classAspect) Apply(node js.Object) {
 	}
 }
 
-func (a *classAspect) Revoke() {
+func (a *classAspect) Revert() {
 	if a.classList == nil {
 		return
 	}

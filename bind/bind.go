@@ -9,42 +9,73 @@ import (
 )
 
 type Scope struct {
-	Listeners []func()
+	listeners map[int]func()
+	counter   int
+}
+
+type Listener struct {
+	id    int
+	fun   func()
+	scope *Scope
+}
+
+func (l *Listener) Call() {
+	l.fun()
+}
+
+func (l *Listener) Remove() {
+	delete(l.scope.listeners, l.id)
+}
+
+func (s *Scope) NewListener(fun func()) *Listener {
+	s.counter++
+	s.listeners[s.counter] = fun
+	return &Listener{id: s.counter, fun: fun, scope: s}
 }
 
 func (s *Scope) Digest() {
-	for _, l := range s.Listeners {
+	for _, l := range s.listeners {
 		l()
 	}
 }
 
 func NewScope() *Scope {
-	return &Scope{}
+	return &Scope{
+		listeners: make(map[int]func()),
+		counter:   0,
+	}
 }
 
-type ifBinding struct {
+type ifAspect struct {
 	condition *bool
 	scope     *Scope
 	aspect    dom.Aspect
+	listener  *Listener
 }
 
 func If(condition *bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
-	return &ifBinding{condition: condition, scope: scope, aspect: dom.Group(aspects...)}
+	return &ifAspect{condition: condition, scope: scope, aspect: dom.Group(aspects...)}
 }
 
-func (b *ifBinding) Apply(node js.Object) {
-	l := func() {
-		switch *b.condition {
-		case true:
-			b.aspect.Apply(node)
-		case false:
-			if ra, ok := b.aspect.(dom.RevokableAspect); ok {
-				ra.Revoke()
-			}
-		}
+func (a *ifAspect) Apply(node js.Object) {
+	if a.listener != nil {
+		return
 	}
-	b.scope.Listeners = append(b.scope.Listeners, l)
-	l()
+	a.listener = a.scope.NewListener(func() {
+		switch *a.condition {
+		case true:
+			a.aspect.Apply(node)
+		case false:
+			a.aspect.Revert()
+		}
+	})
+	a.listener.Call()
+}
+
+func (a *ifAspect) Revert() {
+	a.aspect.Revert()
+	a.listener.Remove()
+	a.listener = nil
 }
 
 type Aspects struct {
@@ -68,33 +99,42 @@ func (a *Aspects) Reuse(key interface{}) bool {
 }
 
 type dynamicAspect struct {
-	scope *Scope
-	fun   func(*Aspects)
-	cache map[interface{}]dom.Aspect
+	scope    *Scope
+	fun      func(*Aspects)
+	cache    map[interface{}]dom.Aspect
+	listener *Listener
 }
 
-func (d *dynamicAspect) Apply(node js.Object) {
-	update := func() {
+func (a *dynamicAspect) Apply(node js.Object) {
+	if a.listener != nil {
+		return
+	}
+	a.listener = a.scope.NewListener(func() {
 		aspects := &Aspects{
-			oldCache: d.cache,
+			oldCache: a.cache,
 			newCache: make(map[interface{}]dom.Aspect),
 		}
 
-		d.fun(aspects)
-		d.cache = aspects.newCache
+		a.fun(aspects)
+		a.cache = aspects.newCache
 
 		for _, a := range aspects.oldCache {
-			if ra, ok := a.(dom.RevokableAspect); ok {
-				ra.Revoke()
-			}
+			a.Revert()
 		}
 
 		for _, a := range aspects.current {
 			a.Apply(node)
 		}
+	})
+	a.listener.Call()
+}
+
+func (a *dynamicAspect) Revert() {
+	for _, a := range a.cache {
+		a.Revert()
 	}
-	update()
-	d.scope.Listeners = append(d.scope.Listeners, update)
+	a.listener.Remove()
+	a.listener = nil
 }
 
 func Dynamic(scope *Scope, fun func(*Aspects)) dom.Aspect {
@@ -105,9 +145,15 @@ func Dynamic(scope *Scope, fun func(*Aspects)) dom.Aspect {
 }
 
 func Text(ptr *string, scope *Scope) dom.Aspect {
+	var current string
 	return elem.Span(
 		Dynamic(scope, func(aspects *Aspects) {
-			aspects.Add("", dom.Text(*ptr))
+			if current == *ptr {
+				aspects.Reuse("")
+				return
+			}
+			current = *ptr
+			aspects.Add("", dom.Text(current))
 		}),
 	)
 }

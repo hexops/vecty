@@ -74,7 +74,7 @@ func main(model *model.Model) dom.Aspect {
 									bind.Checked(&item.Completed, model.Scope),
 								),
 								elem.Label(
-									dom.Text(item.Text),
+									bind.Text(&item.Text, model.Scope),
 								),
 								elem.Button(
 									prop.Class("destroy"),
@@ -82,7 +82,7 @@ func main(model *model.Model) dom.Aspect {
 							),
 							elem.Input(
 								prop.Class("edit"),
-								prop.Value(item.Text),
+								prop.Value(item.Text), // TODO fixme
 							),
 						))
 					}

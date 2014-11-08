@@ -6,11 +6,7 @@ import (
 
 type Aspect interface {
 	Apply(node js.Object)
-}
-
-type RevokableAspect interface {
-	Aspect
-	Revoke()
+	Revert()
 }
 
 type groupAspect []Aspect
@@ -28,11 +24,9 @@ func (g groupAspect) Apply(node js.Object) {
 	}
 }
 
-func (g groupAspect) Revoke() {
+func (g groupAspect) Revert() {
 	for _, a := range g {
-		if ra, ok := a.(RevokableAspect); ok {
-			ra.Revoke()
-		}
+		a.Revert()
 	}
 }
 
@@ -57,7 +51,7 @@ func (e *elemAspect) Apply(node js.Object) {
 	node.Call("appendChild", e.node)
 }
 
-func (e *elemAspect) Revoke() {
+func (e *elemAspect) Revert() {
 	e.node.Call("remove")
 }
 
@@ -73,8 +67,12 @@ func Prop(name string, value interface{}) Aspect {
 	}
 }
 
-func (p *propAspect) Apply(node js.Object) {
-	node.Set(p.name, p.value)
+func (a *propAspect) Apply(node js.Object) {
+	node.Set(a.name, a.value)
+}
+
+func (a *propAspect) Revert() {
+	// TODO
 }
 
 type styleAspect struct {
@@ -89,8 +87,12 @@ func Style(name string, value interface{}) Aspect {
 	}
 }
 
-func (s *styleAspect) Apply(node js.Object) {
-	node.Get("style").Set(s.name, s.value)
+func (a *styleAspect) Apply(node js.Object) {
+	node.Get("style").Set(a.name, a.value)
+}
+
+func (a *styleAspect) Revert() {
+	// TODO
 }
 
 type Listener func(c *EventContext)
@@ -102,26 +104,35 @@ type EventContext struct {
 
 type eventAspect struct {
 	eventType string
-	listener  Listener
+	listener  func(event js.Object)
 	node      js.Object
 }
 
 func Event(eventType string, listener Listener) Aspect {
-	return &eventAspect{
+	var a *eventAspect
+	a = &eventAspect{
 		eventType: eventType,
-		listener:  listener,
+		listener: func(event js.Object) {
+			go listener(&EventContext{
+				Node:  a.node,
+				Event: event,
+			})
+		},
+	}
+	return a
+}
+
+func (a *eventAspect) Apply(node js.Object) {
+	if a.node == nil {
+		a.node = node
+		a.node.Call("addEventListener", a.eventType, a.listener)
 	}
 }
 
-func (l *eventAspect) Apply(node js.Object) {
-	if l.node == nil {
-		l.node = node
-		node.Call("addEventListener", l.eventType, func(event js.Object) {
-			go l.listener(&EventContext{
-				Node:  l.node,
-				Event: event,
-			})
-		})
+func (a *eventAspect) Revert() {
+	if a.node != nil {
+		a.node.Call("removeEventListener", a.eventType, a.listener)
+		a.node = nil
 	}
 }
 
@@ -137,7 +148,7 @@ func (a *textAspect) Apply(node js.Object) {
 	node.Call("appendChild", a.node)
 }
 
-func (a *textAspect) Revoke() {
+func (a *textAspect) Revert() {
 	a.node.Call("remove")
 }
 
