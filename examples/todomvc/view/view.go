@@ -16,8 +16,10 @@ func Page(m *model.Model) dom.Aspect {
 			prop.Id("todoapp"),
 
 			header(m),
-			main(m),
-			footer(m),
+			bind.IfFunc(func() bool { return len(m.Items) != 0 }, m.Scope,
+				main(m),
+				footer(m),
+			),
 		),
 
 		info(),
@@ -71,6 +73,9 @@ func main(m *model.Model) dom.Aspect {
 
 			bind.Dynamic(m.Scope, func(aspects *bind.Aspects) {
 				for _, item := range m.Items {
+					if !(m.Filter == model.All || (m.Filter == model.Active && !item.Completed) || (m.Filter == model.Completed && item.Completed)) {
+						continue
+					}
 					if !aspects.Reuse(item) {
 						aspects.Add(item, elem.LI(
 							bind.IfPtr(&item.Completed, m.Scope,
@@ -90,6 +95,7 @@ func main(m *model.Model) dom.Aspect {
 								),
 								elem.Button(
 									prop.Class("destroy"),
+									event.Click(m.DestroyItem(item)),
 								),
 							),
 							elem.Input(
@@ -112,33 +118,21 @@ func footer(m *model.Model) dom.Aspect {
 			prop.Id("todo-count"),
 
 			elem.Strong(
-				bind.TextFunc(bind.Itoa(m.IncompleteItemCount), m.Scope),
+				bind.TextFunc(bind.Itoa(m.ActiveItemCount), m.Scope),
 			),
-			dom.Text(" item left"),
+			bind.IfFunc(func() bool { return m.ActiveItemCount() == 1 }, m.Scope,
+				dom.Text(" item left"),
+			),
+			bind.IfFunc(func() bool { return m.ActiveItemCount() != 1 }, m.Scope,
+				dom.Text(" items left"),
+			),
 		),
 
 		elem.UL(
 			prop.Id("filters"),
-
-			elem.LI(
-				elem.A(
-					prop.Class("selected"),
-					dom.Text("All"),
-				),
-				dom.Text(" "),
-			),
-			elem.LI(
-				elem.A(
-					dom.Text("Active"),
-				),
-				dom.Text(" "),
-			),
-			elem.LI(
-				elem.A(
-					dom.Text("Completed"),
-				),
-				dom.Text(" "),
-			),
+			filterButton("All", model.All, m),
+			filterButton("Active", model.Active, m),
+			filterButton("Completed", model.Completed, m),
 		),
 
 		bind.IfFunc(func() bool { return m.CompletedItemCount() != 0 }, m.Scope,
@@ -147,8 +141,24 @@ func footer(m *model.Model) dom.Aspect {
 				dom.Text("Clear completed ("),
 				bind.TextFunc(bind.Itoa(m.CompletedItemCount), m.Scope),
 				dom.Text(")"),
+				event.Click(m.ClearCompleted),
 			),
 		),
+	)
+}
+
+func filterButton(label string, state model.FilterState, m *model.Model) dom.Aspect {
+	return elem.LI(
+		elem.A(
+			bind.IfFunc(func() bool { return m.Filter == state }, m.Scope,
+				prop.Class("selected"),
+			),
+			prop.HRef("#"),
+			dom.PreventDefault(event.Click(func(c *dom.EventContext) { m.Filter = state; m.Scope.Digest() })),
+
+			dom.Text(label),
+		),
+		dom.Text(" "),
 	)
 }
 

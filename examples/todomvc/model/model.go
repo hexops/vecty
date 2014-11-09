@@ -5,19 +5,30 @@ import (
 	"github.com/neelance/dom/bind"
 )
 
+type FilterState int
+
+const (
+	All FilterState = iota
+	Active
+	Completed
+)
+
 type Model struct {
 	Scope *bind.Scope
 
 	Items        []*Item
 	AddItemTitle string
+	Filter       FilterState
 
 	// derived
-	IncompleteItemCount func() int
-	CompletedItemCount  func() int
+	ActiveItemCount    func() int
+	CompletedItemCount func() int
 
 	// listeners
-	AddItem   dom.Listener
-	ToggleAll dom.Listener
+	AddItem        dom.Listener
+	DestroyItem    func(*Item) dom.Listener
+	ClearCompleted dom.Listener
+	ToggleAll      dom.Listener
 }
 
 type Item struct {
