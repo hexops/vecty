@@ -57,7 +57,7 @@ func main(m *model.Model) dom.Aspect {
 
 		elem.Input(
 			prop.Id("toggle-all"),
-			prop.Type("checkbox"),
+			prop.Type(prop.TypeCheckbox),
 			bind.IfFunc(func() bool { return m.CompletedItemCount() == len(m.Items) }, m.Scope,
 				prop.Checked(),
 			),
@@ -99,7 +99,7 @@ func itemElem(item *model.Item, m *model.Model) dom.Aspect {
 
 			elem.Input(
 				prop.Class("toggle"),
-				prop.Type("checkbox"),
+				prop.Type(prop.TypeCheckbox),
 				bind.Checked(&item.Completed, m.Scope),
 			),
 			elem.Label(
