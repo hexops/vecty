@@ -41,11 +41,13 @@ func main() {
 		}
 		panic("item not found")
 	}
+
 	m.AddItem = func(c *dom.EventContext) {
 		m.Items = append(m.Items, &model.Item{Title: m.AddItemTitle, Completed: false})
 		m.AddItemTitle = ""
 		scope.Digest()
 	}
+
 	m.DestroyItem = func(item *model.Item) dom.Listener {
 		return func(c *dom.EventContext) {
 			i := itemIndex(item)
@@ -54,6 +56,7 @@ func main() {
 			m.Scope.Digest()
 		}
 	}
+
 	m.ClearCompleted = func(c *dom.EventContext) {
 		var incomplete []*model.Item
 		for _, item := range m.Items {

@@ -165,9 +165,7 @@ func (a *dynamicAspect) Apply(node js.Object) {
 			a.Revert()
 		}
 
-		for _, a := range aspects.current {
-			a.Apply(node)
-		}
+		dom.Group(aspects.current...).Apply(node)
 	})
 	a.listener.Call()
 }

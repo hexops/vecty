@@ -18,6 +18,7 @@ type Model struct {
 
 	Items        []*Item
 	AddItemTitle string
+	EditItem     *Item
 	Filter       FilterState
 
 	// derived

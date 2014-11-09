@@ -1,6 +1,8 @@
 package dom
 
 import (
+	"fmt"
+
 	"github.com/gopherjs/gopherjs/js"
 )
 
@@ -153,6 +155,10 @@ type textAspect struct {
 	node    js.Object
 }
 
+func Text(content string) Aspect {
+	return &textAspect{content: content}
+}
+
 func (a *textAspect) Apply(node js.Object) {
 	if a.node == nil {
 		a.node = js.Global.Get("document").Call("createTextNode", a.content)
@@ -164,10 +170,20 @@ func (a *textAspect) Revert() {
 	a.node.Call("remove")
 }
 
-func Text(content string) Aspect {
-	return &textAspect{
-		content: content,
-	}
+type debugAspect struct {
+	msg interface{}
+}
+
+func Debug(msg interface{}) Aspect {
+	return &debugAspect{msg: msg}
+}
+
+func (a *debugAspect) Apply(node js.Object) {
+	println("Apply:", fmt.Sprint(a.msg), node)
+}
+
+func (a *debugAspect) Revert() {
+	println("Revert:", fmt.Sprint(a.msg))
 }
 
 func Body() js.Object {

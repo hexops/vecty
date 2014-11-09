@@ -77,35 +77,49 @@ func main(m *model.Model) dom.Aspect {
 						continue
 					}
 					if !aspects.Reuse(item) {
-						aspects.Add(item, elem.LI(
-							bind.IfPtr(&item.Completed, m.Scope,
-								prop.Class("Completed"),
-							),
-
-							elem.Div(
-								prop.Class("view"),
-
-								elem.Input(
-									prop.Class("toggle"),
-									prop.Type("checkbox"),
-									bind.Checked(&item.Completed, m.Scope),
-								),
-								elem.Label(
-									bind.TextPtr(&item.Title, m.Scope),
-								),
-								elem.Button(
-									prop.Class("destroy"),
-									event.Click(m.DestroyItem(item)),
-								),
-							),
-							elem.Input(
-								prop.Class("edit"),
-								prop.Value(item.Title), // TODO fixme
-							),
-						))
+						aspects.Add(item, itemElem(item, m))
 					}
 				}
 			}),
+		),
+	)
+}
+
+func itemElem(item *model.Item, m *model.Model) dom.Aspect {
+	return elem.LI(
+		dom.Debug("li"),
+		bind.IfPtr(&item.Completed, m.Scope,
+			prop.Class("completed"),
+		),
+		bind.IfFunc(func() bool { return item == m.EditItem }, m.Scope,
+			prop.Class("editing"),
+		),
+
+		elem.Div(
+			prop.Class("view"),
+
+			elem.Input(
+				prop.Class("toggle"),
+				prop.Type("checkbox"),
+				bind.Checked(&item.Completed, m.Scope),
+			),
+			elem.Label(
+				bind.TextPtr(&item.Title, m.Scope),
+				event.DblClick(func(c *dom.EventContext) { m.EditItem = item; m.Scope.Digest() }),
+			),
+			elem.Button(
+				prop.Class("destroy"),
+				event.Click(m.DestroyItem(item)),
+			),
+		),
+		elem.Form(
+			style.Margin(style.Px(0)),
+			dom.PreventDefault(event.Submit(func(c *dom.EventContext) { m.EditItem = nil; m.Scope.Digest() })),
+			elem.Input(
+				dom.Debug("input"),
+				prop.Class("edit"),
+				bind.Value(&item.Title, m.Scope),
+			),
 		),
 	)
 }
