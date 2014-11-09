@@ -6,11 +6,11 @@ import (
 )
 
 func Autofocus() dom.Aspect {
-	return dom.Prop("autofocus", true)
+	return dom.ToggleProp("autofocus")
 }
 
 func Checked() dom.Aspect {
-	return dom.Prop("checked", true)
+	return dom.ToggleProp("checked")
 }
 
 type classAspect struct {
@@ -18,7 +18,7 @@ type classAspect struct {
 	classList js.Object
 }
 
-func (a *classAspect) Apply(node js.Object) {
+func (a *classAspect) Apply(node js.Object, p, r float64) {
 	a.classList = node.Get("classList")
 	for _, c := range a.classes {
 		a.classList.Call("add", c)
@@ -39,29 +39,29 @@ func Class(classes ...string) dom.Aspect {
 }
 
 func For(id string) dom.Aspect {
-	return dom.Prop("htmlFor", id)
+	return dom.SetProp("htmlFor", id)
 }
 
 func HRef(url string) dom.Aspect {
-	return dom.Prop("href", url)
+	return dom.SetProp("href", url)
 }
 
 func Id(id string) dom.Aspect {
-	return dom.Prop("id", id)
+	return dom.SetProp("id", id)
 }
 
 func Placeholder(text string) dom.Aspect {
-	return dom.Prop("placeholder", text)
+	return dom.SetProp("placeholder", text)
 }
 
 func Src(url string) dom.Aspect {
-	return dom.Prop("src", url)
+	return dom.SetProp("src", url)
 }
 
 func Type(t string) dom.Aspect {
-	return dom.Prop("type", t)
+	return dom.SetProp("type", t)
 }
 
-func Value(v interface{}) dom.Aspect {
-	return dom.Prop("value", v)
+func Value(v string) dom.Aspect {
+	return dom.SetProp("value", v)
 }

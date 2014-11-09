@@ -5,7 +5,6 @@ import (
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/neelance/dom"
-	"github.com/neelance/dom/elem"
 	"github.com/neelance/dom/event"
 	"github.com/neelance/dom/prop"
 )
@@ -81,46 +80,6 @@ func (s *Scope) CacheString(fun func() string) func() string {
 	}
 }
 
-type ifAspect struct {
-	condition func() bool
-	scope     *Scope
-	aspect    dom.Aspect
-	listener  *Listener
-}
-
-func IfFunc(condition func() bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
-	return &ifAspect{condition: condition, scope: scope, aspect: dom.Group(aspects...)}
-}
-
-func IfPtr(condition *bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
-	return IfFunc(func() bool { return *condition }, scope, aspects...)
-}
-
-func (a *ifAspect) Apply(node js.Object) {
-	if a.listener != nil {
-		return
-	}
-	current := false
-	a.listener = a.scope.NewListener(func() {
-		value := a.condition()
-		if value && !current {
-			a.aspect.Apply(node)
-			current = true
-		}
-		if !value && current {
-			a.aspect.Revert()
-			current = false
-		}
-	})
-	a.listener.Call()
-}
-
-func (a *ifAspect) Revert() {
-	a.aspect.Revert()
-	a.listener.Remove()
-	a.listener = nil
-}
-
 type Aspects struct {
 	current  []dom.Aspect
 	oldCache map[interface{}]dom.Aspect
@@ -148,7 +107,7 @@ type dynamicAspect struct {
 	listener *Listener
 }
 
-func (a *dynamicAspect) Apply(node js.Object) {
+func (a *dynamicAspect) Apply(node js.Object, p, r float64) {
 	if a.listener != nil {
 		return
 	}
@@ -165,7 +124,7 @@ func (a *dynamicAspect) Apply(node js.Object) {
 			a.Revert()
 		}
 
-		dom.Group(aspects.current...).Apply(node)
+		dom.Group(aspects.current...).Apply(node, p, r)
 	})
 	a.listener.Call()
 }
@@ -185,19 +144,31 @@ func Dynamic(scope *Scope, fun func(*Aspects)) dom.Aspect {
 	}
 }
 
+func IfFunc(condition func() bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
+	return Dynamic(scope, func(a *Aspects) {
+		if condition() {
+			if !a.Reuse("") {
+				a.Add("", dom.Group(aspects...))
+			}
+		}
+	})
+}
+
+func IfPtr(condition *bool, scope *Scope, aspects ...dom.Aspect) dom.Aspect {
+	return IfFunc(func() bool { return *condition }, scope, aspects...)
+}
+
 func TextFunc(fun func() string, scope *Scope) dom.Aspect {
 	current := ""
-	return elem.Span(
-		Dynamic(scope, func(aspects *Aspects) {
-			text := fun()
-			if text == current {
-				aspects.Reuse("")
-				return
-			}
-			aspects.Add("", dom.Text(text))
-			current = text
-		}),
-	)
+	return Dynamic(scope, func(aspects *Aspects) {
+		text := fun()
+		if text == current {
+			aspects.Reuse("")
+			return
+		}
+		aspects.Add("", dom.Text(text))
+		current = text
+	})
 }
 
 func TextPtr(ptr *string, scope *Scope) dom.Aspect {

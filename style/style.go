@@ -17,13 +17,13 @@ func Color(value string) dom.Aspect {
 }
 
 func Height(pixels Size) dom.Aspect {
-	return dom.Style("height", pixels)
+	return dom.Style("height", string(pixels))
 }
 
 func Margin(pixels Size) dom.Aspect {
-	return dom.Style("margin", pixels)
+	return dom.Style("margin", string(pixels))
 }
 
 func Width(pixels Size) dom.Aspect {
-	return dom.Style("width", pixels)
+	return dom.Style("width", string(pixels))
 }

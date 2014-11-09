@@ -45,5 +45,5 @@ func main() {
 		}
 	}
 
-	view.Page(m).Apply(dom.Body())
+	view.Page(m).Apply(dom.Body(), 0, 1)
 }

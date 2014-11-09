@@ -7,7 +7,7 @@ import (
 )
 
 type Aspect interface {
-	Apply(node js.Object)
+	Apply(node js.Object, p, r float64)
 	Revert()
 }
 
@@ -20,9 +20,10 @@ func Group(aspects ...Aspect) Aspect {
 	return groupAspect(aspects)
 }
 
-func (g groupAspect) Apply(node js.Object) {
-	for _, a := range g {
-		a.Apply(node)
+func (g groupAspect) Apply(node js.Object, p, r float64) {
+	r2 := r / float64(len(g))
+	for i, a := range g {
+		a.Apply(node, p+r2*float64(i), r2)
 	}
 }
 
@@ -32,71 +33,102 @@ func (g groupAspect) Revert() {
 	}
 }
 
-type elemAspect struct {
-	tagName string
-	aspect  Aspect
-	node    js.Object
+type nodeAspect struct {
+	node  js.Object
+	child Aspect
 }
 
 func Elem(tagName string, aspects ...Aspect) Aspect {
-	return &elemAspect{
-		tagName: tagName,
-		aspect:  Group(aspects...),
+	return &nodeAspect{
+		node:  js.Global.Get("document").Call("createElement", tagName),
+		child: Group(aspects...),
 	}
 }
 
-func (e *elemAspect) Apply(node js.Object) {
-	if e.node == nil {
-		e.node = js.Global.Get("document").Call("createElement", e.tagName)
+func (e *nodeAspect) Apply(node js.Object, p, r float64) {
+	if !e.node.Get("previousSibling").IsNull() && e.node.Get("previousSibling").Get("gopherjsDomPosition").Float() > p {
+		e.node.Call("remove")
 	}
-	e.aspect.Apply(e.node)
-	node.Call("appendChild", e.node)
+	if e.node.Get("parentNode").IsNull() {
+		e.node.Set("gopherjsDomPosition", p)
+		c := node.Get("firstChild")
+		for !c.IsNull() && c.Get("gopherjsDomPosition").Float() < p {
+			c = c.Get("nextSibling")
+		}
+		node.Call("insertBefore", e.node, c)
+	}
+	if e.child != nil {
+		e.child.Apply(e.node, 0, 1)
+	}
 }
 
-func (e *elemAspect) Revert() {
+func (e *nodeAspect) Revert() {
 	e.node.Call("remove")
 }
 
-type propAspect struct {
-	name  string
-	value interface{}
-	node  js.Object
-}
-
-func Prop(name string, value interface{}) Aspect {
-	return &propAspect{
-		name:  name,
-		value: value,
+func Text(content string) Aspect {
+	return &nodeAspect{
+		node: js.Global.Get("document").Call("createTextNode", content),
 	}
 }
 
-func (a *propAspect) Apply(node js.Object) {
-	a.node = node
-	node.Set(a.name, a.value)
+type setPropAspect struct {
+	name  string
+	value string
 }
 
-func (a *propAspect) Revert() {
-	a.node.Set(a.name, nil)
+func SetProp(name string, value string) Aspect {
+	return &setPropAspect{name: name, value: value}
+}
+
+func (a *setPropAspect) Apply(node js.Object, p, r float64) {
+	if node.Get(a.name).Str() != a.value {
+		node.Set(a.name, a.value)
+	}
+}
+
+func (a *setPropAspect) Revert() {
+	// no reset
+}
+
+type togglePropAspect struct {
+	name string
+	node js.Object
+}
+
+func ToggleProp(name string) Aspect {
+	return &togglePropAspect{name: name}
+}
+
+func (a *togglePropAspect) Apply(node js.Object, p, r float64) {
+	a.node = node
+	node.Set(a.name, true)
+}
+
+func (a *togglePropAspect) Revert() {
+	a.node.Set(a.name, false)
 }
 
 type styleAspect struct {
 	name  string
-	value interface{}
+	value string
+	style js.Object
 }
 
-func Style(name string, value interface{}) Aspect {
+func Style(name string, value string) Aspect {
 	return &styleAspect{
 		name:  name,
 		value: value,
 	}
 }
 
-func (a *styleAspect) Apply(node js.Object) {
-	node.Get("style").Set(a.name, a.value)
+func (a *styleAspect) Apply(node js.Object, p, r float64) {
+	a.style = node.Get("style")
+	a.style.Call("setProperty", a.name, a.value, "important")
 }
 
 func (a *styleAspect) Revert() {
-	// TODO
+	a.style.Call("removeProperty", a.name)
 }
 
 type Listener func(c *EventContext)
@@ -136,7 +168,7 @@ func PreventDefault(aspect Aspect) Aspect {
 	return aspect
 }
 
-func (a *eventAspect) Apply(node js.Object) {
+func (a *eventAspect) Apply(node js.Object, p, r float64) {
 	if a.node == nil {
 		a.node = node
 		a.node.Call("addEventListener", a.eventType, a.listener)
@@ -150,26 +182,6 @@ func (a *eventAspect) Revert() {
 	}
 }
 
-type textAspect struct {
-	content string
-	node    js.Object
-}
-
-func Text(content string) Aspect {
-	return &textAspect{content: content}
-}
-
-func (a *textAspect) Apply(node js.Object) {
-	if a.node == nil {
-		a.node = js.Global.Get("document").Call("createTextNode", a.content)
-	}
-	node.Call("appendChild", a.node)
-}
-
-func (a *textAspect) Revert() {
-	a.node.Call("remove")
-}
-
 type debugAspect struct {
 	msg interface{}
 }
@@ -178,7 +190,7 @@ func Debug(msg interface{}) Aspect {
 	return &debugAspect{msg: msg}
 }
 
-func (a *debugAspect) Apply(node js.Object) {
+func (a *debugAspect) Apply(node js.Object, p, r float64) {
 	println("Apply:", fmt.Sprint(a.msg), node)
 }
 

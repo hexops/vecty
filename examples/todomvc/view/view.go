@@ -87,7 +87,6 @@ func main(m *model.Model) dom.Aspect {
 
 func itemElem(item *model.Item, m *model.Model) dom.Aspect {
 	return elem.LI(
-		dom.Debug("li"),
 		bind.IfPtr(&item.Completed, m.Scope,
 			prop.Class("completed"),
 		),
@@ -116,7 +115,6 @@ func itemElem(item *model.Item, m *model.Model) dom.Aspect {
 			style.Margin(style.Px(0)),
 			dom.PreventDefault(event.Submit(func(c *dom.EventContext) { m.EditItem = nil; m.Scope.Digest() })),
 			elem.Input(
-				dom.Debug("input"),
 				prop.Class("edit"),
 				bind.Value(&item.Title, m.Scope),
 			),
