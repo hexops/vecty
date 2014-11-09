@@ -38,11 +38,11 @@ const (
 )
 
 func Autofocus() dom.Aspect {
-	return dom.ToggleProp("autofocus")
+	return dom.ToggleProperty("autofocus")
 }
 
 func Checked() dom.Aspect {
-	return dom.ToggleProp("checked")
+	return dom.ToggleProperty("checked")
 }
 
 type classAspect struct {
@@ -71,29 +71,29 @@ func Class(classes ...string) dom.Aspect {
 }
 
 func For(id string) dom.Aspect {
-	return dom.SetProp("htmlFor", id)
+	return dom.SetProperty("htmlFor", id)
 }
 
 func HRef(url string) dom.Aspect {
-	return dom.SetProp("href", url)
+	return dom.SetProperty("href", url)
 }
 
 func Id(id string) dom.Aspect {
-	return dom.SetProp("id", id)
+	return dom.SetProperty("id", id)
 }
 
 func Placeholder(text string) dom.Aspect {
-	return dom.SetProp("placeholder", text)
+	return dom.SetProperty("placeholder", text)
 }
 
 func Src(url string) dom.Aspect {
-	return dom.SetProp("src", url)
+	return dom.SetProperty("src", url)
 }
 
 func Type(t InputType) dom.Aspect {
-	return dom.SetProp("type", string(t))
+	return dom.SetProperty("type", string(t))
 }
 
 func Value(v string) dom.Aspect {
-	return dom.SetProp("value", v)
+	return dom.SetProperty("value", v)
 }

@@ -38,7 +38,7 @@ type nodeAspect struct {
 	child Aspect
 }
 
-func Elem(tagName string, aspects ...Aspect) Aspect {
+func Element(tagName string, aspects ...Aspect) Aspect {
 	return &nodeAspect{
 		node:  js.Global.Get("document").Call("createElement", tagName),
 		child: Group(aspects...),
@@ -72,40 +72,40 @@ func Text(content string) Aspect {
 	}
 }
 
-type setPropAspect struct {
+type setPropertyAspect struct {
 	name  string
 	value string
 }
 
-func SetProp(name string, value string) Aspect {
-	return &setPropAspect{name: name, value: value}
+func SetProperty(name string, value string) Aspect {
+	return &setPropertyAspect{name: name, value: value}
 }
 
-func (a *setPropAspect) Apply(node js.Object, p, r float64) {
+func (a *setPropertyAspect) Apply(node js.Object, p, r float64) {
 	if node.Get(a.name).Str() != a.value {
 		node.Set(a.name, a.value)
 	}
 }
 
-func (a *setPropAspect) Revert() {
+func (a *setPropertyAspect) Revert() {
 	// no reset
 }
 
-type togglePropAspect struct {
+type togglePropertyAspect struct {
 	name string
 	node js.Object
 }
 
-func ToggleProp(name string) Aspect {
-	return &togglePropAspect{name: name}
+func ToggleProperty(name string) Aspect {
+	return &togglePropertyAspect{name: name}
 }
 
-func (a *togglePropAspect) Apply(node js.Object, p, r float64) {
+func (a *togglePropertyAspect) Apply(node js.Object, p, r float64) {
 	a.node = node
 	node.Set(a.name, true)
 }
 
-func (a *togglePropAspect) Revert() {
+func (a *togglePropertyAspect) Revert() {
 	a.node.Set(a.name, false)
 }
 

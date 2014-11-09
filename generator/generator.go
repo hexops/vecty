@@ -94,7 +94,7 @@ import (
 // %s
 // https://developer.mozilla.org%s
 func %s(aspects ...dom.Aspect) dom.Aspect {
-	return dom.Elem("%s", aspects...)
+	return dom.Element("%s", aspects...)
 }
 `, desc, link[6:], funName, name)
 	})
