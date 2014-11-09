@@ -76,5 +76,5 @@ func main() {
 		scope.Digest()
 	}
 
-	view.Page(m).Apply(dom.Body(), 0, 1)
+	dom.AddToBody(view.Page(m))
 }

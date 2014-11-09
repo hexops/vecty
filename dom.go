@@ -198,6 +198,6 @@ func (a *debugAspect) Revert() {
 	println("Revert:", fmt.Sprint(a.msg))
 }
 
-func Body() js.Object {
-	return js.Global.Get("document").Get("body")
+func AddToBody(aspects ...Aspect) {
+	Group(aspects...).Apply(js.Global.Get("document").Get("body"), 0, 1)
 }
