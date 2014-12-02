@@ -1,9 +1,10 @@
 // Package dom is a front-end MVC framework for use with http://gopherjs.org/.
-// It uses a concept of aspects, which modify apperance, behavior and content of
-// DOM elements. A tree of aspects represents a tree of DOM elements in a
-// dynamic fashion. By using the aspects of the bind package, one may bind
-// to the data model and modify the DOM elements automatically according to
-// changes of the model.
+// It uses a concept of aspects, which modify apperance (properties and styles),
+// behavior (event listeners) and content (child elements and text nodes) of
+// DOM elements. An aspect can be applied and reverted. A tree of aspects
+// represents a tree of DOM elements in a dynamic fashion. By using the aspects
+// of the bind package, one may bind to the data model and modify the DOM
+// elements automatically according to changes of the model.
 package dom
 
 import (
@@ -229,7 +230,7 @@ func (a *debugAspect) Revert() {
 	println("Revert:", fmt.Sprint(a.msg))
 }
 
-// AddToBody applies the given aspect to the page's body element.
+// AddToBody applies the given aspects to the page's body element.
 func AddToBody(aspects ...Aspect) {
 	Group(aspects...).Apply(js.Global.Get("document").Get("body"), 0, 1)
 }
