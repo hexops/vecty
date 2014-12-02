@@ -14,7 +14,8 @@ import (
 )
 
 // Aspect is the basic building block of the dom package. A DOM element can have
-// many aspects that modify apperance, behavior and content.
+// many aspects that modify apperance, behavior and content. There should be no
+// need to call Apply or Revert from the MVC application's code directly.
 type Aspect interface {
 	Apply(node js.Object, p, r float64)
 	Revert()
