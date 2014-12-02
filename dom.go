@@ -174,8 +174,9 @@ type eventAspect struct {
 }
 
 // Event adds the given event listener when applied. It removes the listener
-// when reverted. The event package provides helper functions to be used instead
-// of this function in most cases.
+// when reverted. The listener is invoked asynchronously in a new goroutine when
+// the event fires. The event package provides helper functions to be used
+// instead of this function in most cases.
 func Event(eventType string, listener Listener) Aspect {
 	var a *eventAspect
 	a = &eventAspect{
@@ -194,7 +195,8 @@ func Event(eventType string, listener Listener) Aspect {
 	return a
 }
 
-// PreventDefault calls event.preventDefault() when handling the given event.
+// PreventDefault modifies the given event aspect to synchronously call
+// event.preventDefault() when handling the given event.
 func PreventDefault(aspect Aspect) Aspect {
 	aspect.(*eventAspect).preventDefault = true
 	return aspect
