@@ -1,3 +1,9 @@
+// Package dom is a front-end MVC framework for use with http://gopherjs.org/.
+// It uses a concept of aspects, which modify apperance, behavior and content of
+// DOM elements. A tree of aspects represents a tree of DOM elements in a
+// dynamic fashion. By using the aspects of the bind package, one may bind
+// to the data model and modify the DOM elements automatically according to the
+// changes of the model.
 package dom
 
 import (
@@ -6,6 +12,8 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
+// Aspect is the basic building block of the dom package. A DOM element can have
+// many aspects that modify apperance, behavior and content.
 type Aspect interface {
 	Apply(node js.Object, p, r float64)
 	Revert()
@@ -13,6 +21,7 @@ type Aspect interface {
 
 type groupAspect []Aspect
 
+// Group combines multiple aspects into one.
 func Group(aspects ...Aspect) Aspect {
 	if len(aspects) == 1 {
 		return aspects[0]
@@ -38,6 +47,9 @@ type nodeAspect struct {
 	child Aspect
 }
 
+// Element creates a new DOM element and adds it when applied. It removes the
+// element when reverted. The elem package provides helper functions to be used
+// instead of this function in most cases.
 func Element(tagName string, aspects ...Aspect) Aspect {
 	return &nodeAspect{
 		node:  js.Global.Get("document").Call("createElement", tagName),
@@ -66,6 +78,7 @@ func (e *nodeAspect) Revert() {
 	e.node.Call("remove")
 }
 
+// Text creates a new DOM text node and adds it when applied. It removes the node when reverted.
 func Text(content string) Aspect {
 	return &nodeAspect{
 		node: js.Global.Get("document").Call("createTextNode", content),
@@ -77,6 +90,9 @@ type setPropertyAspect struct {
 	value string
 }
 
+// SetProperty sets a string property when applied. It does NOT reset the
+// property when reverted. The prop package provides helper functions to be used
+// instead of this function in most cases.
 func SetProperty(name string, value string) Aspect {
 	return &setPropertyAspect{name: name, value: value}
 }
@@ -96,6 +112,9 @@ type togglePropertyAspect struct {
 	node js.Object
 }
 
+// ToggleProperty sets a boolean property to true when applied. It sets it to
+// false when reverted. The prop package provides helper functions to be used
+// instead of this function in most cases.
 func ToggleProperty(name string) Aspect {
 	return &togglePropertyAspect{name: name}
 }
@@ -115,6 +134,9 @@ type styleAspect struct {
 	style js.Object
 }
 
+// Style sets a style when applied. It removes the style when reverted. The
+// style package provides helper functions to be used instead of this function
+// in most cases.
 func Style(name string, value string) Aspect {
 	return &styleAspect{
 		name:  name,
@@ -131,10 +153,14 @@ func (a *styleAspect) Revert() {
 	a.style.Call("removeProperty", a.name)
 }
 
+// Listener is a callback for DOM events.
 type Listener func(c *EventContext)
 
+// EventContext provides details about event.
 type EventContext struct {
-	Node  js.Object
+	// JavaScript's "this" in the event callback.
+	Node js.Object
+	// The first argument given to the event callback (usually the event object).
 	Event js.Object
 }
 
@@ -145,6 +171,9 @@ type eventAspect struct {
 	node           js.Object
 }
 
+// Event adds the given event listener when applied. It removes the listener
+// when reverted. The event package provides helper functions to be used instead
+// of this function in most cases.
 func Event(eventType string, listener Listener) Aspect {
 	var a *eventAspect
 	a = &eventAspect{
@@ -163,6 +192,7 @@ func Event(eventType string, listener Listener) Aspect {
 	return a
 }
 
+// PreventDefault calls event.preventDefault() when handling the given event.
 func PreventDefault(aspect Aspect) Aspect {
 	aspect.(*eventAspect).preventDefault = true
 	return aspect
@@ -186,6 +216,7 @@ type debugAspect struct {
 	msg interface{}
 }
 
+// Debug prints to the console when applied or removed.
 func Debug(msg interface{}) Aspect {
 	return &debugAspect{msg: msg}
 }
@@ -198,6 +229,7 @@ func (a *debugAspect) Revert() {
 	println("Revert:", fmt.Sprint(a.msg))
 }
 
+// AddToBody applies the given aspect to the page's body element.
 func AddToBody(aspects ...Aspect) {
 	Group(aspects...).Apply(js.Global.Get("document").Get("body"), 0, 1)
 }
