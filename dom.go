@@ -2,7 +2,7 @@
 // It uses a concept of aspects, which modify apperance, behavior and content of
 // DOM elements. A tree of aspects represents a tree of DOM elements in a
 // dynamic fashion. By using the aspects of the bind package, one may bind
-// to the data model and modify the DOM elements automatically according to the
+// to the data model and modify the DOM elements automatically according to
 // changes of the model.
 package dom
 
