@@ -158,9 +158,9 @@ func (a *styleAspect) Revert() {
 // Listener is a callback for DOM events.
 type Listener func(c *EventContext)
 
-// EventContext provides details about event.
+// EventContext provides details about an event.
 type EventContext struct {
-	// JavaScript's "this" in the event callback.
+	// The DOM element that triggered the event.
 	Node js.Object
 	// The first argument given to the event callback (usually the event object).
 	Event js.Object
