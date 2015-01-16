@@ -60,13 +60,13 @@ func Element(tagName string, aspects ...Aspect) Aspect {
 }
 
 func (e *nodeAspect) Apply(node js.Object, p, r float64) {
-	if !e.node.Get("previousSibling").IsNull() && e.node.Get("previousSibling").Get("gopherjsDomPosition").Float() > p {
+	if e.node.Get("previousSibling") != nil && e.node.Get("previousSibling").Get("gopherjsDomPosition").Float() > p {
 		e.node.Call("remove")
 	}
-	if e.node.Get("parentNode").IsNull() {
+	if e.node.Get("parentNode") == nil {
 		e.node.Set("gopherjsDomPosition", p)
 		c := node.Get("firstChild")
-		for !c.IsNull() && c.Get("gopherjsDomPosition").Float() < p {
+		for c != nil && c.Get("gopherjsDomPosition").Float() < p {
 			c = c.Get("nextSibling")
 		}
 		node.Call("insertBefore", e.node, c)
@@ -100,7 +100,7 @@ func SetProperty(name string, value string) Aspect {
 }
 
 func (a *setPropertyAspect) Apply(node js.Object, p, r float64) {
-	if node.Get(a.name).Str() != a.value {
+	if node.Get(a.name).String() != a.value {
 		node.Set(a.name, a.value)
 	}
 }

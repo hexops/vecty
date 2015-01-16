@@ -181,7 +181,7 @@ func Value(ptr *string, scope *Scope) dom.Aspect {
 			aspects.Add("", prop.Value(*ptr))
 		}),
 		event.Input(func(c *dom.EventContext) {
-			*ptr = c.Node.Get("value").Str()
+			*ptr = c.Node.Get("value").String()
 			scope.Digest()
 		}),
 	)

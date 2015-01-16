@@ -17,8 +17,8 @@ func main() {
 		Scope: bind.NewScope(),
 	}
 
-	if data := js.Global.Get("localStorage").Get("items"); !data.IsUndefined() {
-		if err := json.Unmarshal([]byte(data.Str()), &m.Items); err != nil {
+	if data := js.Global.Get("localStorage").Get("items"); data != js.Undefined {
+		if err := json.Unmarshal([]byte(data.String()), &m.Items); err != nil {
 			fmt.Printf("failed to load items: %s\n", err)
 		}
 	}
