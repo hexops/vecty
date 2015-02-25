@@ -47,10 +47,10 @@ func Checked() dom.Aspect {
 
 type classAspect struct {
 	classes   []string
-	classList js.Object
+	classList *js.Object
 }
 
-func (a *classAspect) Apply(node js.Object, p, r float64) {
+func (a *classAspect) Apply(node *js.Object, p, r float64) {
 	a.classList = node.Get("classList")
 	for _, c := range a.classes {
 		a.classList.Call("add", c)

@@ -107,7 +107,7 @@ type dynamicAspect struct {
 	listener *Listener
 }
 
-func (a *dynamicAspect) Apply(node js.Object, p, r float64) {
+func (a *dynamicAspect) Apply(node *js.Object, p, r float64) {
 	if a.listener != nil {
 		return
 	}

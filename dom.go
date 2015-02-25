@@ -17,7 +17,7 @@ import (
 // many aspects that modify apperance, behavior and content. There should be no
 // need to call Apply or Revert from the MVC application's code directly.
 type Aspect interface {
-	Apply(node js.Object, p, r float64)
+	Apply(node *js.Object, p, r float64)
 	Revert()
 }
 
@@ -31,7 +31,7 @@ func Group(aspects ...Aspect) Aspect {
 	return groupAspect(aspects)
 }
 
-func (g groupAspect) Apply(node js.Object, p, r float64) {
+func (g groupAspect) Apply(node *js.Object, p, r float64) {
 	r2 := r / float64(len(g))
 	for i, a := range g {
 		a.Apply(node, p+r2*float64(i), r2)
@@ -45,7 +45,7 @@ func (g groupAspect) Revert() {
 }
 
 type nodeAspect struct {
-	node  js.Object
+	node  *js.Object
 	child Aspect
 }
 
@@ -59,7 +59,7 @@ func Element(tagName string, aspects ...Aspect) Aspect {
 	}
 }
 
-func (e *nodeAspect) Apply(node js.Object, p, r float64) {
+func (e *nodeAspect) Apply(node *js.Object, p, r float64) {
 	if e.node.Get("previousSibling") != nil && e.node.Get("previousSibling").Get("gopherjsDomPosition").Float() > p {
 		e.node.Call("remove")
 	}
@@ -99,7 +99,7 @@ func SetProperty(name string, value string) Aspect {
 	return &setPropertyAspect{name: name, value: value}
 }
 
-func (a *setPropertyAspect) Apply(node js.Object, p, r float64) {
+func (a *setPropertyAspect) Apply(node *js.Object, p, r float64) {
 	if node.Get(a.name).String() != a.value {
 		node.Set(a.name, a.value)
 	}
@@ -111,7 +111,7 @@ func (a *setPropertyAspect) Revert() {
 
 type togglePropertyAspect struct {
 	name string
-	node js.Object
+	node *js.Object
 }
 
 // ToggleProperty sets a boolean property to true when applied. It sets it to
@@ -121,7 +121,7 @@ func ToggleProperty(name string) Aspect {
 	return &togglePropertyAspect{name: name}
 }
 
-func (a *togglePropertyAspect) Apply(node js.Object, p, r float64) {
+func (a *togglePropertyAspect) Apply(node *js.Object, p, r float64) {
 	a.node = node
 	node.Set(a.name, true)
 }
@@ -133,7 +133,7 @@ func (a *togglePropertyAspect) Revert() {
 type styleAspect struct {
 	name  string
 	value string
-	style js.Object
+	style *js.Object
 }
 
 // Style sets a style when applied. It removes the style when reverted. The
@@ -146,7 +146,7 @@ func Style(name string, value string) Aspect {
 	}
 }
 
-func (a *styleAspect) Apply(node js.Object, p, r float64) {
+func (a *styleAspect) Apply(node *js.Object, p, r float64) {
 	a.style = node.Get("style")
 	a.style.Call("setProperty", a.name, a.value, "important")
 }
@@ -161,16 +161,16 @@ type Listener func(c *EventContext)
 // EventContext provides details about an event.
 type EventContext struct {
 	// The DOM element that triggered the event.
-	Node js.Object
+	Node *js.Object
 	// The first argument given to the event callback (usually the event object).
-	Event js.Object
+	Event *js.Object
 }
 
 type eventAspect struct {
 	eventType      string
-	listener       func(event js.Object)
+	listener       func(event *js.Object)
 	preventDefault bool
-	node           js.Object
+	node           *js.Object
 }
 
 // Event adds the given event listener when applied. It removes the listener
@@ -181,7 +181,7 @@ func Event(eventType string, listener Listener) Aspect {
 	var a *eventAspect
 	a = &eventAspect{
 		eventType: eventType,
-		listener: func(event js.Object) {
+		listener: func(event *js.Object) {
 			if a.preventDefault {
 				event.Call("preventDefault")
 			}
@@ -202,7 +202,7 @@ func PreventDefault(aspect Aspect) Aspect {
 	return aspect
 }
 
-func (a *eventAspect) Apply(node js.Object, p, r float64) {
+func (a *eventAspect) Apply(node *js.Object, p, r float64) {
 	if a.node == nil {
 		a.node = node
 		a.node.Call("addEventListener", a.eventType, a.listener)
@@ -225,7 +225,7 @@ func Debug(msg interface{}) Aspect {
 	return &debugAspect{msg: msg}
 }
 
-func (a *debugAspect) Apply(node js.Object, p, r float64) {
+func (a *debugAspect) Apply(node *js.Object, p, r float64) {
 	println("Apply:", fmt.Sprint(a.msg), node)
 }
 
