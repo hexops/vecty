@@ -64,13 +64,13 @@ func (e *nodeAspect) Apply(node *js.Object, p, r float64) {
 		e.node.Call("remove")
 	}
 	if e.node.Get("parentNode") == nil {
-		e.node.Set("gopherjsDomPosition", p)
 		c := node.Get("firstChild")
 		for c != nil && c.Get("gopherjsDomPosition").Float() < p {
 			c = c.Get("nextSibling")
 		}
 		node.Call("insertBefore", e.node, c)
 	}
+	e.node.Set("gopherjsDomPosition", p)
 	if e.child != nil {
 		e.child.Apply(e.node, 0, 1)
 	}
