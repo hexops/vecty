@@ -233,7 +233,22 @@ func (a *debugAspect) Revert() {
 	println("Revert:", fmt.Sprint(a.msg))
 }
 
-// AddToBody applies the given aspects to the page's body element.
-func AddToBody(aspects ...Aspect) {
-	Group(aspects...).Apply(js.Global.Get("document").Get("body"), 0, 1)
+// SetTitle sets the title of the document.
+func SetTitle(title string) {
+	js.Global.Get("document").Set("title", title)
+}
+
+// AddStylesheed adds an external stylesheet to the document.
+func AddStylesheet(url string) {
+	link := js.Global.Get("document").Call("createElement", "link")
+	link.Set("rel", "stylesheet")
+	link.Set("href", url)
+	js.Global.Get("document").Get("head").Call("appendChild", link)
+}
+
+// SetBody replaces the page's body with the given aspects.
+func SetBody(aspects ...Aspect) {
+	body := js.Global.Get("document").Call("createElement", "body")
+	Group(aspects...).Apply(body, 0, 1)
+	js.Global.Get("document").Set("body", body)
 }

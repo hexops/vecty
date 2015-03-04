@@ -13,6 +13,12 @@ import (
 )
 
 func main() {
+	dom.SetTitle("GopherJS • TodoMVC")
+	dom.AddStylesheet("bower_components/todomvc-common/base.css")
+	dom.SetBody(view.Page(createModel()))
+}
+
+func createModel() *model.Model {
 	m := &model.Model{
 		Scope: bind.NewScope(),
 	}
@@ -88,5 +94,5 @@ func main() {
 		m.Scope.Digest()
 	}
 
-	dom.AddToBody(view.Page(m))
+	return m
 }
