@@ -34,7 +34,7 @@ func header(m *model.Model) dom.Aspect {
 	return elem.Header(
 		prop.Id("header"),
 
-		elem.H1(
+		elem.Header1(
 			dom.Text("todos"),
 		),
 		elem.Form(
@@ -68,7 +68,7 @@ func main(m *model.Model) dom.Aspect {
 			dom.Text("Mark all as complete"),
 		),
 
-		elem.UL(
+		elem.UnorderedList(
 			prop.Id("todo-list"),
 
 			bind.Dynamic(m.Scope, func(aspects *bind.Aspects) {
@@ -86,7 +86,7 @@ func main(m *model.Model) dom.Aspect {
 }
 
 func itemElem(item *model.Item, m *model.Model) dom.Aspect {
-	return elem.LI(
+	return elem.ListItem(
 		bind.IfPtr(&item.Completed, m.Scope,
 			prop.Class("completed"),
 		),
@@ -140,7 +140,7 @@ func footer(m *model.Model) dom.Aspect {
 			),
 		),
 
-		elem.UL(
+		elem.UnorderedList(
 			prop.Id("filters"),
 			filterButton("All", model.All, m),
 			filterButton("Active", model.Active, m),
@@ -160,12 +160,12 @@ func footer(m *model.Model) dom.Aspect {
 }
 
 func filterButton(label string, state model.FilterState, m *model.Model) dom.Aspect {
-	return elem.LI(
-		elem.A(
+	return elem.ListItem(
+		elem.Anchor(
 			bind.IfFunc(func() bool { return m.Filter == state }, m.Scope,
 				prop.Class("selected"),
 			),
-			prop.HRef("#"),
+			prop.Href("#"),
 			dom.PreventDefault(event.Click(func(c *dom.EventContext) { m.Filter = state; m.Scope.Digest() })),
 
 			dom.Text(label),
@@ -178,27 +178,27 @@ func info() dom.Aspect {
 	return elem.Footer(
 		prop.Id("info"),
 
-		elem.P(
+		elem.Paragraph(
 			dom.Text("Double-click to edit a todo"),
 		),
-		elem.P(
+		elem.Paragraph(
 			dom.Text("Template by "),
-			elem.A(
-				prop.HRef("http://github.com/sindresorhus"),
+			elem.Anchor(
+				prop.Href("http://github.com/sindresorhus"),
 				dom.Text("Sindre Sorhus"),
 			),
 		),
-		elem.P(
+		elem.Paragraph(
 			dom.Text("Created by "),
-			elem.A(
-				prop.HRef("http://github.com/neelance"),
+			elem.Anchor(
+				prop.Href("http://github.com/neelance"),
 				dom.Text("Richard Musiol"),
 			),
 		),
-		elem.P(
+		elem.Paragraph(
 			dom.Text("Part of "),
-			elem.A(
-				prop.HRef("http://todomvc.com"),
+			elem.Anchor(
+				prop.Href("http://todomvc.com"),
 				dom.Text("TodoMVC"),
 			),
 		),
