@@ -27,7 +27,6 @@ var elemNameMap = map[string]string{
 	"b":          "Bold",
 	"bdi":        "BidirectionalIsolation",
 	"bdo":        "BidirectionalOverride",
-	"bgsound":    "BackgroundSound",
 	"blockquote": "BlockQuote",
 	"br":         "Break",
 	"cite":       "Citation",
@@ -55,8 +54,6 @@ var elemNameMap = map[string]string{
 	"keygen":     "KeyGen",
 	"li":         "ListItem",
 	"menuitem":   "MenuItem",
-	"multicol":   "MultiColumn",
-	"nobr":       "NoBreak",
 	"noframes":   "NoFrames",
 	"noscript":   "NoScript",
 	"ol":         "OrderedList",
@@ -107,7 +104,7 @@ import (
 			return
 		}
 
-		if s.Parent().Find(".icon-trash, .icon-thumbs-down-alt").Length() > 0 {
+		if s.Parent().Find(".icon-trash, .icon-thumbs-down-alt, .icon-warning-sign").Length() > 0 {
 			return
 		}
 

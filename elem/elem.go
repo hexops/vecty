@@ -71,12 +71,6 @@ func BidirectionalOverride(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("bdo", aspects...)
 }
 
-// The HTML Background Sound Element () is an Internet Explorer element associating a background sound with a page.
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound
-func BackgroundSound(aspects ...dom.Aspect) dom.Aspect {
-	return dom.Element("bgsound", aspects...)
-}
-
 // The HTML <blockquote> Element (or HTML Block Quotation Element) indicates that the enclosed text is an extended quotation. Usually, this is rendered visually by indentation (see Notes for how to change it). A URL for the source of the quotation may be given using the cite attribute, while a text representation of the source can be given using the <cite> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote
 func BlockQuote(aspects ...dom.Aspect) dom.Aspect {
@@ -287,12 +281,6 @@ func InlineFrame(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("iframe", aspects...)
 }
 
-// The HTML <image> element was an experimental element designed to display pictures. It never was implemented and the standard <img> element must be used.
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/image
-func Image(aspects ...dom.Aspect) dom.Aspect {
-	return dom.Element("image", aspects...)
-}
-
 // The HTML <img> Element (or HTML Image Element) represents an image of the document.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
 func Img(aspects ...dom.Aspect) dom.Aspect {
@@ -365,12 +353,6 @@ func Mark(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("mark", aspects...)
 }
 
-// The HTML <marquee> element is used to insert a scrolling area of text.
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/marquee
-func Marquee(aspects ...dom.Aspect) dom.Aspect {
-	return dom.Element("marquee", aspects...)
-}
-
 // The HTML <menu> element represents a group of commands that a user can perform or activate. This includes both toolbar menus, which might appear across the top of a screen, as well as popup menus, such as those that might appear underneath a button after it has been clicked.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu
 func Menu(aspects ...dom.Aspect) dom.Aspect {
@@ -395,22 +377,10 @@ func Meter(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("meter", aspects...)
 }
 
-// The HTML <multicol> element was an experimental element designed to allow multi-column layouts. It never got any significant traction and is not implemented in any major browsers.
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol
-func MultiColumn(aspects ...dom.Aspect) dom.Aspect {
-	return dom.Element("multicol", aspects...)
-}
-
 // The HTML Navigation Element (<nav>) represents a section of a page that links to other pages or to parts within the page: a section with navigation links.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav
 func Nav(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("nav", aspects...)
-}
-
-// The HTML <nobr> element prevents a text from breaking into a new line automagically, so it is displayed on one long line and scrolling might be necessary. This tag is not standard HTML and should not be used.
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr
-func NoBreak(aspects ...dom.Aspect) dom.Aspect {
-	return dom.Element("nobr", aspects...)
 }
 
 // <noframes> is an HTML element which is used to supporting browsers which are not able to support <frame> elements or configured to do so.
