@@ -205,7 +205,7 @@ func Element(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <em> element (or HTML Emphasis Element) marks text that has stress emphasis. The <em> element can be nested, with each level of nesting indicating a greater degree of emphasis.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
-func Em(aspects ...dom.Aspect) dom.Aspect {
+func Emphasis(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("em", aspects...)
 }
 
@@ -223,7 +223,7 @@ func FieldSet(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <figcaption> Element represents a caption or a legend associated with a figure or an illustration described by the rest of the data of the <figure> element which is its immediate ancestor which means <figcaption> can be the first or last element inside a <figure> block. Also, the HTML Figcaption Element is optional; if not provided, then the parent figure element will have no caption.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption
-func FigCaption(aspects ...dom.Aspect) dom.Aspect {
+func FigureCaption(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("figcaption", aspects...)
 }
 
@@ -283,7 +283,7 @@ func InlineFrame(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <img> Element (or HTML Image Element) represents an image of the document.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
-func Img(aspects ...dom.Aspect) dom.Aspect {
+func Image(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("img", aspects...)
 }
 
@@ -301,7 +301,7 @@ func InsertedText(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <kbd> Element (or HTML Keyboard Input Element) represents user input and produces an inline element displayed in the browser's default monospace font.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd
-func Kbd(aspects ...dom.Aspect) dom.Aspect {
+func KeyboardInput(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("kbd", aspects...)
 }
 
@@ -379,7 +379,7 @@ func Meter(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML Navigation Element (<nav>) represents a section of a page that links to other pages or to parts within the page: a section with navigation links.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav
-func Nav(aspects ...dom.Aspect) dom.Aspect {
+func Navigation(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("nav", aspects...)
 }
 
@@ -457,19 +457,19 @@ func Progress(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <q> Element (or HTML Quote Element) indicates that the enclosed text is a short inline quotation. This element is intended for short quotations that don't require paragraph breaks; for long quotations use <blockquote> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q
-func Q(aspects ...dom.Aspect) dom.Aspect {
+func Quote(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("q", aspects...)
 }
 
 // The HTML <rp> element is used to provide fall-back parenthesis for browsers non-supporting ruby annotations. Ruby annotations are for showing pronounciation of East Asian characters, like using Japanese furigana or Taiwainese bopomofo characters. The <rp> element is used in the case of lack of <ruby> element support its content has what should be displayed in order to indicate the presence of a ruby annotation, usually parentheses.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp
-func RP(aspects ...dom.Aspect) dom.Aspect {
+func RubyParenthesis(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("rp", aspects...)
 }
 
 // The HTML <rt> Element embraces pronunciation of character presented in a ruby annotations, which are for showing pronunciation of East Asian characters and the <rt> element is used inside of <ruby> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt
-func RT(aspects ...dom.Aspect) dom.Aspect {
+func RubyText(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("rt", aspects...)
 }
 
@@ -493,7 +493,7 @@ func Strikethrough(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <samp> element is an element intended to identify sample output from a computer program. It is usually displayed in the browser's default monotype font (such as Lucida Console).
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp
-func Samp(aspects ...dom.Aspect) dom.Aspect {
+func Sample(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("samp", aspects...)
 }
 
@@ -565,7 +565,7 @@ func Summary(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML Superscript Element (<sup>) defines a span of text that should be displayed, for typographic reasons, higher, and often smaller, than the main span of text.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup
-func Sup(aspects ...dom.Aspect) dom.Aspect {
+func Superscript(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("sup", aspects...)
 }
 
