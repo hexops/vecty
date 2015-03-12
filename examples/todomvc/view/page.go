@@ -9,15 +9,24 @@ import (
 	"github.com/neelance/dom/prop"
 )
 
-func Page(m *model.Model) dom.Aspect {
+type PageListeners struct {
+	AddItem        dom.Listener
+	DestroyItem    func(*model.Item) dom.Listener
+	StartEdit      func(*model.Item) dom.Listener
+	StopEdit       dom.Listener
+	ClearCompleted dom.Listener
+	ToggleAll      dom.Listener
+}
+
+func Page(m *model.ItemList, l *PageListeners) dom.Aspect {
 	return dom.Group(
 		elem.Section(
 			prop.Id("todoapp"),
 
-			listHeader(m),
+			listHeader(m, l),
 			bind.IfFunc(func() bool { return len(m.Items) != 0 }, m.Scope,
-				itemList(m),
-				listFooter(m),
+				itemList(m, l),
+				listFooter(m, l),
 			),
 		),
 
@@ -29,7 +38,7 @@ func Page(m *model.Model) dom.Aspect {
 	)
 }
 
-func itemList(m *model.Model) dom.Aspect {
+func itemList(m *model.ItemList, l *PageListeners) dom.Aspect {
 	return elem.Section(
 		prop.Id("main"),
 
@@ -39,7 +48,7 @@ func itemList(m *model.Model) dom.Aspect {
 			bind.IfFunc(func() bool { return m.CompletedItemCount() == len(m.Items) }, m.Scope,
 				prop.Checked(),
 			),
-			event.Change(m.ToggleAll),
+			event.Change(l.ToggleAll),
 		),
 		elem.Label(
 			prop.For("toggle-all"),
@@ -55,7 +64,9 @@ func itemList(m *model.Model) dom.Aspect {
 						continue
 					}
 					if !aspects.Reuse(item) {
-						aspects.Add(item, itemElem(item, m))
+						theItem := item
+						editing := func() bool { return theItem == m.EditItem }
+						aspects.Add(item, itemElem(item, editing, l))
 					}
 				}
 			}),

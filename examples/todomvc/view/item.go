@@ -10,12 +10,12 @@ import (
 	"github.com/neelance/dom/style"
 )
 
-func itemElem(item *model.Item, m *model.Model) dom.Aspect {
+func itemElem(item *model.Item, editing func() bool, l *PageListeners) dom.Aspect {
 	return elem.ListItem(
-		bind.IfPtr(&item.Completed, m.Scope,
+		bind.IfPtr(&item.Completed, item.Scope,
 			prop.Class("completed"),
 		),
-		bind.IfFunc(func() bool { return item == m.EditItem }, m.Scope,
+		bind.IfFunc(editing, item.Scope,
 			prop.Class("editing"),
 		),
 
@@ -25,23 +25,23 @@ func itemElem(item *model.Item, m *model.Model) dom.Aspect {
 			elem.Input(
 				prop.Class("toggle"),
 				prop.Type(prop.TypeCheckbox),
-				bind.Checked(&item.Completed, m.Scope),
+				bind.Checked(&item.Completed, item.Scope),
 			),
 			elem.Label(
-				bind.TextPtr(&item.Title, m.Scope),
-				event.DblClick(func(c *dom.EventContext) { m.EditItem = item; m.Scope.Digest() }),
+				bind.TextPtr(&item.Title, item.Scope),
+				event.DblClick(l.StartEdit(item)),
 			),
 			elem.Button(
 				prop.Class("destroy"),
-				event.Click(m.DestroyItem(item)),
+				event.Click(l.DestroyItem(item)),
 			),
 		),
 		elem.Form(
 			style.Margin(style.Px(0)),
-			dom.PreventDefault(event.Submit(func(c *dom.EventContext) { m.EditItem = nil; m.Scope.Digest() })),
+			dom.PreventDefault(event.Submit(l.StopEdit)),
 			elem.Input(
 				prop.Class("edit"),
-				bind.Value(&item.Title, m.Scope),
+				bind.Value(&item.Title, item.Scope),
 			),
 		),
 	)

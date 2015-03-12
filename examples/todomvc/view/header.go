@@ -10,7 +10,7 @@ import (
 	"github.com/neelance/dom/style"
 )
 
-func listHeader(m *model.Model) dom.Aspect {
+func listHeader(m *model.ItemList, l *PageListeners) dom.Aspect {
 	return elem.Header(
 		prop.Id("header"),
 
@@ -19,7 +19,7 @@ func listHeader(m *model.Model) dom.Aspect {
 		),
 		elem.Form(
 			style.Margin(style.Px(0)),
-			dom.PreventDefault(event.Submit(m.AddItem)),
+			dom.PreventDefault(event.Submit(l.AddItem)),
 
 			elem.Input(
 				prop.Id("new-todo"),

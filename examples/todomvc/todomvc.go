@@ -13,34 +13,50 @@ import (
 )
 
 func main() {
-	dom.SetTitle("GopherJS • TodoMVC")
-	dom.AddStylesheet("bower_components/todomvc-common/base.css")
-	dom.SetBody(view.Page(createModel()))
-}
-
-func createModel() *model.Model {
-	m := &model.Model{
+	m := &model.ItemList{
 		Scope: bind.NewScope(),
 	}
 
+	l := createListeners(m)
+
 	attachLocalStorage(m)
 
-	m.AddItem = func(c *dom.EventContext) {
-		m.Items = append(m.Items, &model.Item{Title: m.AddItemTitle, Completed: false})
+	dom.SetTitle("GopherJS • TodoMVC")
+	dom.AddStylesheet("bower_components/todomvc-common/base.css")
+	dom.SetBody(view.Page(m, l))
+}
+
+func createListeners(m *model.ItemList) *view.PageListeners {
+	l := &view.PageListeners{}
+
+	l.AddItem = func(c *dom.EventContext) {
+		m.Items = append(m.Items, &model.Item{Scope: m.Scope, Title: m.AddItemTitle, Completed: false})
 		m.AddItemTitle = ""
 		m.Scope.Digest()
 	}
 
-	m.DestroyItem = func(item *model.Item) dom.Listener {
+	l.DestroyItem = func(item *model.Item) dom.Listener {
 		return func(c *dom.EventContext) {
-			i := itemIndex(item, m)
+			i := m.ItemIndex(item)
 			copy(m.Items[i:], m.Items[i+1:])
 			m.Items = m.Items[:len(m.Items)-1]
 			m.Scope.Digest()
 		}
 	}
 
-	m.ClearCompleted = func(c *dom.EventContext) {
+	l.StartEdit = func(item *model.Item) dom.Listener {
+		return func(c *dom.EventContext) {
+			m.EditItem = item
+			m.Scope.Digest()
+		}
+	}
+
+	l.StopEdit = func(c *dom.EventContext) {
+		m.EditItem = nil
+		m.Scope.Digest()
+	}
+
+	l.ClearCompleted = func(c *dom.EventContext) {
 		var incomplete []*model.Item
 		for _, item := range m.Items {
 			if !item.Completed {
@@ -51,7 +67,7 @@ func createModel() *model.Model {
 		m.Scope.Digest()
 	}
 
-	m.ToggleAll = func(c *dom.EventContext) {
+	l.ToggleAll = func(c *dom.EventContext) {
 		checked := c.Node.Get("checked").Bool()
 		for _, item := range m.Items {
 			item.Completed = checked
@@ -59,38 +75,17 @@ func createModel() *model.Model {
 		m.Scope.Digest()
 	}
 
-	m.ActiveItemCount = countFunc(m, false)
-	m.CompletedItemCount = countFunc(m, true)
-
-	return m
+	return l
 }
 
-func countFunc(m *model.Model, completed bool) func() int {
-	return m.Scope.CacheInt(func() int {
-		count := 0
-		for _, item := range m.Items {
-			if item.Completed == completed {
-				count++
-			}
-		}
-		return count
-	})
-}
-
-func itemIndex(item *model.Item, m *model.Model) int {
-	for i, item2 := range m.Items {
-		if item == item2 {
-			return i
-		}
-	}
-	panic("item not found")
-}
-
-func attachLocalStorage(m *model.Model) {
+func attachLocalStorage(m *model.ItemList) {
 	if data := js.Global.Get("localStorage").Get("items"); data != js.Undefined {
 		if err := json.Unmarshal([]byte(data.String()), &m.Items); err != nil {
 			fmt.Printf("failed to load items: %s\n", err)
 		}
+	}
+	for _, item := range m.Items {
+		item.Scope = m.Scope
 	}
 
 	m.Scope.NewListener(func() {

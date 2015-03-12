@@ -9,7 +9,7 @@ import (
 	"github.com/neelance/dom/prop"
 )
 
-func listFooter(m *model.Model) dom.Aspect {
+func listFooter(m *model.ItemList, l *PageListeners) dom.Aspect {
 	return elem.Footer(
 		prop.Id("footer"),
 
@@ -40,13 +40,13 @@ func listFooter(m *model.Model) dom.Aspect {
 				dom.Text("Clear completed ("),
 				bind.TextFunc(bind.Itoa(m.CompletedItemCount), m.Scope),
 				dom.Text(")"),
-				event.Click(m.ClearCompleted),
+				event.Click(l.ClearCompleted),
 			),
 		),
 	)
 }
 
-func filterButton(label string, state model.FilterState, m *model.Model) dom.Aspect {
+func filterButton(label string, state model.FilterState, m *model.ItemList) dom.Aspect {
 	return elem.ListItem(
 		elem.Anchor(
 			bind.IfFunc(func() bool { return m.Filter == state }, m.Scope,
