@@ -74,7 +74,7 @@ func For(id string) dom.Aspect {
 	return dom.SetProperty("htmlFor", id)
 }
 
-func HRef(url string) dom.Aspect {
+func Href(url string) dom.Aspect {
 	return dom.SetProperty("href", url)
 }
 
