@@ -7,13 +7,13 @@ import (
 
 // The HTML <a> Element (or the HTML Anchor Element) defines a hyperlink, the named target destination for a hyperlink, or both.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a
-func A(aspects ...dom.Aspect) dom.Aspect {
+func Anchor(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("a", aspects...)
 }
 
 // The HTML <abbr> Element (or HTML Abbreviation Element) represents an abbreviation and optionally provides a full description for it. If present, the title attribute must contain this full description and nothing else.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr
-func Abbr(aspects ...dom.Aspect) dom.Aspect {
+func Abbreviation(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("abbr", aspects...)
 }
 
@@ -49,7 +49,7 @@ func Audio(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <b> Element represents a span of text stylistically different from normal text, without conveying any special importance or relevance. It is typically used for keywords in a summary, product names in a review, or other spans of text whose typical presentation would be boldfaced. Another example of its use is to mark the lead sentence of each paragraph of an article.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b
-func B(aspects ...dom.Aspect) dom.Aspect {
+func Bold(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("b", aspects...)
 }
 
@@ -61,19 +61,19 @@ func Base(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <bdi> Element (or Bi-Directional Isolation Element) isolates a span of text that might be formatted in a different direction from other text outside it.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi
-func BDI(aspects ...dom.Aspect) dom.Aspect {
+func BidirectionalIsolation(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("bdi", aspects...)
 }
 
 // The HTML <bdo> Element (or HTML bidirectional override element) is used to override the current directionality of text. It causes the directionality of the characters to be ignored in favor of the specified directionality.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo
-func BDO(aspects ...dom.Aspect) dom.Aspect {
+func BidirectionalOverride(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("bdo", aspects...)
 }
 
 // The HTML Background Sound Element () is an Internet Explorer element associating a background sound with a page.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound
-func BgSound(aspects ...dom.Aspect) dom.Aspect {
+func BackgroundSound(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("bgsound", aspects...)
 }
 
@@ -85,7 +85,7 @@ func BlockQuote(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <br> Element (or HTML Line Break Element) produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br
-func Br(aspects ...dom.Aspect) dom.Aspect {
+func Break(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("br", aspects...)
 }
 
@@ -109,7 +109,7 @@ func Caption(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <cite> Element (or HTML Citation Element) represents a reference to a creative work. It must include the title of a work or a URL reference, which may be in an abbreviated form according to the conventions used for the addition of citation metadata.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite
-func Cite(aspects ...dom.Aspect) dom.Aspect {
+func Citation(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("cite", aspects...)
 }
 
@@ -121,13 +121,13 @@ func Code(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <col> Element (or HTML Table Column Element) defines a column within a table and is used for defining common semantics on all common cells. It is generally found within a <colgroup> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col
-func Col(aspects ...dom.Aspect) dom.Aspect {
+func Column(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("col", aspects...)
 }
 
 // The HTML <colgroup> Element (or HTML Table Column Group Element) defines a group of columns within a table.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup
-func ColGroup(aspects ...dom.Aspect) dom.Aspect {
+func ColumnGroup(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("colgroup", aspects...)
 }
 
@@ -157,13 +157,13 @@ func DataList(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <dd> Element (or HTML Description Element) indicates the description of a term in a description list (<dl>) element. This element can occur only as a child element of a definition list and it must follow a <dt> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd
-func Dd(aspects ...dom.Aspect) dom.Aspect {
+func Description(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("dd", aspects...)
 }
 
 // The HTML <del> element (or HTML Deleted Text Element) represents a range of text that has been deleted from a document. This element is often (but need not be) rendered with strike-through text.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
-func Del(aspects ...dom.Aspect) dom.Aspect {
+func DeletedText(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("del", aspects...)
 }
 
@@ -175,7 +175,7 @@ func Details(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <dfn> element (or HTML Definition Element) represents the defining instance of a term.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
-func Dfn(aspects ...dom.Aspect) dom.Aspect {
+func Definition(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("dfn", aspects...)
 }
 
@@ -193,13 +193,13 @@ func Div(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <dl> Element (or HTML Description List Element) encloses a list of pairs of terms and descriptions. Common uses for this element are to implement a glossary or to display metadata (a list of key-value pairs).
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl
-func DL(aspects ...dom.Aspect) dom.Aspect {
+func DescriptionList(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("dl", aspects...)
 }
 
 // The HTML <dt> element (or HTML Definition Term Element) identifies a term in a definition list. This element can occur only as a child element of a <dl>. It is usually followed by a <dd> element; however, multiple <dt> elements in a row indicate several terms that are all defined by the immediate next <dd> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt
-func DT(aspects ...dom.Aspect) dom.Aspect {
+func DefinitionTerm(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("dt", aspects...)
 }
 
@@ -265,25 +265,25 @@ func Header(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <hgroup> Element (HTML Headings Group Element) represents the heading of a section. It defines a single title that participates in the outline of the document as the heading of the implicit or explicit section that it belongs to.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup
-func Hgroup(aspects ...dom.Aspect) dom.Aspect {
+func HeadingsGroup(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("hgroup", aspects...)
 }
 
 // The HTML <hr> element represents a thematic break between paragraph-level elements (for example, a change of scene in a story, or a shift of topic with a section). In previous versions of HTML, it represented a horizontal rule. It may still be displayed as a horizontal rule in visual browsers, but is now defined in semantic terms, rather than presentational terms.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr
-func HR(aspects ...dom.Aspect) dom.Aspect {
+func HorizontalRule(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("hr", aspects...)
 }
 
 // The HTML <i> Element represents a range of text that is set off from the normal text for some reason, for example, technical terms, foreign language phrases, or fictional character thoughts. It is typically displayed in italic type.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i
-func I(aspects ...dom.Aspect) dom.Aspect {
+func Italic(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("i", aspects...)
 }
 
 // The HTML <iframe> Element (or HTML inline frame element) represents a nested browsing context, effectively embedding another HTML page into the current page. In HTML 4.01, a document may contain a head and a body or a head and a frame-set, but not both a body and a frame-set. However, an <iframe> can be used within a normal document body. Each browsing context has its own session history and active document. The browsing context that contains the embedded content is called the parent browsing context. The top-level browsing context (which has no parent) is typically the browser window.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
-func IFrame(aspects ...dom.Aspect) dom.Aspect {
+func InlineFrame(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("iframe", aspects...)
 }
 
@@ -307,7 +307,7 @@ func Input(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <ins> Element (or HTML Inserted Text) HTML represents a range of text that has been added to a document.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins
-func Ins(aspects ...dom.Aspect) dom.Aspect {
+func InsertedText(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("ins", aspects...)
 }
 
@@ -337,7 +337,7 @@ func Legend(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML List item element (<li>) is used to represent a list item. It should be contained in an ordered list (<ol>), an unordered list (<ul>) or a menu (<menu>), where it represents a single entity in that list. In menus and unordered lists, list items are ordinarily displayed using bullet points. In ordered lists, they are usually displayed with some ascending counter on the left such as a number or letter
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li
-func LI(aspects ...dom.Aspect) dom.Aspect {
+func ListItem(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("li", aspects...)
 }
 
@@ -397,7 +397,7 @@ func Meter(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <multicol> element was an experimental element designed to allow multi-column layouts. It never got any significant traction and is not implemented in any major browsers.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol
-func Multicol(aspects ...dom.Aspect) dom.Aspect {
+func MultiColumn(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("multicol", aspects...)
 }
 
@@ -409,13 +409,13 @@ func Nav(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <nobr> element prevents a text from breaking into a new line automagically, so it is displayed on one long line and scrolling might be necessary. This tag is not standard HTML and should not be used.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr
-func NoBr(aspects ...dom.Aspect) dom.Aspect {
+func NoBreak(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("nobr", aspects...)
 }
 
 // <noframes> is an HTML element which is used to supporting browsers which are not able to support <frame> elements or configured to do so.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noframes
-func Noframes(aspects ...dom.Aspect) dom.Aspect {
+func NoFrames(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("noframes", aspects...)
 }
 
@@ -433,13 +433,13 @@ func Object(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <ol> Element (or HTML Ordered List Element) represents an ordered list of items. Typically, ordered-list items are displayed with a preceding numbering, which can be of any form, like numerals, letters or Romans numerals or even simple bullets. This numbered style is not defined in the HTML description of the page, but in its associated CSS, using the list-style-type property.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol
-func OL(aspects ...dom.Aspect) dom.Aspect {
+func OrderedList(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("ol", aspects...)
 }
 
 // In a Web form, the HTML <optgroup> element  creates a grouping of options within a <select> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup
-func Optgroup(aspects ...dom.Aspect) dom.Aspect {
+func OptionsGroup(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("optgroup", aspects...)
 }
 
@@ -457,13 +457,13 @@ func Output(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <p> element (or HTML Paragraph Element) represents a paragraph of text.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p
-func P(aspects ...dom.Aspect) dom.Aspect {
+func Paragraph(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("p", aspects...)
 }
 
 // The HTML <param> Element (or HTML Parameter Element) defines parameters for <object>.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param
-func Param(aspects ...dom.Aspect) dom.Aspect {
+func Parameter(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("param", aspects...)
 }
 
@@ -475,7 +475,7 @@ func Picture(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML <pre> Element (or HTML Preformatted Text) represents preformatted text. Text within this element is typically displayed in a non-proportional font exactly as it is laid out in the file. Whitespaces inside this element are displayed as typed.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre
-func Pre(aspects ...dom.Aspect) dom.Aspect {
+func Preformatted(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("pre", aspects...)
 }
 
@@ -517,7 +517,7 @@ func Ruby(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML Strikethrough Element (<s>) renders text with a strikethrough, or a line through it. Use the <s> element to represent things that are no longer relevant or no longer accurate. However, <s> is not appropriate when indicating document edits; for that, use the <del> and <ins> elements, as appropriate.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
-func S(aspects ...dom.Aspect) dom.Aspect {
+func Strikethrough(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("s", aspects...)
 }
 
@@ -583,7 +583,7 @@ func Style(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML Subscript Element (<sub>) defines a span of text that should be displayed, for typographic reasons, lower, and often smaller, than the main span of text.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub
-func Sub(aspects ...dom.Aspect) dom.Aspect {
+func Subscript(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("sub", aspects...)
 }
 
@@ -607,13 +607,13 @@ func Table(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML Table Body Element (<tbody>) defines one or more rows as the body of its parent <table> element when no <tr> elements are children of the parent.  In conjunction with a preceding <tfoot> and <thead> element, (<tbody>) provides additional semantic information for devices such as printers and displays. Of the parent table's child elements, (<tbody>) will represent the content, if longer than a page, that will most likely differ for each page printed. The <tfoot> and <thead> elements' content will be consistent for each page printed. For displays, (<tbody>) will enable separate scrolling from the <tfoot>, <thead> and <caption> elements of the same parent <table> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody
-func TBody(aspects ...dom.Aspect) dom.Aspect {
+func TableBody(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("tbody", aspects...)
 }
 
 // The Table cell HTML element (<td>) defines a cell of a table that contains data. It participates in the table model.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td
-func TD(aspects ...dom.Aspect) dom.Aspect {
+func TableData(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("td", aspects...)
 }
 
@@ -631,19 +631,19 @@ func TextArea(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML Table Foot Element (<tfoot>) defines a set of rows summarizing the columns of the table.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot
-func TFoot(aspects ...dom.Aspect) dom.Aspect {
+func TableFoot(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("tfoot", aspects...)
 }
 
 // The HTML Table Header Cell Element (<th>) defines a cell that is a header for a group of cells of a table. The group of cells that the header refers to is defined by the scope and headers attribute.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th
-func TH(aspects ...dom.Aspect) dom.Aspect {
+func TableHeader(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("th", aspects...)
 }
 
 // The HTML Table Head Element (<thead>) defines a set of rows defining the head of the columns of the table.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead
-func THead(aspects ...dom.Aspect) dom.Aspect {
+func TableHead(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("thead", aspects...)
 }
 
@@ -661,7 +661,7 @@ func Title(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML Table Row Element (<tr>) defines a row of cells in a table. Those can be a mix of <td> and <th> elements.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr
-func TR(aspects ...dom.Aspect) dom.Aspect {
+func TableRow(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("tr", aspects...)
 }
 
@@ -673,19 +673,19 @@ func Track(aspects ...dom.Aspect) dom.Aspect {
 
 // The HTML Underline Element (<u>) renders text with an underline, a line under the baseline of its content.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u
-func U(aspects ...dom.Aspect) dom.Aspect {
+func Underline(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("u", aspects...)
 }
 
 // The HTML unordered list element (<ul>) represents an unordered list of items, namely a collection of items that do not have a numerical ordering, and their order in the list is meaningless. Typically, unordered-list items are displayed with a bullet, which can be of several forms, like a dot, a circle or a squared. The bullet style is not defined in the HTML description of the page, but in its associated CSS, using the list-style-type property.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul
-func UL(aspects ...dom.Aspect) dom.Aspect {
+func UnorderedList(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("ul", aspects...)
 }
 
 // The HTML Variable Element (<var>) represents a variable in a mathematical expression or a programming context.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var
-func Var(aspects ...dom.Aspect) dom.Aspect {
+func Variable(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("var", aspects...)
 }
 
@@ -697,42 +697,42 @@ func Video(aspects ...dom.Aspect) dom.Aspect {
 
 // The Word Break Opportunity (<wbr>) HTML element represents a position within text where the browser may optionally break a line, though its line-breaking rules would not otherwise create a break at that location.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr
-func WBr(aspects ...dom.Aspect) dom.Aspect {
+func WordBreakOpportunity(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("wbr", aspects...)
 }
 
 // Heading elements implement six levels of document headings, <h1> is the most important and <h6> is the least. A heading element briefly describes the topic of the section it introduces. Heading information may be used by user agents, for example, to construct a table of contents for a document automatically.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func H1(aspects ...dom.Aspect) dom.Aspect {
+func Header1(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("h1", aspects...)
 }
 
 // Heading elements implement six levels of document headings, <h1> is the most important and <h6> is the least. A heading element briefly describes the topic of the section it introduces. Heading information may be used by user agents, for example, to construct a table of contents for a document automatically.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func H2(aspects ...dom.Aspect) dom.Aspect {
+func Header2(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("h2", aspects...)
 }
 
 // Heading elements implement six levels of document headings, <h1> is the most important and <h6> is the least. A heading element briefly describes the topic of the section it introduces. Heading information may be used by user agents, for example, to construct a table of contents for a document automatically.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func H3(aspects ...dom.Aspect) dom.Aspect {
+func Header3(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("h3", aspects...)
 }
 
 // Heading elements implement six levels of document headings, <h1> is the most important and <h6> is the least. A heading element briefly describes the topic of the section it introduces. Heading information may be used by user agents, for example, to construct a table of contents for a document automatically.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func H4(aspects ...dom.Aspect) dom.Aspect {
+func Header4(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("h4", aspects...)
 }
 
 // Heading elements implement six levels of document headings, <h1> is the most important and <h6> is the least. A heading element briefly describes the topic of the section it introduces. Heading information may be used by user agents, for example, to construct a table of contents for a document automatically.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func H5(aspects ...dom.Aspect) dom.Aspect {
+func Header5(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("h5", aspects...)
 }
 
 // Heading elements implement six levels of document headings, <h1> is the most important and <h6> is the least. A heading element briefly describes the topic of the section it introduces. Heading information may be used by user agents, for example, to construct a table of contents for a document automatically.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func H6(aspects ...dom.Aspect) dom.Aspect {
+func Header6(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("h6", aspects...)
 }
