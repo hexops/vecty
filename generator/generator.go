@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"sort"
 	"strings"
@@ -20,39 +21,39 @@ func main() {
 	generateEventPkg()
 }
 
-func generateElemPkg() {
-	nameMap := map[string]string{
-		"bdi":        "BDI",
-		"bdo":        "BDO",
-		"bgsound":    "BgSound",
-		"blockquote": "BlockQuote",
-		"colgroup":   "ColGroup",
-		"datalist":   "DataList",
-		"dl":         "DL",
-		"dt":         "DT",
-		"fieldset":   "FieldSet",
-		"figcaption": "FigCaption",
-		"hr":         "HR",
-		"iframe":     "IFrame",
-		"keygen":     "KeyGen",
-		"li":         "LI",
-		"menuitem":   "MenuItem",
-		"nobr":       "NoBr",
-		"noscript":   "NoScript",
-		"ol":         "OL",
-		"rp":         "RP",
-		"rt":         "RT",
-		"tbody":      "TBody",
-		"textarea":   "TextArea",
-		"td":         "TD",
-		"tfoot":      "TFoot",
-		"th":         "TH",
-		"thead":      "THead",
-		"tr":         "TR",
-		"ul":         "UL",
-		"wbr":        "WBr",
-	}
+var elemNameMap = map[string]string{
+	"bdi":        "BDI",
+	"bdo":        "BDO",
+	"bgsound":    "BgSound",
+	"blockquote": "BlockQuote",
+	"colgroup":   "ColGroup",
+	"datalist":   "DataList",
+	"dl":         "DL",
+	"dt":         "DT",
+	"fieldset":   "FieldSet",
+	"figcaption": "FigCaption",
+	"hr":         "HR",
+	"iframe":     "IFrame",
+	"keygen":     "KeyGen",
+	"li":         "LI",
+	"menuitem":   "MenuItem",
+	"nobr":       "NoBr",
+	"noscript":   "NoScript",
+	"ol":         "OL",
+	"rp":         "RP",
+	"rt":         "RT",
+	"tbody":      "TBody",
+	"textarea":   "TextArea",
+	"td":         "TD",
+	"tfoot":      "TFoot",
+	"th":         "TH",
+	"thead":      "THead",
+	"tr":         "TR",
+	"ul":         "UL",
+	"wbr":        "WBr",
+}
 
+func generateElemPkg() {
 	doc, err := goquery.NewDocument("https://developer.mozilla.org/en-US/docs/Web/HTML/Element")
 	if err != nil {
 		panic(err)
@@ -64,7 +65,7 @@ func generateElemPkg() {
 	}
 	defer file.Close()
 
-	fmt.Fprint(file, `// Documentation source: "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
+	fmt.Fprint(file, `// Documentation source: "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
 package elem
 
 import (
@@ -72,32 +73,51 @@ import (
 )
 `)
 
-	doc.Find(".index a").Each(func(i int, s *goquery.Selection) {
-		name := s.Find("code").Text()
-		if name == "" || s.Parent().Is(".obsoleteElement") {
+	doc.Find(".quick-links a").Each(func(i int, s *goquery.Selection) {
+		link, _ := s.Attr("href")
+		if !strings.HasPrefix(link, "/en-US/docs/Web/HTML/Element/") {
 			return
 		}
-		name = name[1 : len(name)-1]
+
+		if s.Parent().Find(".icon-trash, .icon-thumbs-down-alt").Length() > 0 {
+			return
+		}
+
+		desc, _ := s.Attr("title")
+
+		text := s.Text()
+		if text == "Heading elements" {
+			writeElem(file, "h1", desc, link)
+			writeElem(file, "h2", desc, link)
+			writeElem(file, "h3", desc, link)
+			writeElem(file, "h4", desc, link)
+			writeElem(file, "h5", desc, link)
+			writeElem(file, "h6", desc, link)
+			return
+		}
+
+		name := text[1 : len(text)-1]
 		if name == "html" || name == "head" || name == "body" {
 			return
 		}
 
-		funName := nameMap[name]
-		if funName == "" {
-			funName = capitalize(name)
-		}
+		writeElem(file, name, desc, link)
+	})
+}
 
-		desc, _ := s.Attr("title")
-		link, _ := s.Attr("href")
+func writeElem(w io.Writer, name, desc, link string) {
+	funName := elemNameMap[name]
+	if funName == "" {
+		funName = capitalize(name)
+	}
 
-		fmt.Fprintf(file, `
+	fmt.Fprintf(w, `
 // %s
 // https://developer.mozilla.org%s
 func %s(aspects ...dom.Aspect) dom.Aspect {
 	return dom.Element("%s", aspects...)
 }
-`, desc, link[6:], funName, name)
-	})
+`, desc, link, funName, name)
 }
 
 func generateEventPkg() {
@@ -178,7 +198,7 @@ func generateEventPkg() {
 		"volumechange":            "VolumeChange",
 	}
 
-	doc, err := goquery.NewDocument("https://developer.mozilla.org/docs/Web/Events")
+	doc, err := goquery.NewDocument("https://developer.mozilla.org/en-US/docs/Web/Events")
 	if err != nil {
 		panic(err)
 	}
@@ -219,7 +239,7 @@ func generateEventPkg() {
 	}
 	defer file.Close()
 
-	fmt.Fprint(file, `// Documentation source: "Event reference" by Mozilla Contributors, https://developer.mozilla.org/docs/Web/Events, licensed under CC-BY-SA 2.5.
+	fmt.Fprint(file, `// Documentation source: "Event reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/Events, licensed under CC-BY-SA 2.5.
 package event
 
 import (

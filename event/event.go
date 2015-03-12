@@ -1,4 +1,4 @@
-// Documentation source: "Event reference" by Mozilla Contributors, https://developer.mozilla.org/docs/Web/Events, licensed under CC-BY-SA 2.5.
+// Documentation source: "Event reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/Events, licensed under CC-BY-SA 2.5.
 package event
 
 import (
