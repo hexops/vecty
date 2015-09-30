@@ -15,6 +15,7 @@ type Instance interface {
 
 type Spec interface {
 	Reconcile(oldSpec Spec)
+	Markup
 	Instance
 }
 
@@ -78,7 +79,17 @@ func (e *Element) Apply(element *Element) {
 func (e *Element) Reconcile(oldSpec Spec) {
 	if oldElement, ok := oldSpec.(*Element); ok && oldElement.TagName == e.TagName {
 		e.node = oldElement.node
-		// TODO update properties, etc.
+		// TODO fix updating
+		for _, p := range oldElement.Properties {
+			e.node.Set(p.Name, nil)
+		}
+		for _, p := range e.Properties {
+			e.node.Set(p.Name, p.Value)
+		}
+		style := e.node.Get("style")
+		for _, s := range e.Styles {
+			style.Call("setProperty", s.Name, s.Value)
+		}
 		for i, newChild := range e.Children {
 			oldChild := oldElement.Children[i]
 			newChild.Reconcile(oldChild)
@@ -139,4 +150,34 @@ func (l *EventListener) Apply(element *Element) {
 
 type Event struct {
 	Target *js.Object
+}
+
+// SetTitle sets the title of the document.
+func SetTitle(title string) {
+	js.Global.Get("document").Set("title", title)
+}
+
+// AddStylesheed adds an external stylesheet to the document.
+func AddStylesheet(url string) {
+	link := js.Global.Get("document").Call("createElement", "link")
+	link.Set("rel", "stylesheet")
+	link.Set("href", url)
+	js.Global.Get("document").Get("head").Call("appendChild", link)
+}
+
+type List []Markup
+
+func (g List) Apply(element *Element) {
+	for _, m := range g {
+		if m != nil {
+			m.Apply(element)
+		}
+	}
+}
+
+func If(cond bool, markup ...Markup) Markup {
+	if cond {
+		return List(markup)
+	}
+	return nil
 }

@@ -140,9 +140,7 @@ func writeElem(w io.Writer, name, desc, link string) {
 // https://developer.mozilla.org%s
 func %s(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "%s"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 `, desc, link, funName, name)

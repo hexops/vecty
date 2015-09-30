@@ -52,6 +52,12 @@ func main() {
 	}
 
 	var components []*Component
+	imports := map[string]struct{}{
+		"github.com/gopherjs/gopherjs/js":       struct{}{},
+		"github.com/neelance/dom":               struct{}{},
+		"github.com/neelance/dom/componentutil": struct{}{},
+		buildPkg.ImportPath:                     struct{}{},
+	}
 	for _, name := range pkg.Scope().Names() {
 		obj := pkg.Scope().Lookup(name)
 		if s, ok := obj.Type().Underlying().(*types.Struct); ok {
@@ -63,23 +69,29 @@ func main() {
 				if f.Type().String() == "github.com/neelance/dom.Instance" {
 					continue
 				}
+
 				switch f.Exported() {
 				case true:
 					comp.Props = append(comp.Props, f)
 				case false:
 					comp.State = append(comp.State, f)
 				}
+
+				types.TypeString(f.Type(), func(pkg *types.Package) string {
+					imports[pkg.Path()] = struct{}{}
+					return ""
+				})
 			}
 			components = append(components, comp)
 		}
 	}
 
 	data := struct {
-		ImportPath string
+		Imports    map[string]struct{}
 		PkgName    string
 		Components []*Component
 	}{
-		ImportPath: buildPkg.ImportPath,
+		Imports:    imports,
 		PkgName:    buildPkg.Name,
 		Components: components,
 	}
@@ -93,7 +105,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := ioutil.WriteFile("core.gen.go", formatted, 0666); err != nil {
+	if err := ioutil.WriteFile("impl.gen.go", formatted, 0666); err != nil {
 		panic(err)
 	}
 }
@@ -111,20 +123,23 @@ var tmpl = template.Must(template.New("").Delims("<<<", ">>>").Funcs(template.Fu
 package impl
 
 import (
-	"github.com/gopherjs/gopherjs/js"
-	"github.com/neelance/dom"
-	"github.com/neelance/dom/componentutil"
-	"<<<.ImportPath>>>"
+	<<<range $k, $v := .Imports>>>
+		"<<<$k>>>"
+	<<<end>>>
 )
 
-<<<range .Components>>>
-  func init() {
-  	<<<$t.PkgName>>>.Reconcile<<<.Name>>> = reconcile<<<.Name>>>
-  }
-<<<end>>>
+func init() {<<<range .Components>>>
+	<<<$t.PkgName>>>.Reconcile<<<.Name>>> = reconcile<<<.Name>>><<<end>>>
+}
 
 <<<range .Components>>>
   <<<$c := .>>>
+
+  type <<<.Name>>>Impl struct {
+		<<<.Name>>>Accessors
+		componentutil.EmptyLifecycle
+  }
+
   type <<<.Name>>>Accessors interface {
   	Props() <<<.Name>>>Props
   	State() <<<.Name>>>State
@@ -155,7 +170,7 @@ import (
   }
 
   <<<range .Props>>>
-    func (c *<<<$c.Name | uc>>>Core) <<<.Name | c>>>() string {
+    func (c *<<<$c.Name | uc>>>Core) <<<.Name | c>>>() <<<.Type | type>>> {
     	return c._<<<.Name | uc>>>
     }
   <<<end>>>
@@ -165,30 +180,35 @@ import (
   }
 
   <<<range .State>>>
-    func (c *<<<$c.Name | uc>>>Core) <<<.Name | c>>>() string {
+    func (c *<<<$c.Name | uc>>>Core) <<<.Name | c>>>() <<<.Type | type>>> {
     	return c._<<<.Name | uc>>>
     }
 
-    func (c *<<<$c.Name | uc>>>Core) Set<<<.Name | c>>>(<<<.Name | uc>>> string) {
+    func (c *<<<$c.Name | uc>>>Core) Set<<<.Name | c>>>(<<<.Name | uc>>> <<<.Type | type>>>) {
     	c._<<<.Name | uc>>> = <<<.Name | uc>>>
     	c.Update()
     }
   <<<end>>>
 
+	func (c *<<<.Name | uc>>>Core) applyProps(spec *spec.<<<.Name>>>) {<<<range .Props>>>
+		  c._<<<.Name | uc>>> = spec.<<<.Name | c>>><<<end>>>
+		c.DoRender()
+	}
+
   func reconcile<<<.Name>>>(newSpec *<<<$t.PkgName>>>.<<<.Name>>>, oldSpec dom.Spec) {
   	if oldSpec, ok := oldSpec.(*<<<$t.PkgName>>>.<<<.Name>>>); ok {
   		newSpec.Instance = oldSpec.Instance
-  		newSpec.Instance.(*<<<.Name>>>Impl).<<<.Name>>>Accessors.(*<<<.Name | uc>>>Core).DoRender()
+  		newSpec.Instance.(*<<<.Name>>>Impl).<<<.Name>>>Accessors.(*<<<.Name | uc>>>Core).applyProps(newSpec)
   		return
   	}
 
-  	c := &<<<.Name | uc>>>Core{<<<range .Props>>>
-  		  _<<<.Name | uc>>>: newSpec.<<<.Name | c>>>,<<<end>>>
-  	}
-  	inst := &<<<.Name>>>Impl{c}
+  	c := &<<<.Name | uc>>>Core{}
+  	inst := &<<<.Name>>>Impl{<<<.Name>>>Accessors: c}
   	c.Lifecycle = inst
   	newSpec.Instance = inst
-  	c.DoRender()
+		inst.ComponentWillMount()
+		c.applyProps(newSpec)
+		inst.ComponentDidMount()
   }
 <<<end>>>
 `))

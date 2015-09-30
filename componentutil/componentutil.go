@@ -8,7 +8,15 @@ import (
 
 type Lifecycle interface {
 	Render() dom.Spec
+	ComponentWillMount()
+	ComponentDidMount()
 }
+
+type EmptyLifecycle struct{}
+
+func (a EmptyLifecycle) Render() dom.Spec    { return nil }
+func (a EmptyLifecycle) ComponentWillMount() {}
+func (a EmptyLifecycle) ComponentDidMount()  {}
 
 type Core struct {
 	Lifecycle Lifecycle

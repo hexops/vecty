@@ -11,9 +11,7 @@ import (
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a
 func Anchor(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "a"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -21,9 +19,7 @@ func Anchor(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr
 func Abbreviation(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "abbr"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -31,9 +27,7 @@ func Abbreviation(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address
 func Address(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "address"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -41,9 +35,7 @@ func Address(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area
 func Area(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "area"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -51,9 +43,7 @@ func Area(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article
 func Article(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "article"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -61,9 +51,7 @@ func Article(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside
 func Aside(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "aside"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -71,9 +59,7 @@ func Aside(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
 func Audio(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "audio"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -81,9 +67,7 @@ func Audio(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b
 func Bold(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "b"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -91,9 +75,7 @@ func Bold(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
 func Base(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "base"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -101,9 +83,7 @@ func Base(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi
 func BidirectionalIsolation(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "bdi"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -111,9 +91,7 @@ func BidirectionalIsolation(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo
 func BidirectionalOverride(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "bdo"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -121,9 +99,7 @@ func BidirectionalOverride(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote
 func BlockQuote(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "blockquote"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -131,9 +107,7 @@ func BlockQuote(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br
 func Break(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "br"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -141,9 +115,7 @@ func Break(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button
 func Button(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "button"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -151,9 +123,7 @@ func Button(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas
 func Canvas(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "canvas"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -161,9 +131,7 @@ func Canvas(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption
 func Caption(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "caption"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -171,9 +139,7 @@ func Caption(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite
 func Citation(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "cite"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -181,9 +147,7 @@ func Citation(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code
 func Code(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "code"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -191,9 +155,7 @@ func Code(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col
 func Column(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "col"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -201,9 +163,7 @@ func Column(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup
 func ColumnGroup(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "colgroup"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -211,9 +171,7 @@ func ColumnGroup(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/command
 func Command(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "command"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -221,9 +179,7 @@ func Command(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/content
 func Content(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "content"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -231,9 +187,7 @@ func Content(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data
 func Data(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "data"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -241,9 +195,7 @@ func Data(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist
 func DataList(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "datalist"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -251,9 +203,7 @@ func DataList(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd
 func Description(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "dd"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -261,9 +211,7 @@ func Description(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
 func DeletedText(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "del"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -271,9 +219,7 @@ func DeletedText(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
 func Details(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "details"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -281,9 +227,7 @@ func Details(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
 func Definition(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "dfn"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -291,9 +235,7 @@ func Definition(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
 func Dialog(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "dialog"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -301,9 +243,7 @@ func Dialog(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div
 func Div(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "div"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -311,9 +251,7 @@ func Div(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl
 func DescriptionList(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "dl"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -321,9 +259,7 @@ func DescriptionList(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt
 func DefinitionTerm(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "dt"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -331,9 +267,7 @@ func DefinitionTerm(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/element
 func Element(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "element"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -341,9 +275,7 @@ func Element(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
 func Emphasis(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "em"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -351,9 +283,7 @@ func Emphasis(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed
 func Embed(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "embed"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -361,9 +291,7 @@ func Embed(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset
 func FieldSet(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "fieldset"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -371,9 +299,7 @@ func FieldSet(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption
 func FigureCaption(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "figcaption"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -381,9 +307,7 @@ func FigureCaption(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure
 func Figure(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "figure"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -391,9 +315,7 @@ func Figure(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/font
 func Font(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "font"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -401,9 +323,7 @@ func Font(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer
 func Footer(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "footer"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -411,9 +331,7 @@ func Footer(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form
 func Form(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "form"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -421,9 +339,7 @@ func Form(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header
 func Header(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "header"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -431,9 +347,7 @@ func Header(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup
 func HeadingsGroup(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "hgroup"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -441,9 +355,7 @@ func HeadingsGroup(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr
 func HorizontalRule(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "hr"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -451,9 +363,7 @@ func HorizontalRule(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i
 func Italic(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "i"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -461,9 +371,7 @@ func Italic(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
 func InlineFrame(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "iframe"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -471,9 +379,7 @@ func InlineFrame(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
 func Image(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "img"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -481,9 +387,7 @@ func Image(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
 func Input(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "input"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -491,9 +395,7 @@ func Input(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins
 func InsertedText(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "ins"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -501,9 +403,7 @@ func InsertedText(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd
 func KeyboardInput(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "kbd"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -511,9 +411,7 @@ func KeyboardInput(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen
 func KeyGen(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "keygen"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -521,9 +419,7 @@ func KeyGen(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label
 func Label(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "label"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -531,9 +427,7 @@ func Label(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend
 func Legend(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "legend"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -541,9 +435,7 @@ func Legend(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li
 func ListItem(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "li"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -551,9 +443,7 @@ func ListItem(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link
 func Link(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "link"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -561,9 +451,7 @@ func Link(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main
 func Main(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "main"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -571,9 +459,7 @@ func Main(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map
 func Map(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "map"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -581,9 +467,7 @@ func Map(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark
 func Mark(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "mark"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -591,9 +475,7 @@ func Mark(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu
 func Menu(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "menu"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -601,9 +483,7 @@ func Menu(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem
 func MenuItem(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "menuitem"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -611,9 +491,7 @@ func MenuItem(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
 func Meta(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "meta"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -621,9 +499,7 @@ func Meta(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter
 func Meter(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "meter"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -631,9 +507,7 @@ func Meter(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav
 func Navigation(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "nav"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -641,9 +515,7 @@ func Navigation(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noframes
 func NoFrames(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "noframes"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -651,9 +523,7 @@ func NoFrames(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript
 func NoScript(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "noscript"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -661,9 +531,7 @@ func NoScript(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object
 func Object(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "object"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -671,9 +539,7 @@ func Object(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol
 func OrderedList(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "ol"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -681,9 +547,7 @@ func OrderedList(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup
 func OptionsGroup(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "optgroup"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -691,9 +555,7 @@ func OptionsGroup(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option
 func Option(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "option"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -701,9 +563,7 @@ func Option(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output
 func Output(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "output"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -711,9 +571,7 @@ func Output(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p
 func Paragraph(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "p"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -721,9 +579,7 @@ func Paragraph(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param
 func Parameter(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "param"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -731,9 +587,7 @@ func Parameter(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture
 func Picture(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "picture"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -741,9 +595,7 @@ func Picture(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre
 func Preformatted(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "pre"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -751,9 +603,7 @@ func Preformatted(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress
 func Progress(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "progress"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -761,9 +611,7 @@ func Progress(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q
 func Quote(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "q"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -771,9 +619,7 @@ func Quote(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp
 func RubyParenthesis(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "rp"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -781,9 +627,7 @@ func RubyParenthesis(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt
 func RubyText(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "rt"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -791,9 +635,7 @@ func RubyText(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc
 func Rtc(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "rtc"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -801,9 +643,7 @@ func Rtc(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby
 func Ruby(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "ruby"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -811,9 +651,7 @@ func Ruby(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
 func Strikethrough(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "s"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -821,9 +659,7 @@ func Strikethrough(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp
 func Sample(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "samp"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -831,9 +667,7 @@ func Sample(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script
 func Script(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "script"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -841,9 +675,7 @@ func Script(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section
 func Section(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "section"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -851,9 +683,7 @@ func Section(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
 func Select(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "select"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -861,9 +691,7 @@ func Select(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Shadow
 func Shadow(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "shadow"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -871,9 +699,7 @@ func Shadow(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small
 func Small(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "small"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -881,9 +707,7 @@ func Small(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source
 func Source(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "source"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -891,9 +715,7 @@ func Source(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span
 func Span(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "span"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -901,9 +723,7 @@ func Span(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong
 func Strong(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "strong"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -911,9 +731,7 @@ func Strong(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
 func Style(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "style"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -921,9 +739,7 @@ func Style(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub
 func Subscript(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "sub"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -931,9 +747,7 @@ func Subscript(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary
 func Summary(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "summary"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -941,9 +755,7 @@ func Summary(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup
 func Superscript(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "sup"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -951,9 +763,7 @@ func Superscript(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
 func Table(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "table"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -961,9 +771,7 @@ func Table(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody
 func TableBody(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "tbody"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -971,9 +779,7 @@ func TableBody(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td
 func TableData(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "td"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -981,9 +787,7 @@ func TableData(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
 func Template(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "template"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -991,9 +795,7 @@ func Template(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
 func TextArea(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "textarea"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1001,9 +803,7 @@ func TextArea(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot
 func TableFoot(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "tfoot"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1011,9 +811,7 @@ func TableFoot(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th
 func TableHeader(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "th"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1021,9 +819,7 @@ func TableHeader(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead
 func TableHead(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "thead"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1031,9 +827,7 @@ func TableHead(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time
 func Time(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "time"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1041,9 +835,7 @@ func Time(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
 func Title(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "title"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1051,9 +843,7 @@ func Title(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr
 func TableRow(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "tr"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1061,9 +851,7 @@ func TableRow(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
 func Track(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "track"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1071,9 +859,7 @@ func Track(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u
 func Underline(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "u"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1081,9 +867,7 @@ func Underline(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul
 func UnorderedList(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "ul"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1091,9 +875,7 @@ func UnorderedList(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var
 func Variable(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "var"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1101,9 +883,7 @@ func Variable(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video
 func Video(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "video"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1111,9 +891,7 @@ func Video(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr
 func WordBreakOpportunity(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "wbr"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1121,9 +899,7 @@ func WordBreakOpportunity(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Header1(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "h1"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1131,9 +907,7 @@ func Header1(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Header2(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "h2"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1141,9 +915,7 @@ func Header2(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Header3(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "h3"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1151,9 +923,7 @@ func Header3(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Header4(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "h4"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1161,9 +931,7 @@ func Header4(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Header5(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "h5"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
 
@@ -1171,8 +939,6 @@ func Header5(markup ...dom.Markup) *dom.Element {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Header6(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "h6"}
-	for _, m := range markup {
-		m.Apply(e)
-	}
+	dom.List(markup).Apply(e)
 	return e
 }
