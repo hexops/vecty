@@ -3,35 +3,23 @@ package store
 import (
 	"github.com/neelance/dom/examples/todomvc/actions"
 	"github.com/neelance/dom/examples/todomvc/dispatcher"
+	"github.com/neelance/dom/examples/todomvc/store/model"
 	"github.com/neelance/dom/storeutil"
 )
 
-type FilterState int
-
-const (
-	All FilterState = iota
-	Active
-	Completed
-)
-
 var (
-	Items     []*Item
-	Filter    FilterState = All
-	Listeners             = storeutil.NewListenerRegistry()
+	Items     []*model.Item
+	Filter    model.FilterState = model.All
+	Listeners                   = storeutil.NewListenerRegistry()
 )
 
 func init() {
-	Items = []*Item{
+	Items = []*model.Item{
 		{"Foo", false},
 		{"Bar", true},
 		{"Baz", false},
 	}
 	dispatcher.Register(onAction)
-}
-
-type Item struct {
-	Title     string
-	Completed bool
 }
 
 func ActiveItemCount() int {
@@ -52,7 +40,7 @@ func count(completed bool) int {
 	return count
 }
 
-func ItemIndex(item *Item) int {
+func ItemIndex(item *model.Item) int {
 	for i, item2 := range Items {
 		if item == item2 {
 			return i
@@ -72,5 +60,10 @@ func onAction(action interface{}) {
 			item.Completed = a.Completed
 		}
 		Listeners.Fire()
+
+	case *actions.SetFilter:
+		Filter = a.Filter
+		Listeners.Fire()
+
 	}
 }

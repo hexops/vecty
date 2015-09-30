@@ -10,6 +10,7 @@ import (
 	"github.com/neelance/dom/examples/todomvc/components/spec"
 	"github.com/neelance/dom/examples/todomvc/dispatcher"
 	"github.com/neelance/dom/examples/todomvc/store"
+	"github.com/neelance/dom/examples/todomvc/store/model"
 	"github.com/neelance/dom/prop"
 	"github.com/neelance/dom/style"
 )
@@ -83,12 +84,11 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 
 		elem.UnorderedList(
 			prop.Id("filters"),
-			&spec.FilterButton{Label: "All", Selected: store.Filter == store.All},
-			&spec.FilterButton{Label: "Active", Selected: store.Filter == store.Active},
-			&spec.FilterButton{Label: "Completed", Selected: store.Filter == store.Completed},
-			// filterButton("All", model.All, m),
-			// filterButton("Active", model.Active, m),
-			// filterButton("Completed", model.Completed, m),
+			&spec.FilterButton{Label: "All", Filter: model.All},
+			dom.Text(" "),
+			&spec.FilterButton{Label: "Active", Filter: model.Active},
+			dom.Text(" "),
+			&spec.FilterButton{Label: "Completed", Filter: model.Completed},
 		),
 
 		// bind.IfFunc(func() bool { return m.CompletedItemCount() != 0 }, m.Scope,
@@ -143,6 +143,9 @@ func (p *PageViewImpl) onToggleAllCompleted(event *dom.Event) {
 func (p *PageViewImpl) renderItemList() dom.Spec {
 	var items dom.List
 	for i, item := range store.Items {
+		if (store.Filter == model.Active && item.Completed) || (store.Filter == model.Completed && !item.Completed) {
+			continue
+		}
 		items = append(items, &spec.ItemView{Index: i, Item: item})
 	}
 
@@ -179,15 +182,21 @@ func (p *PageViewImpl) renderItemList() dom.Spec {
 	)
 }
 
-func (p *FilterButtonImpl) Render() dom.Spec {
+func (b *FilterButtonImpl) onClick(event *dom.Event) {
+	dispatcher.Dispatch(&actions.SetFilter{
+		Filter: b.Props().Filter(),
+	})
+}
+
+func (b *FilterButtonImpl) Render() dom.Spec {
 	return elem.ListItem(
 		elem.Anchor(
-			dom.If(p.Props().Selected(), prop.Class("selected")),
+			dom.If(store.Filter == b.Props().Filter(), prop.Class("selected")),
 			prop.Href("#"),
 			// dom.PreventDefault(event.Click(func(c *dom.EventContext) { m.Filter = state; m.Scope.Digest() })),
+			event.Click(b.onClick).PreventDefault(),
 
-			dom.Text(p.Props().Label()),
+			dom.Text(b.Props().Label()),
 		),
-		dom.Text(" "),
 	)
 }

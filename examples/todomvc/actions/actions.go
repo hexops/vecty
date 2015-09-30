@@ -1,5 +1,7 @@
 package actions
 
+import "github.com/neelance/dom/examples/todomvc/store/model"
+
 type SetCompleted struct {
 	Index     int
 	Completed bool
@@ -7,4 +9,8 @@ type SetCompleted struct {
 
 type SetAllCompleted struct {
 	Completed bool
+}
+
+type SetFilter struct {
+	Filter model.FilterState
 }

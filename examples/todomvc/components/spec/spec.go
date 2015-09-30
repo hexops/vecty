@@ -2,24 +2,24 @@ package spec
 
 import (
 	"github.com/neelance/dom"
-	"github.com/neelance/dom/examples/todomvc/store"
+	"github.com/neelance/dom/examples/todomvc/store/model"
 )
 
 type PageView struct {
 	dom.Instance
-	items []*store.Item
+	items []*model.Item
 }
 
 type ItemView struct {
 	dom.Instance
 	Index int
-	Item  *store.Item
+	Item  *model.Item
 }
 
 type FilterButton struct {
 	dom.Instance
-	Label    string
-	Selected bool
+	Label  string
+	Filter model.FilterState
 }
 
 func (s *PageView) Apply(element *dom.Element)     { element.AddChild(s) }

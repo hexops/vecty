@@ -11,7 +11,7 @@ import (
 
 	"github.com/neelance/dom/examples/todomvc/components/spec"
 
-	"github.com/neelance/dom/examples/todomvc/store"
+	"github.com/neelance/dom/examples/todomvc/store/model"
 )
 
 func init() {
@@ -33,7 +33,7 @@ type FilterButtonAccessors interface {
 
 type FilterButtonProps interface {
 	Label() string
-	Selected() bool
+	Filter() model.FilterState
 }
 
 type FilterButtonState interface {
@@ -42,8 +42,8 @@ type FilterButtonState interface {
 type filterButtonCore struct {
 	componentutil.Core
 
-	_label    string
-	_selected bool
+	_label  string
+	_filter model.FilterState
 }
 
 func (c *filterButtonCore) Props() FilterButtonProps {
@@ -54,8 +54,8 @@ func (c *filterButtonCore) Label() string {
 	return c._label
 }
 
-func (c *filterButtonCore) Selected() bool {
-	return c._selected
+func (c *filterButtonCore) Filter() model.FilterState {
+	return c._filter
 }
 
 func (c *filterButtonCore) State() FilterButtonState {
@@ -64,7 +64,7 @@ func (c *filterButtonCore) State() FilterButtonState {
 
 func (c *filterButtonCore) applyProps(spec *spec.FilterButton) {
 	c._label = spec.Label
-	c._selected = spec.Selected
+	c._filter = spec.Filter
 	c.DoRender()
 }
 
@@ -97,7 +97,7 @@ type ItemViewAccessors interface {
 
 type ItemViewProps interface {
 	Index() int
-	Item() *store.Item
+	Item() *model.Item
 }
 
 type ItemViewState interface {
@@ -107,7 +107,7 @@ type itemViewCore struct {
 	componentutil.Core
 
 	_index int
-	_item  *store.Item
+	_item  *model.Item
 }
 
 func (c *itemViewCore) Props() ItemViewProps {
@@ -118,7 +118,7 @@ func (c *itemViewCore) Index() int {
 	return c._index
 }
 
-func (c *itemViewCore) Item() *store.Item {
+func (c *itemViewCore) Item() *model.Item {
 	return c._item
 }
 
@@ -163,14 +163,14 @@ type PageViewProps interface {
 }
 
 type PageViewState interface {
-	Items() []*store.Item
-	SetItems(items []*store.Item)
+	Items() []*model.Item
+	SetItems(items []*model.Item)
 }
 
 type pageViewCore struct {
 	componentutil.Core
 
-	_items []*store.Item
+	_items []*model.Item
 }
 
 func (c *pageViewCore) Props() PageViewProps {
@@ -181,11 +181,11 @@ func (c *pageViewCore) State() PageViewState {
 	return c
 }
 
-func (c *pageViewCore) Items() []*store.Item {
+func (c *pageViewCore) Items() []*model.Item {
 	return c._items
 }
 
-func (c *pageViewCore) SetItems(items []*store.Item) {
+func (c *pageViewCore) SetItems(items []*model.Item) {
 	c._items = items
 	c.Update()
 }

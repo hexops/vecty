@@ -90,10 +90,19 @@ func (e *Element) Reconcile(oldSpec Spec) {
 		for _, s := range e.Styles {
 			style.Call("setProperty", s.Name, s.Value)
 		}
+		// TODO better list element reuse
 		for i, newChild := range e.Children {
+			if i >= len(oldElement.Children) {
+				newChild.Reconcile(nil)
+				e.node.Call("appendChild", newChild.Node())
+				continue
+			}
 			oldChild := oldElement.Children[i]
 			newChild.Reconcile(oldChild)
 			domutil.ReplaceNode(newChild.Node(), oldChild.Node())
+		}
+		for i := len(e.Children); i < len(oldElement.Children); i++ {
+			domutil.RemoveNode(oldElement.Children[i].Node())
 		}
 		return
 	}
@@ -108,6 +117,9 @@ func (e *Element) Reconcile(oldSpec Spec) {
 	}
 	for _, l := range e.EventListeners {
 		e.node.Call("addEventListener", l.Name, func(jsEvent *js.Object) {
+			if l.CallPreventDefault {
+				jsEvent.Call("preventDefault")
+			}
 			l.Listener(&Event{Target: jsEvent.Get("target")})
 		})
 	}
@@ -140,8 +152,14 @@ func (p *Style) Apply(element *Element) {
 }
 
 type EventListener struct {
-	Name     string
-	Listener func(*Event)
+	Name               string
+	Listener           func(*Event)
+	CallPreventDefault bool
+}
+
+func (l *EventListener) PreventDefault() *EventListener {
+	l.CallPreventDefault = true
+	return l
 }
 
 func (l *EventListener) Apply(element *Element) {
