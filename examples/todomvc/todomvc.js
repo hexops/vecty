@@ -24194,7 +24194,7 @@ $packages["github.com/neelance/dom/examples/todomvc/components/impl"] = (functio
 		var $ptr, _arg, _arg$1, _arg$2, _arg$3, _arg$4, _arg$5, _arg$6, _arg$7, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, p, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _arg$4 = $f._arg$4; _arg$5 = $f._arg$5; _arg$6 = $f._arg$6; _arg$7 = $f._arg$7; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
-		_arg = prop.Id("todoapp");
+		_arg = prop.Class("todoapp");
 		_r = p.renderHeader(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_arg$1 = _r;
 		_arg$2 = store.Items.$length > 0;
@@ -24217,12 +24217,12 @@ $packages["github.com/neelance/dom/examples/todomvc/components/impl"] = (functio
 		var $ptr, _arg, _arg$1, _arg$10, _arg$2, _arg$3, _arg$4, _arg$5, _arg$6, _arg$7, _arg$8, _arg$9, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, p, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$10 = $f._arg$10; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _arg$4 = $f._arg$4; _arg$5 = $f._arg$5; _arg$6 = $f._arg$6; _arg$7 = $f._arg$7; _arg$8 = $f._arg$8; _arg$9 = $f._arg$9; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
-		_arg = prop.Id("header");
+		_arg = prop.Class("header");
 		_r = elem.Header1(new sliceType([dom.Text("todos")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_arg$1 = _r;
 		_arg$2 = style.Margin(style.Px(0));
 		_arg$3 = event.Submit($methodVal(p, "onAdd")).PreventDefault();
-		_arg$4 = prop.Id("new-todo");
+		_arg$4 = prop.Class("new-todo");
 		_arg$5 = prop.Placeholder("What needs to be done?");
 		_arg$6 = prop.Autofocus(true);
 		_r$1 = p.PageViewAccessors.State(); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
@@ -24248,8 +24248,8 @@ $packages["github.com/neelance/dom/examples/todomvc/components/impl"] = (functio
 		if (count === 1) {
 			itemsLeftText = " item left";
 		}
-		_arg = prop.Id("footer");
-		_arg$1 = prop.Id("todo-count");
+		_arg = prop.Class("footer");
+		_arg$1 = prop.Class("todo-count");
 		_r = fmt.Sprintf("%d", new sliceType$2([new $Int(count)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = dom.Text(_r); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$2 = elem.Strong(new sliceType([_r$1])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
@@ -24257,10 +24257,10 @@ $packages["github.com/neelance/dom/examples/todomvc/components/impl"] = (functio
 		_arg$3 = dom.Text(itemsLeftText);
 		_r$3 = elem.Span(new sliceType([_arg$1, _arg$2, _arg$3])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		_arg$4 = _r$3;
-		_r$4 = elem.UnorderedList(new sliceType([prop.Id("filters"), new spec.FilterButton.ptr($ifaceNil, "All", 0), dom.Text(" "), new spec.FilterButton.ptr($ifaceNil, "Active", 1), dom.Text(" "), new spec.FilterButton.ptr($ifaceNil, "Completed", 2)])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$4 = elem.UnorderedList(new sliceType([prop.Class("filters"), new spec.FilterButton.ptr($ifaceNil, "All", 0), dom.Text(" "), new spec.FilterButton.ptr($ifaceNil, "Active", 1), dom.Text(" "), new spec.FilterButton.ptr($ifaceNil, "Completed", 2)])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		_arg$5 = _r$4;
 		_arg$6 = store.CompletedItemCount() > 0;
-		_arg$7 = prop.Id("clear-completed");
+		_arg$7 = prop.Class("clear-completed");
 		_r$5 = fmt.Sprintf("Clear completed (%d)", new sliceType$2([new $Int(store.CompletedItemCount())])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		_r$6 = dom.Text(_r$5); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 		_arg$8 = _r$6;
@@ -24278,7 +24278,7 @@ $packages["github.com/neelance/dom/examples/todomvc/components/impl"] = (functio
 		var $ptr, _arg, _arg$1, _arg$10, _arg$2, _arg$3, _arg$4, _arg$5, _arg$6, _arg$7, _arg$8, _arg$9, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, p, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$10 = $f._arg$10; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _arg$4 = $f._arg$4; _arg$5 = $f._arg$5; _arg$6 = $f._arg$6; _arg$7 = $f._arg$7; _arg$8 = $f._arg$8; _arg$9 = $f._arg$9; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; p = $f.p; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		p = this;
-		_arg = prop.Id("info");
+		_arg = prop.Class("info");
 		_r = elem.Paragraph(new sliceType([dom.Text("Double-click to edit a todo")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_arg$1 = _r;
 		_arg$2 = dom.Text("Template by ");
@@ -24319,12 +24319,12 @@ $packages["github.com/neelance/dom/examples/todomvc/components/impl"] = (functio
 			items = $append(items, new spec.ItemView.ptr($ifaceNil, i, item, false, ""));
 			_i++;
 		/* } */ $s = 1; continue; case 2:
-		_arg = prop.Id("main");
-		_r = elem.Input(new sliceType([prop.Id("toggle-all"), prop.Type("checkbox"), prop.Checked(store.CompletedItemCount() === store.Items.$length), event.Change($methodVal(p, "onToggleAllCompleted"))])); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_arg = prop.Class("main");
+		_r = elem.Input(new sliceType([prop.Id("toggle-all"), prop.Class("toggle-all"), prop.Type("checkbox"), prop.Checked(store.CompletedItemCount() === store.Items.$length), event.Change($methodVal(p, "onToggleAllCompleted"))])); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_arg$1 = _r;
 		_r$1 = elem.Label(new sliceType([prop.For("toggle-all"), dom.Text("Mark all as complete")])); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_arg$2 = _r$1;
-		_r$2 = elem.UnorderedList(new sliceType([prop.Id("todo-list"), items])); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$2 = elem.UnorderedList(new sliceType([prop.Class("todo-list"), items])); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_arg$3 = _r$2;
 		_r$3 = elem.Section(new sliceType([_arg, _arg$1, _arg$2, _arg$3])); /* */ $s = 6; case 6: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		return _r$3;
@@ -24396,7 +24396,8 @@ $packages["main"] = (function() {
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = attachLocalStorage(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		dom.SetTitle("GopherJS \xE2\x80\xA2 TodoMVC");
-		dom.AddStylesheet("assets/base.css");
+		dom.AddStylesheet("node_modules/todomvc-common/base.css");
+		dom.AddStylesheet("node_modules/todomvc-app-css/index.css");
 		$r = dom.RenderAsBody(new spec.PageView.ptr($ifaceNil, sliceType.nil, "")); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f.$s = $s; $f.$r = $r; return $f;
 	};
