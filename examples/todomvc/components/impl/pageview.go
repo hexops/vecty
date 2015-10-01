@@ -3,6 +3,8 @@
 package impl
 
 import (
+	"strconv"
+
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/elem"
 	"github.com/neelance/dom/event"
@@ -65,6 +67,12 @@ func (p *PageViewImpl) renderHeader() dom.Markup {
 }
 
 func (p *PageViewImpl) renderFooter() dom.Spec {
+	count := store.ActiveItemCount()
+	var itemsLeftText = " items left"
+	if count == 1 {
+		itemsLeftText = " item left"
+	}
+
 	return elem.Footer(
 		prop.Id("footer"),
 
@@ -72,14 +80,9 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 			prop.Id("todo-count"),
 
 			elem.Strong(
-			// bind.TextFunc(bind.Itoa(m.ActiveItemCount), m.Scope),
+				dom.Text(strconv.Itoa(count)),
 			),
-			// bind.IfFunc(func() bool { return m.ActiveItemCount() == 1 }, m.Scope,
-			// 	dom.Text(" item left"),
-			// ),
-			// bind.IfFunc(func() bool { return m.ActiveItemCount() != 1 }, m.Scope,
-			// 	dom.Text(" items left"),
-			// ),
+			dom.Text(itemsLeftText),
 		),
 
 		elem.UnorderedList(
