@@ -14,11 +14,6 @@ var (
 )
 
 func init() {
-	Items = []*model.Item{
-		{"Foo", false},
-		{"Bar", true},
-		{"Baz", false},
-	}
 	dispatcher.Register(onAction)
 }
 
@@ -51,6 +46,14 @@ func ItemIndex(item *model.Item) int {
 
 func onAction(action interface{}) {
 	switch a := action.(type) {
+	case *actions.AddItem:
+		Items = append(Items, &model.Item{Title: a.Title, Completed: false})
+
+	case *actions.DestroyItem:
+		copy(Items[a.Index:], Items[a.Index+1:])
+		Items = Items[:len(Items)-1]
+		Listeners.Fire()
+
 	case *actions.SetCompleted:
 		Items[a.Index].Completed = a.Completed
 		Listeners.Fire()

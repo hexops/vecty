@@ -23,6 +23,17 @@ func (p *PageViewImpl) ComponentDidMount() {
 	})
 }
 
+func (p *PageViewImpl) onNewItemTitleChange(event *dom.Event) {
+	p.State().SetNewItemTitle(event.Target.Get("value").String())
+}
+
+func (p *PageViewImpl) onAdd(event *dom.Event) {
+	dispatcher.Dispatch(&actions.AddItem{
+		Title: p.State().NewItemTitle(),
+	})
+	p.State().SetNewItemTitle("")
+}
+
 func (p *PageViewImpl) onClearCompleted(event *dom.Event) {
 	dispatcher.Dispatch(&actions.ClearCompleted{})
 }
@@ -62,13 +73,14 @@ func (p *PageViewImpl) renderHeader() dom.Markup {
 		),
 		elem.Form(
 			style.Margin(style.Px(0)),
-			// dom.PreventDefault(event.Submit(l.AddItem)),
+			event.Submit(p.onAdd).PreventDefault(),
 
 			elem.Input(
 				prop.Id("new-todo"),
 				prop.Placeholder("What needs to be done?"),
 				prop.Autofocus(true),
-				// bind.Value(&m.AddItemTitle, m.Scope),
+				prop.Value(p.State().NewItemTitle()),
+				event.Input(p.onNewItemTitleChange),
 			),
 		),
 	)

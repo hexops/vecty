@@ -7,7 +7,8 @@ import (
 
 type PageView struct {
 	dom.Instance
-	items []*model.Item
+	items        []*model.Item
+	newItemTitle string
 }
 
 type ItemView struct {

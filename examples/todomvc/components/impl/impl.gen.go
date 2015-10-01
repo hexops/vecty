@@ -165,12 +165,15 @@ type PageViewProps interface {
 type PageViewState interface {
 	Items() []*model.Item
 	SetItems(items []*model.Item)
+	NewItemTitle() string
+	SetNewItemTitle(newItemTitle string)
 }
 
 type pageViewCore struct {
 	componentutil.Core
 
-	_items []*model.Item
+	_items        []*model.Item
+	_newItemTitle string
 }
 
 func (c *pageViewCore) Props() PageViewProps {
@@ -187,6 +190,15 @@ func (c *pageViewCore) Items() []*model.Item {
 
 func (c *pageViewCore) SetItems(items []*model.Item) {
 	c._items = items
+	c.Update()
+}
+
+func (c *pageViewCore) NewItemTitle() string {
+	return c._newItemTitle
+}
+
+func (c *pageViewCore) SetNewItemTitle(newItemTitle string) {
+	c._newItemTitle = newItemTitle
 	c.Update()
 }
 

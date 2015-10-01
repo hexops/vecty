@@ -10,6 +10,12 @@ import (
 	"github.com/neelance/dom/style"
 )
 
+func (p *ItemViewImpl) onDestroy(event *dom.Event) {
+	dispatcher.Dispatch(&actions.DestroyItem{
+		Index: p.Props().Index(),
+	})
+}
+
 func (p *ItemViewImpl) onToggleCompleted(event *dom.Event) {
 	dispatcher.Dispatch(&actions.SetCompleted{
 		Index:     p.Props().Index(),
@@ -41,7 +47,7 @@ func (p *ItemViewImpl) Render() dom.Spec {
 			),
 			elem.Button(
 				prop.Class("destroy"),
-				// event.Click(l.DestroyItem(item)),
+				event.Click(p.onDestroy),
 			),
 		),
 		elem.Form(
