@@ -1,6 +1,9 @@
 package dom
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/neelance/dom/domutil"
 )
@@ -61,8 +64,8 @@ func (s *TextSpec) Node() *js.Object {
 
 type Element struct {
 	TagName        string
-	Properties     []*Property
-	Styles         []*Style
+	Properties     map[string]interface{}
+	Style          map[string]interface{}
 	EventListeners []*EventListener
 	Children       []Spec
 	node           *js.Object
@@ -79,17 +82,27 @@ func (e *Element) Apply(element *Element) {
 func (e *Element) Reconcile(oldSpec Spec) {
 	if oldElement, ok := oldSpec.(*Element); ok && oldElement.TagName == e.TagName {
 		e.node = oldElement.node
-		// TODO fix updating
-		for _, p := range oldElement.Properties {
-			e.node.Set(p.Name, nil)
+		for name, value := range e.Properties {
+			oldValue := oldElement.Properties[name]
+			if name == "value" { // TODO is there a nicer way than to special case this?
+				oldValue = e.node.Get("value").String()
+			}
+			if value != oldValue {
+				e.node.Set(name, value)
+			}
 		}
-		for _, p := range e.Properties {
-			e.node.Set(p.Name, p.Value)
+		for name, _ := range oldElement.Properties {
+			if _, ok := e.Properties[name]; !ok {
+				e.node.Set(name, nil)
+			}
 		}
+
+		// TODO fix style reset
 		style := e.node.Get("style")
-		for _, s := range e.Styles {
-			style.Call("setProperty", s.Name, s.Value)
+		for name, value := range e.Style {
+			style.Call("setProperty", name, value)
 		}
+
 		// TODO better list element reuse
 		for i, newChild := range e.Children {
 			if i >= len(oldElement.Children) {
@@ -108,12 +121,12 @@ func (e *Element) Reconcile(oldSpec Spec) {
 	}
 
 	e.node = js.Global.Get("document").Call("createElement", e.TagName)
-	for _, p := range e.Properties {
-		e.node.Set(p.Name, p.Value)
+	for name, value := range e.Properties {
+		e.node.Set(name, value)
 	}
 	style := e.node.Get("style")
-	for _, s := range e.Styles {
-		style.Call("setProperty", s.Name, s.Value)
+	for name, value := range e.Style {
+		style.Call("setProperty", name, value)
 	}
 	for _, l := range e.EventListeners {
 		e.node.Call("addEventListener", l.Name, func(jsEvent *js.Object) {
@@ -139,7 +152,29 @@ type Property struct {
 }
 
 func (p *Property) Apply(element *Element) {
-	element.Properties = append(element.Properties, p)
+	if element.Properties == nil {
+		element.Properties = make(map[string]interface{})
+	}
+	if _, ok := element.Properties[p.Name]; ok {
+		panic(fmt.Sprintf("duplicate property: %s", p.Name))
+	}
+	element.Properties[p.Name] = p.Value
+}
+
+type ClassMap map[string]bool
+
+func (m ClassMap) Apply(element *Element) {
+	var classes []string
+	for name, active := range m {
+		if active {
+			classes = append(classes, name)
+		}
+	}
+	p := Property{
+		Name:  "className",
+		Value: strings.Join(classes, " "),
+	}
+	p.Apply(element)
 }
 
 type Style struct {
@@ -147,8 +182,14 @@ type Style struct {
 	Value interface{}
 }
 
-func (p *Style) Apply(element *Element) {
-	element.Styles = append(element.Styles, p)
+func (s *Style) Apply(element *Element) {
+	if element.Style == nil {
+		element.Style = make(map[string]interface{})
+	}
+	if _, ok := element.Style[s.Name]; ok {
+		panic(fmt.Sprintf("duplicate style: %s", s.Name))
+	}
+	element.Style[s.Name] = s.Value
 }
 
 type EventListener struct {

@@ -23,14 +23,29 @@ func (p *ItemViewImpl) onToggleCompleted(event *dom.Event) {
 	})
 }
 
+func (p *ItemViewImpl) onStartEdit(event *dom.Event) {
+	p.State().SetEditing(true)
+	p.State().SetEditTitle(p.Props().Item().Title)
+}
+
+func (p *ItemViewImpl) onEditInput(event *dom.Event) {
+	p.State().SetEditTitle(event.Target.Get("value").String())
+}
+
+func (p *ItemViewImpl) onStopEdit(event *dom.Event) {
+	p.State().SetEditing(false)
+	dispatcher.Dispatch(&actions.SetTitle{
+		Index: p.Props().Index(),
+		Title: p.State().EditTitle(),
+	})
+}
+
 func (p *ItemViewImpl) Render() dom.Spec {
 	return elem.ListItem(
-		dom.If(p.Props().Item().Completed,
-			prop.Class("completed"),
-		),
-		// bind.IfFunc(editing, item.Scope,
-		// 	prop.Class("editing"),
-		// ),
+		dom.ClassMap{
+			"completed": p.Props().Item().Completed,
+			"editing":   p.State().Editing(),
+		},
 
 		elem.Div(
 			prop.Class("view"),
@@ -43,7 +58,7 @@ func (p *ItemViewImpl) Render() dom.Spec {
 			),
 			elem.Label(
 				dom.Text(p.Props().Item().Title),
-				// event.DblClick(l.StartEdit(item)),
+				event.DblClick(p.onStartEdit),
 			),
 			elem.Button(
 				prop.Class("destroy"),
@@ -52,10 +67,11 @@ func (p *ItemViewImpl) Render() dom.Spec {
 		),
 		elem.Form(
 			style.Margin(style.Px(0)),
-			// dom.PreventDefault(event.Submit(l.StopEdit)),
+			event.Submit(p.onStopEdit).PreventDefault(),
 			elem.Input(
 				prop.Class("edit"),
-				prop.Value(p.Props().Item().Title),
+				prop.Value(p.State().EditTitle()),
+				event.Input(p.onEditInput),
 			),
 		),
 	)

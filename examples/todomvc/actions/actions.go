@@ -10,6 +10,11 @@ type DestroyItem struct {
 	Index int
 }
 
+type SetTitle struct {
+	Index int
+	Title string
+}
+
 type SetCompleted struct {
 	Index     int
 	Completed bool

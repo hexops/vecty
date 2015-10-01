@@ -54,6 +54,10 @@ func onAction(action interface{}) {
 		Items = Items[:len(Items)-1]
 		Listeners.Fire()
 
+	case *actions.SetTitle:
+		Items[a.Index].Title = a.Title
+		Listeners.Fire()
+
 	case *actions.SetCompleted:
 		Items[a.Index].Completed = a.Completed
 		Listeners.Fire()

@@ -23,7 +23,7 @@ func (p *PageViewImpl) ComponentDidMount() {
 	})
 }
 
-func (p *PageViewImpl) onNewItemTitleChange(event *dom.Event) {
+func (p *PageViewImpl) onNewItemTitleInput(event *dom.Event) {
 	p.State().SetNewItemTitle(event.Target.Get("value").String())
 }
 
@@ -57,10 +57,6 @@ func (p *PageViewImpl) Render() dom.Spec {
 		),
 
 		p.renderInfo(),
-
-		// elem.Script(
-		// 	prop.Src("bower_components/todomvc-common/base.js"),
-		// ),
 	)
 }
 
@@ -80,7 +76,7 @@ func (p *PageViewImpl) renderHeader() dom.Markup {
 				prop.Placeholder("What needs to be done?"),
 				prop.Autofocus(true),
 				prop.Value(p.State().NewItemTitle()),
-				event.Input(p.onNewItemTitleChange),
+				event.Input(p.onNewItemTitleInput),
 			),
 		),
 	)

@@ -101,6 +101,10 @@ type ItemViewProps interface {
 }
 
 type ItemViewState interface {
+	Editing() bool
+	SetEditing(editing bool)
+	EditTitle() string
+	SetEditTitle(editTitle string)
 }
 
 type itemViewCore struct {
@@ -108,6 +112,9 @@ type itemViewCore struct {
 
 	_index int
 	_item  *model.Item
+
+	_editing   bool
+	_editTitle string
 }
 
 func (c *itemViewCore) Props() ItemViewProps {
@@ -124,6 +131,24 @@ func (c *itemViewCore) Item() *model.Item {
 
 func (c *itemViewCore) State() ItemViewState {
 	return c
+}
+
+func (c *itemViewCore) Editing() bool {
+	return c._editing
+}
+
+func (c *itemViewCore) SetEditing(editing bool) {
+	c._editing = editing
+	c.Update()
+}
+
+func (c *itemViewCore) EditTitle() string {
+	return c._editTitle
+}
+
+func (c *itemViewCore) SetEditTitle(editTitle string) {
+	c._editTitle = editTitle
+	c.Update()
 }
 
 func (c *itemViewCore) applyProps(spec *spec.ItemView) {

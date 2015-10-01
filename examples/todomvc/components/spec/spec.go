@@ -13,8 +13,10 @@ type PageView struct {
 
 type ItemView struct {
 	dom.Instance
-	Index int
-	Item  *model.Item
+	Index     int
+	Item      *model.Item
+	editing   bool
+	editTitle string
 }
 
 type FilterButton struct {
