@@ -128,13 +128,6 @@ func (p *PageViewImpl) renderInfo() dom.Spec {
 			dom.Text("Double-click to edit a todo"),
 		),
 		elem.Paragraph(
-			dom.Text("Template by "),
-			elem.Anchor(
-				prop.Href("http://github.com/sindresorhus"),
-				dom.Text("Sindre Sorhus"),
-			),
-		),
-		elem.Paragraph(
 			dom.Text("Created by "),
 			elem.Anchor(
 				prop.Href("http://github.com/neelance"),
