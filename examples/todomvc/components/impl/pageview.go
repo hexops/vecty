@@ -18,11 +18,19 @@ import (
 )
 
 func (p *PageViewImpl) ComponentDidMount() {
-	store.Listeners.Add(p, p.update)
+	store.Listeners.Add(p, func() {
+		p.State().SetItems(store.Items)
+	})
 }
 
-func (p *PageViewImpl) update() {
-	p.State().SetItems(store.Items)
+func (p *PageViewImpl) onClearCompleted(event *dom.Event) {
+	dispatcher.Dispatch(&actions.ClearCompleted{})
+}
+
+func (p *PageViewImpl) onToggleAllCompleted(event *dom.Event) {
+	dispatcher.Dispatch(&actions.SetAllCompleted{
+		Completed: event.Target.Get("checked").Bool(),
+	})
 }
 
 func (p *PageViewImpl) Render() dom.Spec {
@@ -64,10 +72,6 @@ func (p *PageViewImpl) renderHeader() dom.Markup {
 			),
 		),
 	)
-}
-
-func (p *PageViewImpl) onClearCompleted(event *dom.Event) {
-	dispatcher.Dispatch(&actions.ClearCompleted{})
 }
 
 func (p *PageViewImpl) renderFooter() dom.Spec {
@@ -139,12 +143,6 @@ func (p *PageViewImpl) renderInfo() dom.Spec {
 	)
 }
 
-func (p *PageViewImpl) onToggleAllCompleted(event *dom.Event) {
-	dispatcher.Dispatch(&actions.SetAllCompleted{
-		Completed: event.Target.Get("checked").Bool(),
-	})
-}
-
 func (p *PageViewImpl) renderItemList() dom.Spec {
 	var items dom.List
 	for i, item := range store.Items {
@@ -171,37 +169,6 @@ func (p *PageViewImpl) renderItemList() dom.Spec {
 		elem.UnorderedList(
 			prop.Id("todo-list"),
 			items,
-			// bind.Dynamic(m.Scope, func(aspects *bind.Aspects) {
-			// 	for _, item := range m.Items {
-			// 		if !(m.Filter == model.All || (m.Filter == model.Active && !item.Completed) || (m.Filter == model.Completed && item.Completed)) {
-			// 			continue
-			// 		}
-			// 		if !aspects.Reuse(item) {
-			// 			theItem := item
-			// 			editing := func() bool { return theItem == m.EditItem }
-			// 			aspects.Add(item, itemElem(item, editing, l))
-			// 		}
-			// 	}
-			// }),
-		),
-	)
-}
-
-func (b *FilterButtonImpl) onClick(event *dom.Event) {
-	dispatcher.Dispatch(&actions.SetFilter{
-		Filter: b.Props().Filter(),
-	})
-}
-
-func (b *FilterButtonImpl) Render() dom.Spec {
-	return elem.ListItem(
-		elem.Anchor(
-			dom.If(store.Filter == b.Props().Filter(), prop.Class("selected")),
-			prop.Href("#"),
-			// dom.PreventDefault(event.Click(func(c *dom.EventContext) { m.Filter = state; m.Scope.Digest() })),
-			event.Click(b.onClick).PreventDefault(),
-
-			dom.Text(b.Props().Label()),
 		),
 	)
 }
