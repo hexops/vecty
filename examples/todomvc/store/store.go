@@ -46,8 +46,13 @@ func ItemIndex(item *model.Item) int {
 
 func onAction(action interface{}) {
 	switch a := action.(type) {
+	case *actions.ReplaceItems:
+		Items = a.Items
+		Listeners.Fire()
+
 	case *actions.AddItem:
 		Items = append(Items, &model.Item{Title: a.Title, Completed: false})
+		Listeners.Fire()
 
 	case *actions.DestroyItem:
 		copy(Items[a.Index:], Items[a.Index+1:])

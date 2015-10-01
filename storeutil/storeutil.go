@@ -13,6 +13,9 @@ func NewListenerRegistry() *ListenerRegistry {
 }
 
 func (r *ListenerRegistry) Add(key interface{}, listener func()) {
+	if key == nil {
+		key = new(int)
+	}
 	if _, ok := r.listeners[key]; ok {
 		panic(fmt.Sprintf("listener with key already exists: %v", key))
 	}

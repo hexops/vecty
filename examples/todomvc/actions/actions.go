@@ -2,6 +2,10 @@ package actions
 
 import "github.com/neelance/dom/examples/todomvc/store/model"
 
+type ReplaceItems struct {
+	Items []*model.Item
+}
+
 type AddItem struct {
 	Title string
 }
