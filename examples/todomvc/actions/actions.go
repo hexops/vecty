@@ -11,6 +11,8 @@ type SetAllCompleted struct {
 	Completed bool
 }
 
+type ClearCompleted struct{}
+
 type SetFilter struct {
 	Filter model.FilterState
 }

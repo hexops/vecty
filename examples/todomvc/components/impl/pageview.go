@@ -3,7 +3,7 @@
 package impl
 
 import (
-	"strconv"
+	"fmt"
 
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/elem"
@@ -66,6 +66,10 @@ func (p *PageViewImpl) renderHeader() dom.Markup {
 	)
 }
 
+func (p *PageViewImpl) onClearCompleted(event *dom.Event) {
+	dispatcher.Dispatch(&actions.ClearCompleted{})
+}
+
 func (p *PageViewImpl) renderFooter() dom.Spec {
 	count := store.ActiveItemCount()
 	var itemsLeftText = " items left"
@@ -80,7 +84,7 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 			prop.Id("todo-count"),
 
 			elem.Strong(
-				dom.Text(strconv.Itoa(count)),
+				dom.Text(fmt.Sprintf("%d", count)),
 			),
 			dom.Text(itemsLeftText),
 		),
@@ -94,15 +98,13 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 			&spec.FilterButton{Label: "Completed", Filter: model.Completed},
 		),
 
-		// bind.IfFunc(func() bool { return m.CompletedItemCount() != 0 }, m.Scope,
-		// 	elem.Button(
-		// 		prop.Id("clear-completed"),
-		// 		dom.Text("Clear completed ("),
-		// 		bind.TextFunc(bind.Itoa(m.CompletedItemCount), m.Scope),
-		// 		dom.Text(")"),
-		// 		event.Click(l.ClearCompleted),
-		// 	),
-		// ),
+		dom.If(store.CompletedItemCount() > 0,
+			elem.Button(
+				prop.Id("clear-completed"),
+				dom.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount())),
+				event.Click(p.onClearCompleted),
+			),
+		),
 	)
 }
 

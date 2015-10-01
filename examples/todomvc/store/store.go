@@ -61,6 +61,16 @@ func onAction(action interface{}) {
 		}
 		Listeners.Fire()
 
+	case *actions.ClearCompleted:
+		var activeItems []*model.Item
+		for _, item := range Items {
+			if !item.Completed {
+				activeItems = append(activeItems, item)
+			}
+		}
+		Items = activeItems
+		Listeners.Fire()
+
 	case *actions.SetFilter:
 		Filter = a.Filter
 		Listeners.Fire()
