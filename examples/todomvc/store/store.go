@@ -39,30 +39,24 @@ func onAction(action interface{}) {
 	switch a := action.(type) {
 	case *actions.ReplaceItems:
 		Items = a.Items
-		Listeners.Fire()
 
 	case *actions.AddItem:
 		Items = append(Items, &model.Item{Title: a.Title, Completed: false})
-		Listeners.Fire()
 
 	case *actions.DestroyItem:
 		copy(Items[a.Index:], Items[a.Index+1:])
 		Items = Items[:len(Items)-1]
-		Listeners.Fire()
 
 	case *actions.SetTitle:
 		Items[a.Index].Title = a.Title
-		Listeners.Fire()
 
 	case *actions.SetCompleted:
 		Items[a.Index].Completed = a.Completed
-		Listeners.Fire()
 
 	case *actions.SetAllCompleted:
 		for _, item := range Items {
 			item.Completed = a.Completed
 		}
-		Listeners.Fire()
 
 	case *actions.ClearCompleted:
 		var activeItems []*model.Item
@@ -72,11 +66,13 @@ func onAction(action interface{}) {
 			}
 		}
 		Items = activeItems
-		Listeners.Fire()
 
 	case *actions.SetFilter:
 		Filter = a.Filter
-		Listeners.Fire()
 
+	default:
+		return // don't fire listeners
 	}
+
+	Listeners.Fire()
 }
