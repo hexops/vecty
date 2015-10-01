@@ -24,7 +24,6 @@ func main() {
 
 func attachLocalStorage() {
 	store.Listeners.Add(nil, func() {
-		println("changed")
 		data, err := json.Marshal(store.Items)
 		if err != nil {
 			fmt.Printf("failed to store items: %s\n", err)

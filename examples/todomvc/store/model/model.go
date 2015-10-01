@@ -1,5 +1,10 @@
 package model
 
+type Item struct {
+	Title     string
+	Completed bool
+}
+
 type FilterState int
 
 const (
@@ -7,8 +12,3 @@ const (
 	Active
 	Completed
 )
-
-type Item struct {
-	Title     string
-	Completed bool
-}

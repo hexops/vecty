@@ -35,15 +35,6 @@ func count(completed bool) int {
 	return count
 }
 
-func ItemIndex(item *model.Item) int {
-	for i, item2 := range Items {
-		if item == item2 {
-			return i
-		}
-	}
-	panic("item not found")
-}
-
 func onAction(action interface{}) {
 	switch a := action.(type) {
 	case *actions.ReplaceItems:
