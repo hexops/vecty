@@ -47,7 +47,7 @@ func (p *PageViewImpl) onToggleAllCompleted(event *dom.Event) {
 func (p *PageViewImpl) Render() dom.Spec {
 	return elem.Div(
 		elem.Section(
-			prop.Id("todoapp"),
+			prop.Class("todoapp"),
 
 			p.renderHeader(),
 			dom.If(len(store.Items) > 0,
@@ -62,7 +62,7 @@ func (p *PageViewImpl) Render() dom.Spec {
 
 func (p *PageViewImpl) renderHeader() dom.Markup {
 	return elem.Header(
-		prop.Id("header"),
+		prop.Class("header"),
 
 		elem.Header1(
 			dom.Text("todos"),
@@ -72,7 +72,7 @@ func (p *PageViewImpl) renderHeader() dom.Markup {
 			event.Submit(p.onAdd).PreventDefault(),
 
 			elem.Input(
-				prop.Id("new-todo"),
+				prop.Class("new-todo"),
 				prop.Placeholder("What needs to be done?"),
 				prop.Autofocus(true),
 				prop.Value(p.State().NewItemTitle()),
@@ -90,10 +90,10 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 	}
 
 	return elem.Footer(
-		prop.Id("footer"),
+		prop.Class("footer"),
 
 		elem.Span(
-			prop.Id("todo-count"),
+			prop.Class("todo-count"),
 
 			elem.Strong(
 				dom.Text(fmt.Sprintf("%d", count)),
@@ -102,7 +102,7 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 		),
 
 		elem.UnorderedList(
-			prop.Id("filters"),
+			prop.Class("filters"),
 			&spec.FilterButton{Label: "All", Filter: model.All},
 			dom.Text(" "),
 			&spec.FilterButton{Label: "Active", Filter: model.Active},
@@ -112,7 +112,7 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 
 		dom.If(store.CompletedItemCount() > 0,
 			elem.Button(
-				prop.Id("clear-completed"),
+				prop.Class("clear-completed"),
 				dom.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount())),
 				event.Click(p.onClearCompleted),
 			),
@@ -122,7 +122,7 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 
 func (p *PageViewImpl) renderInfo() dom.Spec {
 	return elem.Footer(
-		prop.Id("info"),
+		prop.Class("info"),
 
 		elem.Paragraph(
 			dom.Text("Double-click to edit a todo"),
@@ -161,10 +161,11 @@ func (p *PageViewImpl) renderItemList() dom.Spec {
 	}
 
 	return elem.Section(
-		prop.Id("main"),
+		prop.Class("main"),
 
 		elem.Input(
 			prop.Id("toggle-all"),
+			prop.Class("toggle-all"),
 			prop.Type(prop.TypeCheckbox),
 			prop.Checked(store.CompletedItemCount() == len(store.Items)),
 			event.Change(p.onToggleAllCompleted),
@@ -175,7 +176,7 @@ func (p *PageViewImpl) renderItemList() dom.Spec {
 		),
 
 		elem.UnorderedList(
-			prop.Id("todo-list"),
+			prop.Class("todo-list"),
 			items,
 		),
 	)

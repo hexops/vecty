@@ -18,7 +18,8 @@ func main() {
 	attachLocalStorage()
 
 	dom.SetTitle("GopherJS • TodoMVC")
-	dom.AddStylesheet("assets/base.css")
+	dom.AddStylesheet("node_modules/todomvc-common/base.css")
+	dom.AddStylesheet("node_modules/todomvc-app-css/index.css")
 	dom.RenderAsBody(&spec.PageView{})
 }
 
