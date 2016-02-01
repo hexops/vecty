@@ -12,39 +12,42 @@ import (
 
 func (p *ItemViewImpl) onDestroy(event *dom.Event) {
 	dispatcher.Dispatch(&actions.DestroyItem{
-		Index: p.Props().Index(),
+		Index: p.Index,
 	})
 }
 
 func (p *ItemViewImpl) onToggleCompleted(event *dom.Event) {
 	dispatcher.Dispatch(&actions.SetCompleted{
-		Index:     p.Props().Index(),
+		Index:     p.Index,
 		Completed: event.Target.Get("checked").Bool(),
 	})
 }
 
 func (p *ItemViewImpl) onStartEdit(event *dom.Event) {
-	p.State().SetEditing(true)
-	p.State().SetEditTitle(p.Props().Item().Title)
+	p.editing = true
+	p.editTitle = p.Item.Title
+	p.Update()
 }
 
 func (p *ItemViewImpl) onEditInput(event *dom.Event) {
-	p.State().SetEditTitle(event.Target.Get("value").String())
+	p.editTitle = event.Target.Get("value").String()
+	p.Update()
 }
 
 func (p *ItemViewImpl) onStopEdit(event *dom.Event) {
-	p.State().SetEditing(false)
+	p.editing = false
+	p.Update()
 	dispatcher.Dispatch(&actions.SetTitle{
-		Index: p.Props().Index(),
-		Title: p.State().EditTitle(),
+		Index: p.Index,
+		Title: p.editTitle,
 	})
 }
 
 func (p *ItemViewImpl) Render() dom.Spec {
 	return elem.ListItem(
 		dom.ClassMap{
-			"completed": p.Props().Item().Completed,
-			"editing":   p.State().Editing(),
+			"completed": p.Item.Completed,
+			"editing":   p.editing,
 		},
 
 		elem.Div(
@@ -53,11 +56,11 @@ func (p *ItemViewImpl) Render() dom.Spec {
 			elem.Input(
 				prop.Class("toggle"),
 				prop.Type(prop.TypeCheckbox),
-				prop.Checked(p.Props().Item().Completed),
+				prop.Checked(p.Item.Completed),
 				event.Change(p.onToggleCompleted),
 			),
 			elem.Label(
-				dom.Text(p.Props().Item().Title),
+				dom.Text(p.Item.Title),
 				event.DblClick(p.onStartEdit),
 			),
 			elem.Button(
@@ -70,7 +73,7 @@ func (p *ItemViewImpl) Render() dom.Spec {
 			event.Submit(p.onStopEdit).PreventDefault(),
 			elem.Input(
 				prop.Class("edit"),
-				prop.Value(p.State().EditTitle()),
+				prop.Value(p.editTitle),
 				event.Input(p.onEditInput),
 			),
 		),

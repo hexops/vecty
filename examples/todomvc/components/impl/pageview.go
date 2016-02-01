@@ -19,19 +19,22 @@ import (
 
 func (p *PageViewImpl) ComponentDidMount() {
 	store.Listeners.Add(p, func() {
-		p.State().SetItems(store.Items)
+		p.items = store.Items
+		p.Update()
 	})
 }
 
 func (p *PageViewImpl) onNewItemTitleInput(event *dom.Event) {
-	p.State().SetNewItemTitle(event.Target.Get("value").String())
+	p.newItemTitle = event.Target.Get("value").String()
+	p.Update()
 }
 
 func (p *PageViewImpl) onAdd(event *dom.Event) {
 	dispatcher.Dispatch(&actions.AddItem{
-		Title: p.State().NewItemTitle(),
+		Title: p.newItemTitle,
 	})
-	p.State().SetNewItemTitle("")
+	p.newItemTitle = ""
+	p.Update()
 }
 
 func (p *PageViewImpl) onClearCompleted(event *dom.Event) {
@@ -75,7 +78,7 @@ func (p *PageViewImpl) renderHeader() dom.Markup {
 				prop.Class("new-todo"),
 				prop.Placeholder("What needs to be done?"),
 				prop.Autofocus(true),
-				prop.Value(p.State().NewItemTitle()),
+				prop.Value(p.newItemTitle),
 				event.Input(p.onNewItemTitleInput),
 			),
 		),

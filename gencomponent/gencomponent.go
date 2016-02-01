@@ -53,7 +53,6 @@ func main() {
 
 	var components []*Component
 	imports := map[string]struct{}{
-		"github.com/gopherjs/gopherjs/js":       struct{}{},
 		"github.com/neelance/dom":               struct{}{},
 		"github.com/neelance/dom/componentutil": struct{}{},
 		buildPkg.ImportPath:                     struct{}{},
@@ -136,78 +135,31 @@ func init() {<<<range .Components>>>
   <<<$c := .>>>
 
   type <<<.Name>>>Impl struct {
-		<<<.Name>>>Accessors
+		componentutil.Core
 		componentutil.EmptyLifecycle
-  }
-
-  type <<<.Name>>>Accessors interface {
-  	Props() <<<.Name>>>Props
-  	State() <<<.Name>>>State
-  	Node() *js.Object
-  }
-
-  type <<<.Name>>>Props interface {
     <<<range .Props>>>
-      <<<.Name | c>>>() <<<.Type | type>>><<<end>>>
-  }
-
-  type <<<.Name>>>State interface {
+      <<<.Name>>> <<<.Type | type>>><<<end>>>
     <<<range .State>>>
-    	<<<.Name | c>>>() <<<.Type | type>>>
-    	Set<<<.Name | c>>>(<<<.Name | uc>>> <<<.Type | type>>>)<<<end>>>
+      <<<.Name>>> <<<.Type | type>>><<<end>>>
   }
 
-  type <<<.Name | uc>>>Core struct {
-  	componentutil.Core
-    <<<range .Props>>>
-      _<<<.Name | uc>>> <<<.Type | type>>><<<end>>>
-    <<<range .State>>>
-      _<<<.Name | uc>>> <<<.Type | type>>><<<end>>>
-  }
-
-  func (c *<<<.Name | uc>>>Core) Props() <<<.Name>>>Props {
-  	return c
-  }
-
-  <<<range .Props>>>
-    func (c *<<<$c.Name | uc>>>Core) <<<.Name | c>>>() <<<.Type | type>>> {
-    	return c._<<<.Name | uc>>>
-    }
-  <<<end>>>
-
-  func (c *<<<.Name | uc>>>Core) State() <<<.Name>>>State {
-  	return c
-  }
-
-  <<<range .State>>>
-    func (c *<<<$c.Name | uc>>>Core) <<<.Name | c>>>() <<<.Type | type>>> {
-    	return c._<<<.Name | uc>>>
-    }
-
-    func (c *<<<$c.Name | uc>>>Core) Set<<<.Name | c>>>(<<<.Name | uc>>> <<<.Type | type>>>) {
-    	c._<<<.Name | uc>>> = <<<.Name | uc>>>
-    	c.Update()
-    }
-  <<<end>>>
-
-	func (c *<<<.Name | uc>>>Core) applyProps(spec *spec.<<<.Name>>>) {<<<range .Props>>>
-		  c._<<<.Name | uc>>> = spec.<<<.Name | c>>><<<end>>>
+	func (c *<<<.Name>>>Impl) applyProps(spec *spec.<<<.Name>>>) {<<<range .Props>>>
+		  c.<<<.Name | c>>> = spec.<<<.Name | c>>><<<end>>>
 		c.DoRender()
 	}
 
   func reconcile<<<.Name>>>(newSpec *<<<$t.PkgName>>>.<<<.Name>>>, oldSpec dom.Spec) {
   	if oldSpec, ok := oldSpec.(*<<<$t.PkgName>>>.<<<.Name>>>); ok {
   		newSpec.Instance = oldSpec.Instance
-  		newSpec.Instance.(*<<<.Name>>>Impl).<<<.Name>>>Accessors.(*<<<.Name | uc>>>Core).applyProps(newSpec)
+  		newSpec.Instance.(*<<<.Name>>>Impl).applyProps(newSpec)
   		return
   	}
 
-  	c := &<<<.Name | uc>>>Core{}
-  	inst := &<<<.Name>>>Impl{<<<.Name>>>Accessors: c}
-  	c.Lifecycle = inst
+  	inst := &<<<.Name>>>Impl{}
+  	inst.Lifecycle = inst
   	newSpec.Instance = inst
 		inst.ComponentWillMount()
-		c.applyProps(newSpec)
+		inst.applyProps(newSpec)
 		inst.ComponentDidMount()
   }
 <<<end>>>

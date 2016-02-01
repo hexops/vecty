@@ -12,18 +12,18 @@ import (
 
 func (b *FilterButtonImpl) onClick(event *dom.Event) {
 	dispatcher.Dispatch(&actions.SetFilter{
-		Filter: b.Props().Filter(),
+		Filter: b.Filter,
 	})
 }
 
 func (b *FilterButtonImpl) Render() dom.Spec {
 	return elem.ListItem(
 		elem.Anchor(
-			dom.If(store.Filter == b.Props().Filter(), prop.Class("selected")),
+			dom.If(store.Filter == b.Filter, prop.Class("selected")),
 			prop.Href("#"),
 			event.Click(b.onClick).PreventDefault(),
 
-			dom.Text(b.Props().Label()),
+			dom.Text(b.Label),
 		),
 	)
 }
