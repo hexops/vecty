@@ -1,4 +1,4 @@
-package impl
+package components
 
 import (
 	"github.com/neelance/dom"
@@ -6,44 +6,68 @@ import (
 	"github.com/neelance/dom/event"
 	"github.com/neelance/dom/examples/todomvc/actions"
 	"github.com/neelance/dom/examples/todomvc/dispatcher"
+	"github.com/neelance/dom/examples/todomvc/store/model"
 	"github.com/neelance/dom/prop"
 	"github.com/neelance/dom/style"
 )
 
-func (p *ItemViewImpl) onDestroy(event *dom.Event) {
+type ItemView struct {
+	dom.Composite
+
+	Index     int
+	Item      *model.Item
+	editing   bool
+	editTitle string
+}
+
+func (p *ItemView) Apply(element *dom.Element) {
+	element.AddChild(p)
+}
+
+func (p *ItemView) Reconcile(oldComp dom.Component) {
+	if oldComp, ok := oldComp.(*ItemView); ok {
+		p.Body = oldComp.Body
+		p.editing = oldComp.editing
+		p.editTitle = oldComp.editTitle
+	}
+	p.RenderFunc = p.render
+	p.ReconcileBody()
+}
+
+func (p *ItemView) onDestroy(event *dom.Event) {
 	dispatcher.Dispatch(&actions.DestroyItem{
 		Index: p.Index,
 	})
 }
 
-func (p *ItemViewImpl) onToggleCompleted(event *dom.Event) {
+func (p *ItemView) onToggleCompleted(event *dom.Event) {
 	dispatcher.Dispatch(&actions.SetCompleted{
 		Index:     p.Index,
 		Completed: event.Target.Get("checked").Bool(),
 	})
 }
 
-func (p *ItemViewImpl) onStartEdit(event *dom.Event) {
+func (p *ItemView) onStartEdit(event *dom.Event) {
 	p.editing = true
 	p.editTitle = p.Item.Title
-	p.Update()
+	p.ReconcileBody()
 }
 
-func (p *ItemViewImpl) onEditInput(event *dom.Event) {
+func (p *ItemView) onEditInput(event *dom.Event) {
 	p.editTitle = event.Target.Get("value").String()
-	p.Update()
+	p.ReconcileBody()
 }
 
-func (p *ItemViewImpl) onStopEdit(event *dom.Event) {
+func (p *ItemView) onStopEdit(event *dom.Event) {
 	p.editing = false
-	p.Update()
+	p.ReconcileBody()
 	dispatcher.Dispatch(&actions.SetTitle{
 		Index: p.Index,
 		Title: p.editTitle,
 	})
 }
 
-func (p *ItemViewImpl) Render() dom.Spec {
+func (p *ItemView) render() dom.Component {
 	return elem.ListItem(
 		dom.ClassMap{
 			"completed": p.Item.Completed,

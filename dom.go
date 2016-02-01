@@ -12,42 +12,38 @@ type Markup interface {
 	Apply(element *Element)
 }
 
-type Instance interface {
+type Component interface {
+	Markup
+	Reconcile(oldComp Component)
 	Node() *js.Object
 }
 
-type Spec interface {
-	Reconcile(oldSpec Spec)
-	Markup
-	Instance
+func Render(comp Component, container *js.Object) {
+	comp.Reconcile(nil)
+	container.Call("appendChild", comp.Node())
 }
 
-func Render(spec Spec, container *js.Object) {
-	spec.Reconcile(nil)
-	container.Call("appendChild", spec.Node())
-}
-
-func RenderAsBody(spec Spec) {
+func RenderAsBody(comp Component) {
 	body := js.Global.Get("document").Call("createElement", "body")
-	Render(spec, body)
+	Render(comp, body)
 	js.Global.Get("document").Set("body", body)
 }
 
-type TextSpec struct {
+type TextComponent struct {
 	text string
 	node *js.Object
 }
 
-func Text(text string) *TextSpec {
-	return &TextSpec{text: text}
+func Text(text string) *TextComponent {
+	return &TextComponent{text: text}
 }
 
-func (s *TextSpec) Apply(element *Element) {
+func (s *TextComponent) Apply(element *Element) {
 	element.Children = append(element.Children, s)
 }
 
-func (s *TextSpec) Reconcile(oldSpec Spec) {
-	if oldText, ok := oldSpec.(*TextSpec); ok {
+func (s *TextComponent) Reconcile(oldComp Component) {
+	if oldText, ok := oldComp.(*TextComponent); ok {
 		s.node = oldText.node
 		if oldText.text != s.text {
 			s.node.Set("nodeValue", s.text)
@@ -58,7 +54,7 @@ func (s *TextSpec) Reconcile(oldSpec Spec) {
 	s.node = js.Global.Get("document").Call("createTextNode", s.text)
 }
 
-func (s *TextSpec) Node() *js.Object {
+func (s *TextComponent) Node() *js.Object {
 	return s.node
 }
 
@@ -67,11 +63,11 @@ type Element struct {
 	Properties     map[string]interface{}
 	Style          map[string]interface{}
 	EventListeners []*EventListener
-	Children       []Spec
+	Children       []Component
 	node           *js.Object
 }
 
-func (e *Element) AddChild(s Spec) {
+func (e *Element) AddChild(s Component) {
 	e.Children = append(e.Children, s)
 }
 
@@ -79,12 +75,12 @@ func (e *Element) Apply(element *Element) {
 	element.Children = append(element.Children, e)
 }
 
-func (e *Element) Reconcile(oldSpec Spec) {
-	if oldElement, ok := oldSpec.(*Element); ok && oldElement.TagName == e.TagName {
+func (e *Element) Reconcile(oldComp Component) {
+	if oldElement, ok := oldComp.(*Element); ok && oldElement.TagName == e.TagName {
 		e.node = oldElement.node
 		for name, value := range e.Properties {
 			oldValue := oldElement.Properties[name]
-			if name == "value" { // TODO is there a nicer way than to special case this?
+			if name == "value" { // TODO is there a nicer way than to compial case this?
 				oldValue = e.node.Get("value").String()
 			}
 			if value != oldValue {
@@ -239,4 +235,19 @@ func If(cond bool, markup ...Markup) Markup {
 		return List(markup)
 	}
 	return nil
+}
+
+type Composite struct {
+	RenderFunc func() Component
+	Body       Component
+}
+
+func (c *Composite) Node() *js.Object {
+	return c.Body.Node()
+}
+
+func (c *Composite) ReconcileBody() {
+	oldBody := c.Body
+	c.Body = c.RenderFunc()
+	c.Body.Reconcile(oldBody)
 }

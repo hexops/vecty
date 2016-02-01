@@ -1,6 +1,4 @@
-//go:generate gencomponent ../spec
-
-package impl
+package components
 
 import (
 	"fmt"
@@ -9,7 +7,6 @@ import (
 	"github.com/neelance/dom/elem"
 	"github.com/neelance/dom/event"
 	"github.com/neelance/dom/examples/todomvc/actions"
-	"github.com/neelance/dom/examples/todomvc/components/spec"
 	"github.com/neelance/dom/examples/todomvc/dispatcher"
 	"github.com/neelance/dom/examples/todomvc/store"
 	"github.com/neelance/dom/examples/todomvc/store/model"
@@ -17,37 +14,50 @@ import (
 	"github.com/neelance/dom/style"
 )
 
-func (p *PageViewImpl) ComponentDidMount() {
-	store.Listeners.Add(p, func() {
-		p.items = store.Items
-		p.Update()
-	})
+type PageView struct {
+	dom.Composite
+
+	Items        []*model.Item
+	newItemTitle string
 }
 
-func (p *PageViewImpl) onNewItemTitleInput(event *dom.Event) {
+func (p *PageView) Apply(element *dom.Element) {
+	element.AddChild(p)
+}
+
+func (p *PageView) Reconcile(oldComp dom.Component) {
+	if oldComp, ok := oldComp.(*PageView); ok {
+		p.Body = oldComp.Body
+		p.newItemTitle = oldComp.newItemTitle
+	}
+	p.RenderFunc = p.render
+	p.ReconcileBody()
+}
+
+func (p *PageView) onNewItemTitleInput(event *dom.Event) {
 	p.newItemTitle = event.Target.Get("value").String()
-	p.Update()
+	p.ReconcileBody()
 }
 
-func (p *PageViewImpl) onAdd(event *dom.Event) {
+func (p *PageView) onAdd(event *dom.Event) {
 	dispatcher.Dispatch(&actions.AddItem{
 		Title: p.newItemTitle,
 	})
 	p.newItemTitle = ""
-	p.Update()
+	p.ReconcileBody()
 }
 
-func (p *PageViewImpl) onClearCompleted(event *dom.Event) {
+func (p *PageView) onClearCompleted(event *dom.Event) {
 	dispatcher.Dispatch(&actions.ClearCompleted{})
 }
 
-func (p *PageViewImpl) onToggleAllCompleted(event *dom.Event) {
+func (p *PageView) onToggleAllCompleted(event *dom.Event) {
 	dispatcher.Dispatch(&actions.SetAllCompleted{
 		Completed: event.Target.Get("checked").Bool(),
 	})
 }
 
-func (p *PageViewImpl) Render() dom.Spec {
+func (p *PageView) render() dom.Component {
 	return elem.Div(
 		elem.Section(
 			prop.Class("todoapp"),
@@ -63,7 +73,7 @@ func (p *PageViewImpl) Render() dom.Spec {
 	)
 }
 
-func (p *PageViewImpl) renderHeader() dom.Markup {
+func (p *PageView) renderHeader() dom.Markup {
 	return elem.Header(
 		prop.Class("header"),
 
@@ -85,7 +95,7 @@ func (p *PageViewImpl) renderHeader() dom.Markup {
 	)
 }
 
-func (p *PageViewImpl) renderFooter() dom.Spec {
+func (p *PageView) renderFooter() dom.Component {
 	count := store.ActiveItemCount()
 	var itemsLeftText = " items left"
 	if count == 1 {
@@ -106,11 +116,11 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 
 		elem.UnorderedList(
 			prop.Class("filters"),
-			&spec.FilterButton{Label: "All", Filter: model.All},
+			&FilterButton{Label: "All", Filter: model.All},
 			dom.Text(" "),
-			&spec.FilterButton{Label: "Active", Filter: model.Active},
+			&FilterButton{Label: "Active", Filter: model.Active},
 			dom.Text(" "),
-			&spec.FilterButton{Label: "Completed", Filter: model.Completed},
+			&FilterButton{Label: "Completed", Filter: model.Completed},
 		),
 
 		dom.If(store.CompletedItemCount() > 0,
@@ -123,7 +133,7 @@ func (p *PageViewImpl) renderFooter() dom.Spec {
 	)
 }
 
-func (p *PageViewImpl) renderInfo() dom.Spec {
+func (p *PageView) renderInfo() dom.Component {
 	return elem.Footer(
 		prop.Class("info"),
 
@@ -147,13 +157,13 @@ func (p *PageViewImpl) renderInfo() dom.Spec {
 	)
 }
 
-func (p *PageViewImpl) renderItemList() dom.Spec {
+func (p *PageView) renderItemList() dom.Component {
 	var items dom.List
 	for i, item := range store.Items {
 		if (store.Filter == model.Active && item.Completed) || (store.Filter == model.Completed && !item.Completed) {
 			continue
 		}
-		items = append(items, &spec.ItemView{Index: i, Item: item})
+		items = append(items, &ItemView{Index: i, Item: item})
 	}
 
 	return elem.Section(

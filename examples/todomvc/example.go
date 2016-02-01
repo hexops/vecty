@@ -7,8 +7,7 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/examples/todomvc/actions"
-	_ "github.com/neelance/dom/examples/todomvc/components/impl"
-	"github.com/neelance/dom/examples/todomvc/components/spec"
+	"github.com/neelance/dom/examples/todomvc/components"
 	"github.com/neelance/dom/examples/todomvc/dispatcher"
 	"github.com/neelance/dom/examples/todomvc/store"
 	"github.com/neelance/dom/examples/todomvc/store/model"
@@ -20,7 +19,12 @@ func main() {
 	dom.SetTitle("GopherJS • TodoMVC")
 	dom.AddStylesheet("node_modules/todomvc-common/base.css")
 	dom.AddStylesheet("node_modules/todomvc-app-css/index.css")
-	dom.RenderAsBody(&spec.PageView{})
+	p := &components.PageView{}
+	store.Listeners.Add(p, func() {
+		p.Items = store.Items
+		p.ReconcileBody()
+	})
+	dom.RenderAsBody(p)
 }
 
 func attachLocalStorage() {

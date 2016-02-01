@@ -1,4 +1,4 @@
-package impl
+package components
 
 import (
 	"github.com/neelance/dom"
@@ -7,16 +7,36 @@ import (
 	"github.com/neelance/dom/examples/todomvc/actions"
 	"github.com/neelance/dom/examples/todomvc/dispatcher"
 	"github.com/neelance/dom/examples/todomvc/store"
+	"github.com/neelance/dom/examples/todomvc/store/model"
 	"github.com/neelance/dom/prop"
 )
 
-func (b *FilterButtonImpl) onClick(event *dom.Event) {
+type FilterButton struct {
+	dom.Composite
+
+	Label  string
+	Filter model.FilterState
+}
+
+func (b *FilterButton) Apply(element *dom.Element) {
+	element.AddChild(b)
+}
+
+func (b *FilterButton) Reconcile(oldComp dom.Component) {
+	if oldComp, ok := oldComp.(*FilterButton); ok {
+		b.Body = oldComp.Body
+	}
+	b.RenderFunc = b.render
+	b.ReconcileBody()
+}
+
+func (b *FilterButton) onClick(event *dom.Event) {
 	dispatcher.Dispatch(&actions.SetFilter{
 		Filter: b.Filter,
 	})
 }
 
-func (b *FilterButtonImpl) Render() dom.Spec {
+func (b *FilterButton) render() dom.Component {
 	return elem.ListItem(
 		elem.Anchor(
 			dom.If(store.Filter == b.Filter, prop.Class("selected")),
