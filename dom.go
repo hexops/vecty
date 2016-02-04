@@ -76,18 +76,24 @@ func (e *Element) Apply(element *Element) {
 }
 
 func (e *Element) Reconcile(oldComp Component) {
+	for _, l := range e.EventListeners {
+		l.wrapper = func(jsEvent *js.Object) {
+			if l.CallPreventDefault {
+				jsEvent.Call("preventDefault")
+			}
+			l.Listener(&Event{Target: jsEvent.Get("target")})
+		}
+	}
+
 	if oldElement, ok := oldComp.(*Element); ok && oldElement.TagName == e.TagName {
 		e.node = oldElement.node
 		for name, value := range e.Properties {
 			oldValue := oldElement.Properties[name]
-			if name == "value" { // TODO is there a nicer way than to compial case this?
-				oldValue = e.node.Get("value").String()
-			}
-			if value != oldValue {
+			if value != oldValue || name == "value" || name == "checked" {
 				e.node.Set(name, value)
 			}
 		}
-		for name, _ := range oldElement.Properties {
+		for name := range oldElement.Properties {
 			if _, ok := e.Properties[name]; !ok {
 				e.node.Set(name, nil)
 			}
@@ -97,6 +103,13 @@ func (e *Element) Reconcile(oldComp Component) {
 		style := e.node.Get("style")
 		for name, value := range e.Style {
 			style.Call("setProperty", name, value)
+		}
+
+		for _, l := range oldElement.EventListeners {
+			e.node.Call("removeEventListener", l.Name, l.wrapper)
+		}
+		for _, l := range e.EventListeners {
+			e.node.Call("addEventListener", l.Name, l.wrapper)
 		}
 
 		// TODO better list element reuse
@@ -125,12 +138,7 @@ func (e *Element) Reconcile(oldComp Component) {
 		style.Call("setProperty", name, value)
 	}
 	for _, l := range e.EventListeners {
-		e.node.Call("addEventListener", l.Name, func(jsEvent *js.Object) {
-			if l.CallPreventDefault {
-				jsEvent.Call("preventDefault")
-			}
-			l.Listener(&Event{Target: jsEvent.Get("target")})
-		})
+		e.node.Call("addEventListener", l.Name, l.wrapper)
 	}
 	for _, c := range e.Children {
 		c.Reconcile(nil)
@@ -192,6 +200,7 @@ type EventListener struct {
 	Name               string
 	Listener           func(*Event)
 	CallPreventDefault bool
+	wrapper            func(jsEvent *js.Object)
 }
 
 func (l *EventListener) PreventDefault() *EventListener {
@@ -212,7 +221,7 @@ func SetTitle(title string) {
 	js.Global.Get("document").Set("title", title)
 }
 
-// AddStylesheed adds an external stylesheet to the document.
+// AddStylesheet adds an external stylesheet to the document.
 func AddStylesheet(url string) {
 	link := js.Global.Get("document").Call("createElement", "link")
 	link.Set("rel", "stylesheet")
@@ -250,4 +259,7 @@ func (c *Composite) ReconcileBody() {
 	oldBody := c.Body
 	c.Body = c.RenderFunc()
 	c.Body.Reconcile(oldBody)
+	if oldBody != nil {
+		domutil.ReplaceNode(c.Body.Node(), oldBody.Node())
+	}
 }
