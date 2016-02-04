@@ -4,7 +4,7 @@
 package elem
 
 import (
-	"github.com/neelance/dom"
+	"github.com/gopherjs/vecty"
 )
 
 // The HTML Anchor Element (<a>) defines a hyperlink to a location on the same page or any other page on the Web. It can also be used (in an obsolete way) to create an anchor point—a destination for hyperlinks within the content of a page, so that links aren't limited to connecting simply to the top of a page.
@@ -15,7 +15,7 @@ func Anchor(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Abbreviation element (<abbr>) represents an abbreviation and optionally provides a full description for it. If present, the title attribute must contain this full description and nothing else.
+// The HTML <abbr> element (or HTML Abbreviation Element) represents an abbreviation and optionally provides a full description for it. If present, the title attribute must contain this full description and nothing else.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr
 func Abbreviation(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "abbr"}
@@ -23,7 +23,7 @@ func Abbreviation(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Address Element (<address>) should be used by authors to supply contact information for its nearest <article> or <body> ancestor; in the latter case, it applies to the whole document.
+// The HTML <address> element supplies contact information for its nearest <article> or <body> ancestor; in the latter case, it applies to the whole document.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address
 func Address(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "address"}
@@ -39,7 +39,7 @@ func Area(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Article Element (<article>) represents a self-contained composition in a document, page, application, or site, which is intended to be independently distributable or reusable (e.g., in syndication). This could be a forum post, a magazine or newspaper article, a blog entry, an object, or any other independent item of content. Each <article> should be identified, typically by including a heading (h1-h6 element) as a child of the <article> element.
+// The HTML <article> element represents a self-contained composition in a document, page, application, or site, which is intended to be independently distributable or reusable (e.g., in syndication). This could be a forum post, a magazine or newspaper article, a blog entry, an object, or any other independent item of content. Each <article> should be identified, typically by including a heading (<h1>-<h6> element) as a child of the <article> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article
 func Article(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "article"}
@@ -55,7 +55,7 @@ func Aside(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <audio> element is used to embed sound content in documents. It may contain several audio sources, represented using the src attribute or the <source> element; the browser will choose the most suitable one.
+// The HTML <audio> element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element; the browser will choose the most suitable one.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
 func Audio(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "audio"}
@@ -71,7 +71,7 @@ func Bold(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Base Element (<base>) specifies the base URL to use for all relative URLs contained within a document. There can be only one <base> element in a document.
+// The HTML <base> element specifies the base URL to use for all relative URLs contained within a document. There can be only one <base> element in a document.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
 func Base(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "base"}
@@ -95,6 +95,14 @@ func BidirectionalOverride(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
+// The HTML Background Sound Element () is an Internet Explorer element associating a background sound with a page.
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound
+func Bgsound(markup ...dom.Markup) *dom.Element {
+	e := &dom.Element{TagName: "bgsound"}
+	dom.List(markup).Apply(e)
+	return e
+}
+
 // The HTML <blockquote> Element (or HTML Block Quotation Element) indicates that the enclosed text is an extended quotation. Usually, this is rendered visually by indentation (see Notes for how to change it). A URL for the source of the quotation may be given using the cite attribute, while a text representation of the source can be given using the <cite> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote
 func BlockQuote(markup ...dom.Markup) *dom.Element {
@@ -103,7 +111,7 @@ func BlockQuote(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <br> Element (or HTML Line Break Element) produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant.
+// The HTML element line break <br> produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br
 func Break(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "br"}
@@ -119,7 +127,7 @@ func Button(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// Editorial review completed.
+// The HTML <canvas> Element can be used to draw graphics via scripting (usually JavaScript). For example, it can be used to draw graphs, make photo compositions or even perform animations. You may (and should) provide alternate content inside the <canvas> block. That content will be rendered both on older browsers that don't support canvas and in browsers with JavaScript disabled.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas
 func Canvas(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "canvas"}
@@ -199,7 +207,7 @@ func DataList(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Description Element (<dd>) indicates the description of a term in a description list (<dl>) element. This element can occur only as a child element of a definition list and it must follow a <dt> element.
+// The HTML <dd> element (HTML Description Element) indicates the description of a term in a description list (<dl>) element. This element can occur only as a child element of a definition list and it must follow a <dt> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd
 func Description(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "dd"}
@@ -207,7 +215,7 @@ func Description(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Deleted Text Element (<del>) represents a range of text that has been deleted from a document. This element is often (but need not be) rendered with strike-through text.
+// The HTML Deleted Text Element (<del>) represents a range of text that has been deleted from a document. This element is often (but need not be) rendered with strike-through text.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
 func DeletedText(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "del"}
@@ -247,7 +255,7 @@ func Div(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <dl> Element (or HTML Description List Element) encloses a list of pairs of terms and descriptions. Common uses for this element are to implement a glossary or to display metadata (a list of key-value pairs).
+// The HTML <dl> element (or HTML Description List Element) encloses a list of pairs of terms and descriptions. Common uses for this element are to implement a glossary or to display metadata (a list of key-value pairs).
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl
 func DescriptionList(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "dl"}
@@ -271,7 +279,7 @@ func Element(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Emphasis Element (<em>) marks text that has stress emphasis. The <em> element can be nested, with each level of nesting indicating a greater degree of emphasis.
+// The HTML element emphasis  <em> marks text that has stress emphasis. The <em> element can be nested, with each level of nesting indicating a greater degree of emphasis.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
 func Emphasis(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "em"}
@@ -295,7 +303,7 @@ func FieldSet(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <figcaption> Element represents a caption or a legend associated with a figure or an illustration described by the rest of the data of the <figure> element which is its immediate ancestor which means <figcaption> can be the first or last element inside a <figure> block. Also, the HTML Figcaption Element is optional; if not provided, then the parent figure element will have no caption.
+// The HTML <figcaption> element represents a caption or a legend associated with a figure or an illustration described by the rest of the data of the <figure> element which is its immediate ancestor which means <figcaption> can be the first or last element inside a <figure> block. Also, the HTML Figcaption Element is optional; if not provided, then the parent figure element will have no caption.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption
 func FigureCaption(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "figcaption"}
@@ -303,7 +311,7 @@ func FigureCaption(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <figure> Element represents self-contained content, frequently with a caption (<figcaption>), and is typically referenced as a single unit. While it is related to the main flow, its position is independent of the main flow. Usually this is an image, an illustration, a diagram, a code snippet, or a schema that is referenced in the main text, but that can be moved to another page or to an appendix without affecting the main flow.
+// The HTML <figure> element represents self-contained content, frequently with a caption (<figcaption>), and is typically referenced as a single unit. While it is related to the main flow, its position is independent of the main flow. Usually this is an image, an illustration, a diagram, a code snippet, or a schema that is referenced in the main text, but that can be moved to another page or to an appendix without affecting the main flow.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure
 func Figure(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "figure"}
@@ -319,7 +327,7 @@ func Font(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Footer Element (<footer>) represents a footer for its nearest sectioning content or sectioning root element. A footer typically contains information about the author of the section, copyright data or links to related documents.
+// The HTML <footer> element represents a footer for its nearest sectioning content or sectioning root element. A footer typically contains information about the author of the section, copyright data or links to related documents.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer
 func Footer(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "footer"}
@@ -335,7 +343,7 @@ func Form(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <header> Element represents a group of introductory or navigational aids. It may contain some heading elements but also other elements like a logo, wrapped section's header, a search form, and so on.
+// The HTML <header> element represents a group of introductory or navigational aids. It may contain some heading elements but also other elements like a logo, wrapped section's header, a search form, and so on.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header
 func Header(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "header"}
@@ -375,7 +383,15 @@ func InlineFrame(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Image Element (<img>) represents an image in the document.
+// The HTML <image> element was an experimental element designed to display pictures. It never was implemented and the standard <img> element must be used.
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/image
+func Image(markup ...dom.Markup) *dom.Element {
+	e := &dom.Element{TagName: "image"}
+	dom.List(markup).Apply(e)
+	return e
+}
+
+// The HTML <img> element represents an image in the document.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
 func Image(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "img"}
@@ -383,7 +399,7 @@ func Image(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <input> element is used to create interactive controls for web-based forms in order to accept data from the user. How an <input> works varies considerably depending on the value of its type attribute.
+// Editorial review completed.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
 func Input(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "input"}
@@ -415,7 +431,7 @@ func KeyGen(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Label Element (<label>) represents a caption for an item in a user interface. It can be associated with a control either by placing the control element inside the <label> element, or by using the for attribute. Such a control is called the labeled control of the label element.
+// The HTML Label Element (<label>) represents a caption for an item in a user interface. It can be associated with a control either by placing the control element inside the <label> element, or by using the for attribute. Such a control is called the labeled control of the label element. One input can be associated with multiple labels.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label
 func Label(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "label"}
@@ -431,7 +447,7 @@ func Legend(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML List Item Element (<li>) is used to represent an item in a list. It must be contained in a parent element: an ordered list (<ol>), an unordered list (<ul>), or a menu (<menu>). In menus and unordered lists, list items are usually displayed using bullet points. In ordered lists, they are usually displayed with an ascending counter on the left, such as a number or letter.
+// The HTML <li> element (or HTML List Item Element) is used to represent an item in a list. It must be contained in a parent element: an ordered list (<ol>), an unordered list (<ul>), or a menu (<menu>). In menus and unordered lists, list items are usually displayed using bullet points. In ordered lists, they are usually displayed with an ascending counter on the left, such as a number or letter.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li
 func ListItem(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "li"}
@@ -439,7 +455,7 @@ func ListItem(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Link Element (<link>) specifies relationships between the current document and an external resource. Possible uses for this element include defining a relational framework for navigation. This Element is most used to link to style sheets.
+// The HTML <link> element specifies relationships between the current document and an external resource. Possible uses for this element include defining a relational framework for navigation. This Element is most used to link to style sheets.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link
 func Link(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "link"}
@@ -471,7 +487,7 @@ func Mark(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// Technical review completed.
+// The HTML <menu> element represents a group of commands that a user can perform or activate. This includes both list menus, which might appear across the top of a screen, as well as context menus, such as those that might appear underneath a button after it has been clicked.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu
 func Menu(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "menu"}
@@ -487,7 +503,7 @@ func MenuItem(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Meta Element (<meta>) represents any metadata information that cannot be represented by one of the other HTML meta-related elements (<base>, <link>, <script>, <style> or <title>).
+// The HTML <meta> element represents any metadata information that cannot be represented by one of the other HTML meta-related elements (<base>, <link>, <script>, <style> or <title>).
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
 func Meta(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "meta"}
@@ -503,10 +519,18 @@ func Meter(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Navigation Element (<nav>) represents a section of a page that links to other pages or to parts within the page: a section with navigation links.
+// The HTML <nav> element (HTML Navigation Element) represents a section of a page that links to other pages or to parts within the page: a section with navigation links.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav
 func Navigation(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "nav"}
+	dom.List(markup).Apply(e)
+	return e
+}
+
+// The HTML <nobr> element prevents a text from breaking into a new line automatically, so it is displayed on one long line and scrolling might be necessary. This tag is not standard HTML and should not be used.
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr
+func Nobr(markup ...dom.Markup) *dom.Element {
+	e := &dom.Element{TagName: "nobr"}
 	dom.List(markup).Apply(e)
 	return e
 }
@@ -583,7 +607,7 @@ func Parameter(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <picture> element is a container used to specify multiple <source>s for a specific <img> contained in it. The browser will choose the most suitable source according to the current layout of the page (the constraints of the box the image will appear in) and the device it will be displayed on (e.g. a normal or hiDPI device).
+// The HTML <picture> element is a container used to specify multiple <source> elements for a specific <img> contained in it. The browser will choose the most suitable source according to the current layout of the page (the constraints of the box the image will appear in) and the device it will be displayed on (e.g. a normal or hiDPI device.)
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture
 func Picture(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "picture"}
@@ -591,7 +615,7 @@ func Picture(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Preformatted Text (<pre>) represents preformatted text. Text within this element is typically displayed in a non-proportional font exactly as it is laid out in the file. Whitespaces inside this element are displayed as typed.
+// The HTML <pre> element (or HTML Preformatted Text) represents preformatted text. Text within this element is typically displayed in a non-proportional ("monospace") font exactly as it is laid out in the file. Whitespace inside this element is displayed as typed.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre
 func Preformatted(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "pre"}
@@ -631,7 +655,7 @@ func RubyText(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <rtc> Element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt> and semantic (<rtc>) annotations.
+// The HTML <rtc> Element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt>) and semantic (<rtc>) annotations.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc
 func Rtc(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "rtc"}
@@ -671,7 +695,7 @@ func Script(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Section Element (<section>) represents a generic section of a document, i.e., a thematic grouping of content, typically with a heading. Each <section> should be identified, typically by including a heading (<h1>-<h6> element) as a child of the <section> element.
+// The HTML <section> element represents a generic section of a document, i.e., a thematic grouping of content, typically with a heading. Each <section> should be identified, typically by including a heading (<h1>-<h6> element) as a child of the <section> element.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section
 func Section(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "section"}
@@ -711,7 +735,7 @@ func Source(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <span> element is a generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element is appropriate. <span> is very much like a <div> element, but <div> is a block-level element whereas a <span> is an inline element.
+// The HTML <span> element is a generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span
 func Span(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "span"}
@@ -727,7 +751,7 @@ func Strong(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Style Element (<style>) contains style information for a document, or part of a document. By default, the style instructions written inside that element are expected to be CSS.
+// The HTML <style> element contains style information for a document, or part of a document. By default, the style instructions written inside that element are expected to be CSS.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
 func Style(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "style"}
@@ -767,7 +791,7 @@ func Table(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Table Body Element () defines one or more <tr> element data-rows to be the body of its parent <table> element (as long as no <tr> elements are immediate children of that table element.)  In conjunction with a preceding <thead> and/or <tfoot> element, <tbody> provides additional semantic information for devices such as printers and displays. Of the parent table's child elements, <tbody> represents the content which, when longer than a page, will most likely differ for each page printed; while the content of <thead> and <tfoot> will be the same or similar for each page printed. For displays, <tbody> will enable separate scrolling of the <thead>, <tfoot>, and <caption> elements of the same parent <table> element.  Note that unlike the <thead>, <tfoot>, and <caption> elements however, multiple <tbody> elements are permitted (if consecutive), allowing the data-rows in long tables to be divided into different sections, each separately formatted as needed.
+// The HTML Table Body Element (<tbody>) defines one or more <tr> element data-rows to be the body of its parent <table> element (as long as no <tr> elements are immediate children of that table element.)  In conjunction with a preceding <thead> and/or <tfoot> element, <tbody> provides additional semantic information for devices such as printers and displays. Of the parent table's child elements, <tbody> represents the content which, when longer than a page, will most likely differ for each page printed; while the content of <thead> and <tfoot> will be the same or similar for each page printed. For displays, <tbody> will enable separate scrolling of the <thead>, <tfoot>, and <caption> elements of the same parent <table> element.  Note that unlike the <thead>, <tfoot>, and <caption> elements however, multiple <tbody> elements are permitted (if consecutive), allowing the data-rows in long tables to be divided into different sections, each separately formatted as needed.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody
 func TableBody(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "tbody"}
@@ -807,7 +831,7 @@ func TableFoot(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Table Header Cell Element (<th>) defines a cell that is a header for a group of cells of a table. The group of cells that the header refers to is defined by the scope and headers attribute.
+// The HTML element table header cell <th> defines a cell as a header for a group of cells of a table. The group of cells that the header refers to is defined by the scope and headers attribute.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th
 func TableHeader(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "th"}
@@ -831,7 +855,7 @@ func Time(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Title Element (<title>) defines the title of the document, shown in a browser's title bar or on the page's tab. It can only contain text and any contained tags are not interpreted.
+// The HTML <title> element defines the title of the document, shown in a browser's title bar or on the page's tab. It can only contain text, and any contained tags are ignored.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
 func Title(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "title"}
@@ -839,7 +863,7 @@ func Title(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML Table Row Element (<tr>) defines a row of cells in a table. Those can be a mix of <td> and <th> elements.
+// The HTML element table row <tr> defines a row of cells in a table. Those can be a mix of <td> and <th> elements.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr
 func TableRow(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "tr"}
@@ -863,7 +887,7 @@ func Underline(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML unordered list element (<ul>) represents an unordered list of items, namely a collection of items that do not have a numerical ordering, and their order in the list is meaningless. Typically, unordered-list items are displayed with a bullet, which can be of several forms, like a dot, a circle or a squared. The bullet style is not defined in the HTML description of the page, but in its associated CSS, using the list-style-type property.
+// The HTML <ul> element (or HTML Unordered List Element) represents an unordered list of items, namely a collection of items that do not have a numerical ordering, and their order in the list is meaningless. Typically, unordered-list items are displayed with a bullet, which can be of several forms, like a dot, a circle or a squared. The bullet style is not defined in the HTML description of the page, but in its associated CSS, using the list-style-type property.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul
 func UnorderedList(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "ul"}
@@ -879,7 +903,7 @@ func Variable(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML <video> element is used to embed video content. It may contain several video sources, represented using the src attribute or the <source> element; the browser will choose the most suitable one.
+// Use the  HTML <video> element to embed video content in a document. The video element contains one or more video sources. To specify a video source, use either the src attribute or the <source> element; the browser will choose the most suitable one.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video
 func Video(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "video"}
@@ -887,7 +911,7 @@ func Video(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The Word Break Opportunity (<wbr>) HTML element represents a position within text where the browser may optionally break a line, though its line-breaking rules would not otherwise create a break at that location.
+// The HTML element word break opportunity <wbr> represents a position within text where the browser may optionally break a line, though its line-breaking rules would not otherwise create a break at that location.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr
 func WordBreakOpportunity(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "wbr"}

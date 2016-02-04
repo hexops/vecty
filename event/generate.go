@@ -142,7 +142,7 @@ func main() {
 package event
 
 import (
-	"github.com/neelance/dom"
+	"github.com/gopherjs/vecty"
 )
 `)
 
