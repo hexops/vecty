@@ -783,7 +783,7 @@ func TableData(markup ...dom.Markup) *dom.Element {
 	return e
 }
 
-// The HTML template element <template> is a mechanism for holding client-side content that is not to be rendered when a page is loaded but may subsequently be instantiated during runtime using JavaScript. 
+// The HTML template element <template> is a mechanism for holding client-side content that is not to be rendered when a page is loaded but may subsequently be instantiated during runtime using JavaScript.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
 func Template(markup ...dom.Markup) *dom.Element {
 	e := &dom.Element{TagName: "template"}

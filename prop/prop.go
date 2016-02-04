@@ -1,6 +1,6 @@
 package prop
 
-import "github.com/neelance/dom"
+import "github.com/gopherjs/vecty"
 
 type InputType string
 

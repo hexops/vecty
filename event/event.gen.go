@@ -4,7 +4,7 @@
 package event
 
 import (
-	"github.com/neelance/dom"
+	"github.com/gopherjs/vecty"
 )
 
 // A transaction has been aborted.

@@ -93,7 +93,7 @@ func main() {
 package elem
 
 import (
-	"github.com/neelance/dom"
+	"github.com/gopherjs/vecty"
 )
 `)
 
