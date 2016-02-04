@@ -4,7 +4,7 @@
 package event
 
 import (
-	"github.com/gopherjs/vecty"
+	"github.com/neelance/dom"
 )
 
 // A transaction has been aborted.
@@ -43,18 +43,6 @@ func AudioProcess(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "audioprocess", Listener: listener}
 }
 
-// The user agent has finished capturing audio for speech recognition.
-// https://developer.mozilla.org/docs/Web/Events/audioend
-func Audioend(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "audioend", Listener: listener}
-}
-
-// The user agent has started to capture audio for speech recognition.
-// https://developer.mozilla.org/docs/Web/Events/audiostart
-func Audiostart(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "audiostart", Listener: listener}
-}
-
 // The associated document is about to be printed or previewed for printing.
 // https://developer.mozilla.org/docs/Web/Events/beforeprint
 func BeforePrint(listener func(*dom.Event)) *dom.EventListener {
@@ -85,12 +73,6 @@ func Blur(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "blur", Listener: listener}
 }
 
-// The spoken utterance reaches a word or sentence boundary
-// https://developer.mozilla.org/docs/Web/Events/boundary
-func Boundary(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "boundary", Listener: listener}
-}
-
 // The resources listed in the manifest have been downloaded, and the application is now cached.
 // https://developer.mozilla.org/docs/Web/Events/cached
 func Cached(listener func(*dom.Event)) *dom.EventListener {
@@ -109,7 +91,7 @@ func CanPlayThrough(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "canplaythrough", Listener: listener}
 }
 
-// The change event is fired for <input>, <select>, and <textarea> elements when a change to the element's value is committed by the user.
+// An element loses focus and its value changed since gaining focus.
 // https://developer.mozilla.org/docs/Web/Events/change
 func Change(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "change", Listener: listener}
@@ -143,6 +125,12 @@ func Click(listener func(*dom.Event)) *dom.EventListener {
 // https://developer.mozilla.org/docs/Web/Reference/Events/close_websocket
 func Close(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "close", Listener: listener}
+}
+
+// The compass used to obtain orientation data is in need of calibration.
+// https://developer.mozilla.org/docs/Web/Events/compassneedscalibration
+func CompassNeedsCalibration(listener func(*dom.Event)) *dom.EventListener {
+	return &dom.EventListener{Name: "compassneedscalibration", Listener: listener}
 }
 
 // The rendering of an OfflineAudioContext is terminated.
@@ -289,12 +277,6 @@ func Emptied(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "emptied", Listener: listener}
 }
 
-// The utterance has finished being spoken.
-// https://developer.mozilla.org/docs/Web/Events/end_(SpeechSynthesis)
-func End(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "end", Listener: listener}
-}
-
 // A SMIL animation element ends.
 // https://developer.mozilla.org/docs/Web/Events/endEvent
 func EndEvent(listener func(*dom.Event)) *dom.EventListener {
@@ -307,8 +289,8 @@ func Ended(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "ended", Listener: listener}
 }
 
-// An error occurs that prevents the utterance from being succesfully spoken.
-// https://developer.mozilla.org/docs/Web/Events/error_(SpeechSynthesisError)
+// A request caused an error and failed.
+// https://developer.mozilla.org/docs/Web/Events/error
 func Error(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "error", Listener: listener}
 }
@@ -445,14 +427,8 @@ func Lostpointercapture(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "lostpointercapture", Listener: listener}
 }
 
-// The spoken utterance reaches a named SSML "mark" tag.
-// https://developer.mozilla.org/docs/Web/Events/mark
-func Mark(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "mark", Listener: listener}
-}
-
-// A message is received from a service worker, or a message is received in a service worker from another context.
-// https://developer.mozilla.org/docs/Web/Events/message_(ServiceWorker)
+// A message is received through an event source.
+// https://developer.mozilla.org/docs/Web/Reference/Events/message_serversentevents
 func Message(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "message", Listener: listener}
 }
@@ -505,18 +481,6 @@ func NoUpdate(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "noupdate", Listener: listener}
 }
 
-// The speech recognition service returns a final result with no significant recognition.
-// https://developer.mozilla.org/docs/Web/Events/nomatch
-func Nomatch(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "nomatch", Listener: listener}
-}
-
-// A system notification spawned by ServiceWorkerRegistration.showNotification() has been clicked.
-// https://developer.mozilla.org/docs/Web/Events/notificationclick
-func Notificationclick(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "notificationclick", Listener: listener}
-}
-
 // The manifest was found to have become a 404 or 410 page, so the application cache is being deleted.
 // https://developer.mozilla.org/docs/Web/Events/obsolete
 func Obsolete(listener func(*dom.Event)) *dom.EventListener {
@@ -565,8 +529,8 @@ func Paste(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "paste", Listener: listener}
 }
 
-// The utterance is paused part way through.
-// https://developer.mozilla.org/docs/Web/Events/pause_(SpeechSynthesis)
+// Playback has been paused.
+// https://developer.mozilla.org/docs/Web/Events/pause
 func Pause(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "pause", Listener: listener}
 }
@@ -655,18 +619,6 @@ func Progress(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "progress", Listener: listener}
 }
 
-// A Service Worker has received a push message.
-// https://developer.mozilla.org/docs/Web/Events/push
-func Push(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "push", Listener: listener}
-}
-
-// A PushSubscription has expired.
-// https://developer.mozilla.org/docs/Web/Events/pushsubscriptionchange
-func Pushsubscriptionchange(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "pushsubscriptionchange", Listener: listener}
-}
-
 // The playback rate has changed.
 // https://developer.mozilla.org/docs/Web/Events/ratechange
 func RateChange(listener func(*dom.Event)) *dom.EventListener {
@@ -695,24 +647,6 @@ func Reset(listener func(*dom.Event)) *dom.EventListener {
 // https://developer.mozilla.org/docs/Web/Events/resize
 func Resize(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "resize", Listener: listener}
-}
-
-// The browser's resource timing buffer is full.
-// https://developer.mozilla.org/docs/Web/Events/resourcetimingbufferfull
-func Resourcetimingbufferfull(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "resourcetimingbufferfull", Listener: listener}
-}
-
-// The speech recognition service returns a result — a word or phrase has been positively recognized and this has been communicated back to the app.
-// https://developer.mozilla.org/docs/Web/Events/result
-func Result(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "result", Listener: listener}
-}
-
-// A paused utterance is resumed.
-// https://developer.mozilla.org/docs/Web/Events/resume
-func Resume(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "resume", Listener: listener}
 }
 
 // Page loading has been stopped before the SVG was loaded.
@@ -799,40 +733,10 @@ func Show(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "show", Listener: listener}
 }
 
-// Any sound — recognisable speech or not — has stopped being detected.
-// https://developer.mozilla.org/docs/Web/Events/soundend
-func Soundend(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "soundend", Listener: listener}
-}
-
-// Any sound — recognisable speech or not — has been detected.
-// https://developer.mozilla.org/docs/Web/Events/soundstart
-func Soundstart(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "soundstart", Listener: listener}
-}
-
-// Speech recognised by the speech recognition service has stopped being detected.
-// https://developer.mozilla.org/docs/Web/Events/speechend
-func Speechend(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "speechend", Listener: listener}
-}
-
-// Sound that is recognised by the speech recognition service as speech has been detected.
-// https://developer.mozilla.org/docs/Web/Events/speechstart
-func Speechstart(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "speechstart", Listener: listener}
-}
-
 // The user agent is trying to fetch media data, but data is unexpectedly not forthcoming.
 // https://developer.mozilla.org/docs/Web/Events/stalled
 func Stalled(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "stalled", Listener: listener}
-}
-
-// The utterance has begun to be spoken.
-// https://developer.mozilla.org/docs/Web/Events/start_(SpeechSynthesis)
-func Start(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "start", Listener: listener}
 }
 
 // A storage area (localStorage or sessionStorage) has changed.
@@ -947,12 +851,6 @@ func VersionChange(listener func(*dom.Event)) *dom.EventListener {
 // https://developer.mozilla.org/docs/Web/Events/visibilitychange
 func VisibilityChange(listener func(*dom.Event)) *dom.EventListener {
 	return &dom.EventListener{Name: "visibilitychange", Listener: listener}
-}
-
-// The list of SpeechSynthesisVoice objects that would be returned by the SpeechSynthesis.getVoices() method has changed (when the voiceschanged event fires.)
-// https://developer.mozilla.org/docs/Web/Events/voiceschanged
-func Voiceschanged(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "voiceschanged", Listener: listener}
 }
 
 // The volume has changed.

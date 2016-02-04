@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/gopherjs/vecty/domutil"
+	"github.com/neelance/dom/domutil"
 )
 
 type Markup interface {
