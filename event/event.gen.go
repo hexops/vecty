@@ -193,12 +193,6 @@ func DOMContentLoaded(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "DOMContentLoaded", Listener: listener}
 }
 
-// A pointing device button is clicked twice on an element.
-// https://developer.mozilla.org/docs/Web/Events/dblclick
-func DblClick(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "dblclick", Listener: listener}
-}
-
 // Fresh data is available from a light sensor.
 // https://developer.mozilla.org/docs/Web/Events/devicelight
 func DeviceLight(listener func(*vecty.Event)) *vecty.EventListener {
@@ -227,6 +221,12 @@ func DeviceProximity(listener func(*vecty.Event)) *vecty.EventListener {
 // https://developer.mozilla.org/docs/Web/Events/dischargingtimechange
 func DischargingTimeChange(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "dischargingtimechange", Listener: listener}
+}
+
+// A pointing device button is clicked twice on an element.
+// https://developer.mozilla.org/docs/Web/Events/dblclick
+func DoubleClick(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "dblclick", Listener: listener}
 }
 
 // The user agent has found an update and is fetching it, or is downloading the resources listed by the cache manifest for the first time.
@@ -357,7 +357,7 @@ func GamepadDisconnected(listener func(*vecty.Event)) *vecty.EventListener {
 
 // Element receives pointer capture.
 // https://developer.mozilla.org/docs/Web/Events/gotpointercapture
-func Gotpointercapture(listener func(*vecty.Event)) *vecty.EventListener {
+func GotPointerCapture(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "gotpointercapture", Listener: listener}
 }
 
@@ -441,7 +441,7 @@ func LoadedMetadata(listener func(*vecty.Event)) *vecty.EventListener {
 
 // Element lost pointer capture.
 // https://developer.mozilla.org/docs/Web/Events/lostpointercapture
-func Lostpointercapture(listener func(*vecty.Event)) *vecty.EventListener {
+func LostPointerCapture(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "lostpointercapture", Listener: listener}
 }
 
@@ -583,6 +583,30 @@ func Playing(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "playing", Listener: listener}
 }
 
+// The pointer is unlikely to produce any more events.
+// https://developer.mozilla.org/docs/Web/Events/pointercancel
+func PointerCancel(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "pointercancel", Listener: listener}
+}
+
+// The pointer enters the active buttons state.
+// https://developer.mozilla.org/docs/Web/Events/pointerdown
+func PointerDown(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "pointerdown", Listener: listener}
+}
+
+// Pointing device is moved inside the hit-testing boundary.
+// https://developer.mozilla.org/docs/Web/Events/pointerenter
+func PointerEnter(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "pointerenter", Listener: listener}
+}
+
+// Pointing device is moved out of the hit-testing boundary.
+// https://developer.mozilla.org/docs/Web/Events/pointerleave
+func PointerLeave(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "pointerleave", Listener: listener}
+}
+
 // The pointer was locked or released.
 // https://developer.mozilla.org/docs/Web/Events/pointerlockchange
 func PointerLockChange(listener func(*vecty.Event)) *vecty.EventListener {
@@ -595,51 +619,27 @@ func PointerLockError(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "pointerlockerror", Listener: listener}
 }
 
-// The pointer is unlikely to produce any more events.
-// https://developer.mozilla.org/docs/Web/Events/pointercancel
-func Pointercancel(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "pointercancel", Listener: listener}
-}
-
-// The pointer enters the active buttons state.
-// https://developer.mozilla.org/docs/Web/Events/pointerdown
-func Pointerdown(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "pointerdown", Listener: listener}
-}
-
-// Pointing device is moved inside the hit-testing boundary.
-// https://developer.mozilla.org/docs/Web/Events/pointerenter
-func Pointerenter(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "pointerenter", Listener: listener}
-}
-
-// Pointing device is moved out of the hit-testing boundary.
-// https://developer.mozilla.org/docs/Web/Events/pointerleave
-func Pointerleave(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "pointerleave", Listener: listener}
-}
-
 // The pointer changed coordinates.
 // https://developer.mozilla.org/docs/Web/Events/pointermove
-func Pointermove(listener func(*vecty.Event)) *vecty.EventListener {
+func PointerMove(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "pointermove", Listener: listener}
 }
 
 // The pointing device moved out of hit-testing boundary or leaves detectable hover range.
 // https://developer.mozilla.org/docs/Web/Events/pointerout
-func Pointerout(listener func(*vecty.Event)) *vecty.EventListener {
+func PointerOut(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "pointerout", Listener: listener}
 }
 
 // The pointing device is moved into the hit-testing boundary.
 // https://developer.mozilla.org/docs/Web/Events/pointerover
-func Pointerover(listener func(*vecty.Event)) *vecty.EventListener {
+func PointerOver(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "pointerover", Listener: listener}
 }
 
 // The pointer leaves the active buttons state.
 // https://developer.mozilla.org/docs/Web/Events/pointerup
-func Pointerup(listener func(*vecty.Event)) *vecty.EventListener {
+func PointerUp(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "pointerup", Listener: listener}
 }
 
@@ -675,7 +675,7 @@ func RateChange(listener func(*vecty.Event)) *vecty.EventListener {
 
 // The readyState attribute of a document has changed.
 // https://developer.mozilla.org/docs/Web/Events/readystatechange
-func ReadystateChange(listener func(*vecty.Event)) *vecty.EventListener {
+func ReadyStateChange(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "readystatechange", Listener: listener}
 }
 
@@ -781,16 +781,16 @@ func Select(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "select", Listener: listener}
 }
 
-// The selection in the document has been changed.
-// https://developer.mozilla.org/docs/Web/Events/selectionchange
-func Selectionchange(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "selectionchange", Listener: listener}
-}
-
 // A selection just started.
 // https://developer.mozilla.org/docs/Web/Events/selectstart
-func Selectstart(listener func(*vecty.Event)) *vecty.EventListener {
+func SelectStart(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "selectstart", Listener: listener}
+}
+
+// The selection in the document has been changed.
+// https://developer.mozilla.org/docs/Web/Events/selectionchange
+func SelectionChange(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "selectionchange", Listener: listener}
 }
 
 // A contextmenu event was fired on/bubbled to an element that has a contextmenu attribute
