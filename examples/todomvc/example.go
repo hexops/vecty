@@ -16,15 +16,15 @@ import (
 func main() {
 	attachLocalStorage()
 
-	dom.SetTitle("GopherJS • TodoMVC")
-	dom.AddStylesheet("node_modules/todomvc-common/base.css")
-	dom.AddStylesheet("node_modules/todomvc-app-css/index.css")
+	vecty.SetTitle("GopherJS • TodoMVC")
+	vecty.AddStylesheet("node_modules/todomvc-common/base.css")
+	vecty.AddStylesheet("node_modules/todomvc-app-css/index.css")
 	p := &components.PageView{}
 	store.Listeners.Add(p, func() {
 		p.Items = store.Items
 		p.ReconcileBody()
 	})
-	dom.RenderAsBody(p)
+	vecty.RenderAsBody(p)
 }
 
 func attachLocalStorage() {

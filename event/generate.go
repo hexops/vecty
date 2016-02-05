@@ -151,8 +151,8 @@ import (
 		fmt.Fprintf(file, `
 // %s
 // https://developer.mozilla.org%s
-func %s(listener func(*dom.Event)) *dom.EventListener {
-	return &dom.EventListener{Name: "%s", Listener: listener}
+func %s(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "%s", Listener: listener}
 }
 `, e.Desc, e.Link[6:], name, e.Name)
 	}

@@ -15,17 +15,17 @@ import (
 )
 
 type PageView struct {
-	dom.Composite
+	vecty.Composite
 
 	Items        []*model.Item
 	newItemTitle string
 }
 
-func (p *PageView) Apply(element *dom.Element) {
+func (p *PageView) Apply(element *vecty.Element) {
 	element.AddChild(p)
 }
 
-func (p *PageView) Reconcile(oldComp dom.Component) {
+func (p *PageView) Reconcile(oldComp vecty.Component) {
 	if oldComp, ok := oldComp.(*PageView); ok {
 		p.Body = oldComp.Body
 		p.newItemTitle = oldComp.newItemTitle
@@ -34,12 +34,12 @@ func (p *PageView) Reconcile(oldComp dom.Component) {
 	p.ReconcileBody()
 }
 
-func (p *PageView) onNewItemTitleInput(event *dom.Event) {
+func (p *PageView) onNewItemTitleInput(event *vecty.Event) {
 	p.newItemTitle = event.Target.Get("value").String()
 	p.ReconcileBody()
 }
 
-func (p *PageView) onAdd(event *dom.Event) {
+func (p *PageView) onAdd(event *vecty.Event) {
 	dispatcher.Dispatch(&actions.AddItem{
 		Title: p.newItemTitle,
 	})
@@ -47,23 +47,23 @@ func (p *PageView) onAdd(event *dom.Event) {
 	p.ReconcileBody()
 }
 
-func (p *PageView) onClearCompleted(event *dom.Event) {
+func (p *PageView) onClearCompleted(event *vecty.Event) {
 	dispatcher.Dispatch(&actions.ClearCompleted{})
 }
 
-func (p *PageView) onToggleAllCompleted(event *dom.Event) {
+func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 	dispatcher.Dispatch(&actions.SetAllCompleted{
 		Completed: event.Target.Get("checked").Bool(),
 	})
 }
 
-func (p *PageView) render() dom.Component {
+func (p *PageView) render() vecty.Component {
 	return elem.Div(
 		elem.Section(
 			prop.Class("todoapp"),
 
 			p.renderHeader(),
-			dom.If(len(store.Items) > 0,
+			vecty.If(len(store.Items) > 0,
 				p.renderItemList(),
 				p.renderFooter(),
 			),
@@ -73,12 +73,12 @@ func (p *PageView) render() dom.Component {
 	)
 }
 
-func (p *PageView) renderHeader() dom.Markup {
+func (p *PageView) renderHeader() vecty.Markup {
 	return elem.Header(
 		prop.Class("header"),
 
 		elem.Header1(
-			dom.Text("todos"),
+			vecty.Text("todos"),
 		),
 		elem.Form(
 			style.Margin(style.Px(0)),
@@ -95,7 +95,7 @@ func (p *PageView) renderHeader() dom.Markup {
 	)
 }
 
-func (p *PageView) renderFooter() dom.Component {
+func (p *PageView) renderFooter() vecty.Component {
 	count := store.ActiveItemCount()
 	var itemsLeftText = " items left"
 	if count == 1 {
@@ -109,56 +109,56 @@ func (p *PageView) renderFooter() dom.Component {
 			prop.Class("todo-count"),
 
 			elem.Strong(
-				dom.Text(fmt.Sprintf("%d", count)),
+				vecty.Text(fmt.Sprintf("%d", count)),
 			),
-			dom.Text(itemsLeftText),
+			vecty.Text(itemsLeftText),
 		),
 
 		elem.UnorderedList(
 			prop.Class("filters"),
 			&FilterButton{Label: "All", Filter: model.All},
-			dom.Text(" "),
+			vecty.Text(" "),
 			&FilterButton{Label: "Active", Filter: model.Active},
-			dom.Text(" "),
+			vecty.Text(" "),
 			&FilterButton{Label: "Completed", Filter: model.Completed},
 		),
 
-		dom.If(store.CompletedItemCount() > 0,
+		vecty.If(store.CompletedItemCount() > 0,
 			elem.Button(
 				prop.Class("clear-completed"),
-				dom.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount())),
+				vecty.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount())),
 				event.Click(p.onClearCompleted),
 			),
 		),
 	)
 }
 
-func (p *PageView) renderInfo() dom.Component {
+func (p *PageView) renderInfo() vecty.Component {
 	return elem.Footer(
 		prop.Class("info"),
 
 		elem.Paragraph(
-			dom.Text("Double-click to edit a todo"),
+			vecty.Text("Double-click to edit a todo"),
 		),
 		elem.Paragraph(
-			dom.Text("Created by "),
+			vecty.Text("Created by "),
 			elem.Anchor(
 				prop.Href("http://github.com/neelance"),
-				dom.Text("Richard Musiol"),
+				vecty.Text("Richard Musiol"),
 			),
 		),
 		elem.Paragraph(
-			dom.Text("Part of "),
+			vecty.Text("Part of "),
 			elem.Anchor(
 				prop.Href("http://todomvc.com"),
-				dom.Text("TodoMVC"),
+				vecty.Text("TodoMVC"),
 			),
 		),
 	)
 }
 
-func (p *PageView) renderItemList() dom.Component {
-	var items dom.List
+func (p *PageView) renderItemList() vecty.Component {
+	var items vecty.List
 	for i, item := range store.Items {
 		if (store.Filter == model.Active && item.Completed) || (store.Filter == model.Completed && !item.Completed) {
 			continue
@@ -178,7 +178,7 @@ func (p *PageView) renderItemList() dom.Component {
 		),
 		elem.Label(
 			prop.For("toggle-all"),
-			dom.Text("Mark all as complete"),
+			vecty.Text("Mark all as complete"),
 		),
 
 		elem.UnorderedList(

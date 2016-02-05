@@ -12,7 +12,7 @@ import (
 )
 
 type ItemView struct {
-	dom.Composite
+	vecty.Composite
 
 	Index     int
 	Item      *model.Item
@@ -20,11 +20,11 @@ type ItemView struct {
 	editTitle string
 }
 
-func (p *ItemView) Apply(element *dom.Element) {
+func (p *ItemView) Apply(element *vecty.Element) {
 	element.AddChild(p)
 }
 
-func (p *ItemView) Reconcile(oldComp dom.Component) {
+func (p *ItemView) Reconcile(oldComp vecty.Component) {
 	if oldComp, ok := oldComp.(*ItemView); ok {
 		p.Body = oldComp.Body
 		p.editing = oldComp.editing
@@ -34,31 +34,31 @@ func (p *ItemView) Reconcile(oldComp dom.Component) {
 	p.ReconcileBody()
 }
 
-func (p *ItemView) onDestroy(event *dom.Event) {
+func (p *ItemView) onDestroy(event *vecty.Event) {
 	dispatcher.Dispatch(&actions.DestroyItem{
 		Index: p.Index,
 	})
 }
 
-func (p *ItemView) onToggleCompleted(event *dom.Event) {
+func (p *ItemView) onToggleCompleted(event *vecty.Event) {
 	dispatcher.Dispatch(&actions.SetCompleted{
 		Index:     p.Index,
 		Completed: event.Target.Get("checked").Bool(),
 	})
 }
 
-func (p *ItemView) onStartEdit(event *dom.Event) {
+func (p *ItemView) onStartEdit(event *vecty.Event) {
 	p.editing = true
 	p.editTitle = p.Item.Title
 	p.ReconcileBody()
 }
 
-func (p *ItemView) onEditInput(event *dom.Event) {
+func (p *ItemView) onEditInput(event *vecty.Event) {
 	p.editTitle = event.Target.Get("value").String()
 	p.ReconcileBody()
 }
 
-func (p *ItemView) onStopEdit(event *dom.Event) {
+func (p *ItemView) onStopEdit(event *vecty.Event) {
 	p.editing = false
 	p.ReconcileBody()
 	dispatcher.Dispatch(&actions.SetTitle{
@@ -67,9 +67,9 @@ func (p *ItemView) onStopEdit(event *dom.Event) {
 	})
 }
 
-func (p *ItemView) render() dom.Component {
+func (p *ItemView) render() vecty.Component {
 	return elem.ListItem(
-		dom.ClassMap{
+		vecty.ClassMap{
 			"completed": p.Item.Completed,
 			"editing":   p.editing,
 		},
@@ -84,7 +84,7 @@ func (p *ItemView) render() dom.Component {
 				event.Change(p.onToggleCompleted),
 			),
 			elem.Label(
-				dom.Text(p.Item.Title),
+				vecty.Text(p.Item.Title),
 				event.DblClick(p.onStartEdit),
 			),
 			elem.Button(

@@ -12,17 +12,17 @@ import (
 )
 
 type FilterButton struct {
-	dom.Composite
+	vecty.Composite
 
 	Label  string
 	Filter model.FilterState
 }
 
-func (b *FilterButton) Apply(element *dom.Element) {
+func (b *FilterButton) Apply(element *vecty.Element) {
 	element.AddChild(b)
 }
 
-func (b *FilterButton) Reconcile(oldComp dom.Component) {
+func (b *FilterButton) Reconcile(oldComp vecty.Component) {
 	if oldComp, ok := oldComp.(*FilterButton); ok {
 		b.Body = oldComp.Body
 	}
@@ -30,20 +30,20 @@ func (b *FilterButton) Reconcile(oldComp dom.Component) {
 	b.ReconcileBody()
 }
 
-func (b *FilterButton) onClick(event *dom.Event) {
+func (b *FilterButton) onClick(event *vecty.Event) {
 	dispatcher.Dispatch(&actions.SetFilter{
 		Filter: b.Filter,
 	})
 }
 
-func (b *FilterButton) render() dom.Component {
+func (b *FilterButton) render() vecty.Component {
 	return elem.ListItem(
 		elem.Anchor(
-			dom.If(store.Filter == b.Filter, prop.Class("selected")),
+			vecty.If(store.Filter == b.Filter, prop.Class("selected")),
 			prop.Href("#"),
 			event.Click(b.onClick).PreventDefault(),
 
-			dom.Text(b.Label),
+			vecty.Text(b.Label),
 		),
 	)
 }

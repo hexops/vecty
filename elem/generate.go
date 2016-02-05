@@ -138,9 +138,9 @@ func writeElem(w io.Writer, name, desc, link string) {
 	fmt.Fprintf(w, `
 // %s
 // https://developer.mozilla.org%s
-func %s(markup ...dom.Markup) *dom.Element {
-	e := &dom.Element{TagName: "%s"}
-	dom.List(markup).Apply(e)
+func %s(markup ...vecty.Markup) *vecty.Element {
+	e := &vecty.Element{TagName: "%s"}
+	vecty.List(markup).Apply(e)
 	return e
 }
 `, desc, link, funName, name)

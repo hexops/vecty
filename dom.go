@@ -1,4 +1,4 @@
-package dom
+package vecty
 
 import (
 	"fmt"
