@@ -37,21 +37,21 @@ func AnimationStart(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "animationstart", Listener: listener}
 }
 
+// The user agent has finished capturing audio for speech recognition.
+// https://developer.mozilla.org/docs/Web/Events/audioend
+func AudioEnd(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "audioend", Listener: listener}
+}
+
 // The input buffer of a ScriptProcessorNode is ready to be processed.
 // https://developer.mozilla.org/docs/Web/Events/audioprocess
 func AudioProcess(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "audioprocess", Listener: listener}
 }
 
-// The user agent has finished capturing audio for speech recognition.
-// https://developer.mozilla.org/docs/Web/Events/audioend
-func Audioend(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "audioend", Listener: listener}
-}
-
 // The user agent has started to capture audio for speech recognition.
 // https://developer.mozilla.org/docs/Web/Events/audiostart
-func Audiostart(listener func(*vecty.Event)) *vecty.EventListener {
+func AudioStart(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "audiostart", Listener: listener}
 }
 
@@ -499,21 +499,21 @@ func MouseUp(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "mouseup", Listener: listener}
 }
 
+// The speech recognition service returns a final result with no significant recognition.
+// https://developer.mozilla.org/docs/Web/Events/nomatch
+func NoMatch(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "nomatch", Listener: listener}
+}
+
 // The manifest hadn't changed.
 // https://developer.mozilla.org/docs/Web/Events/noupdate
 func NoUpdate(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "noupdate", Listener: listener}
 }
 
-// The speech recognition service returns a final result with no significant recognition.
-// https://developer.mozilla.org/docs/Web/Events/nomatch
-func Nomatch(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "nomatch", Listener: listener}
-}
-
 // A system notification spawned by ServiceWorkerRegistration.showNotification() has been clicked.
 // https://developer.mozilla.org/docs/Web/Events/notificationclick
-func Notificationclick(listener func(*vecty.Event)) *vecty.EventListener {
+func NotificationClick(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "notificationclick", Listener: listener}
 }
 
@@ -663,7 +663,7 @@ func Push(listener func(*vecty.Event)) *vecty.EventListener {
 
 // A PushSubscription has expired.
 // https://developer.mozilla.org/docs/Web/Events/pushsubscriptionchange
-func Pushsubscriptionchange(listener func(*vecty.Event)) *vecty.EventListener {
+func PushSubscriptionChange(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "pushsubscriptionchange", Listener: listener}
 }
 
@@ -699,7 +699,7 @@ func Resize(listener func(*vecty.Event)) *vecty.EventListener {
 
 // The browser's resource timing buffer is full.
 // https://developer.mozilla.org/docs/Web/Events/resourcetimingbufferfull
-func Resourcetimingbufferfull(listener func(*vecty.Event)) *vecty.EventListener {
+func ResourceTimingBufferFull(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "resourcetimingbufferfull", Listener: listener}
 }
 
@@ -801,25 +801,25 @@ func Show(listener func(*vecty.Event)) *vecty.EventListener {
 
 // Any sound — recognisable speech or not — has stopped being detected.
 // https://developer.mozilla.org/docs/Web/Events/soundend
-func Soundend(listener func(*vecty.Event)) *vecty.EventListener {
+func SoundEnd(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "soundend", Listener: listener}
 }
 
 // Any sound — recognisable speech or not — has been detected.
 // https://developer.mozilla.org/docs/Web/Events/soundstart
-func Soundstart(listener func(*vecty.Event)) *vecty.EventListener {
+func SoundStart(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "soundstart", Listener: listener}
 }
 
 // Speech recognised by the speech recognition service has stopped being detected.
 // https://developer.mozilla.org/docs/Web/Events/speechend
-func Speechend(listener func(*vecty.Event)) *vecty.EventListener {
+func SpeechEnd(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "speechend", Listener: listener}
 }
 
 // Sound that is recognised by the speech recognition service as speech has been detected.
 // https://developer.mozilla.org/docs/Web/Events/speechstart
-func Speechstart(listener func(*vecty.Event)) *vecty.EventListener {
+func SpeechStart(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "speechstart", Listener: listener}
 }
 
@@ -951,7 +951,7 @@ func VisibilityChange(listener func(*vecty.Event)) *vecty.EventListener {
 
 // The list of SpeechSynthesisVoice objects that would be returned by the SpeechSynthesis.getVoices() method has changed (when the voiceschanged event fires.)
 // https://developer.mozilla.org/docs/Web/Events/voiceschanged
-func Voiceschanged(listener func(*vecty.Event)) *vecty.EventListener {
+func VoicesChanged(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "voiceschanged", Listener: listener}
 }
 
