@@ -85,7 +85,7 @@ func (p *ItemView) render() vecty.Component {
 			),
 			elem.Label(
 				vecty.Text(p.Item.Title),
-				event.DblClick(p.onStartEdit),
+				event.DoubleClick(p.onStartEdit),
 			),
 			elem.Button(
 				prop.Class("destroy"),
