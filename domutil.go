@@ -1,12 +1,12 @@
-package domutil
+package vecty
 
 import "github.com/gopherjs/gopherjs/js"
 
-func RemoveNode(node *js.Object) {
+func removeNode(node *js.Object) {
 	node.Get("parentNode").Call("removeChild", node)
 }
 
-func ReplaceNode(newNode, oldNode *js.Object) {
+func replaceNode(newNode, oldNode *js.Object) {
 	if newNode == oldNode {
 		return
 	}
