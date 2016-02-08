@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/gopherjs/vecty/domutil"
 )
 
 type Markup interface {
@@ -121,10 +120,10 @@ func (e *Element) Reconcile(oldComp Component) {
 			}
 			oldChild := oldElement.Children[i]
 			newChild.Reconcile(oldChild)
-			domutil.ReplaceNode(newChild.Node(), oldChild.Node())
+			replaceNode(newChild.Node(), oldChild.Node())
 		}
 		for i := len(e.Children); i < len(oldElement.Children); i++ {
-			domutil.RemoveNode(oldElement.Children[i].Node())
+			removeNode(oldElement.Children[i].Node())
 		}
 		return
 	}
@@ -260,6 +259,6 @@ func (c *Composite) ReconcileBody() {
 	c.Body = c.RenderFunc()
 	c.Body.Reconcile(oldBody)
 	if oldBody != nil {
-		domutil.ReplaceNode(c.Body.Node(), oldBody.Node())
+		replaceNode(c.Body.Node(), oldBody.Node())
 	}
 }
