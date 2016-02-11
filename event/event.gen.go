@@ -5,9 +5,7 @@
 // Generated from "Event reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/Events, licensed under CC-BY-SA 2.5.
 package event
 
-import (
-	"github.com/gopherjs/vecty"
-)
+import "github.com/gopherjs/vecty"
 
 // A transaction has been aborted.
 //
