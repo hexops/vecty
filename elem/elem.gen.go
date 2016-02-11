@@ -631,7 +631,7 @@ func RubyText(markup ...vecty.Markup) *vecty.Element {
 
 // The HTML <rtc> Element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt> and semantic (<rtc>) annotations.
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc
-func Rtc(markup ...vecty.Markup) *vecty.Element {
+func RubyTextContainer(markup ...vecty.Markup) *vecty.Element {
 	e := &vecty.Element{TagName: "rtc"}
 	vecty.List(markup).Apply(e)
 	return e

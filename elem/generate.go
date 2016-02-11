@@ -58,6 +58,7 @@ var elemNameMap = map[string]string{
 	"q":          "Quote",
 	"rp":         "RubyParenthesis",
 	"rt":         "RubyText",
+	"rtc":        "RubyTextContainer",
 	"s":          "Strikethrough",
 	"samp":       "Sample",
 	"sub":        "Subscript",
