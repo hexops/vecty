@@ -28,21 +28,21 @@ func RenderAsBody(comp Component) {
 	js.Global.Get("document").Set("body", body)
 }
 
-type TextComponent struct {
+type textComponent struct {
 	text string
 	node *js.Object
 }
 
-func Text(text string) *TextComponent {
-	return &TextComponent{text: text}
+func Text(text string) Component {
+	return &textComponent{text: text}
 }
 
-func (s *TextComponent) Apply(element *Element) {
+func (s *textComponent) Apply(element *Element) {
 	element.Children = append(element.Children, s)
 }
 
-func (s *TextComponent) Reconcile(oldComp Component) {
-	if oldText, ok := oldComp.(*TextComponent); ok {
+func (s *textComponent) Reconcile(oldComp Component) {
+	if oldText, ok := oldComp.(*textComponent); ok {
 		s.node = oldText.node
 		if oldText.text != s.text {
 			s.node.Set("nodeValue", s.text)
@@ -53,7 +53,7 @@ func (s *TextComponent) Reconcile(oldComp Component) {
 	s.node = js.Global.Get("document").Call("createTextNode", s.text)
 }
 
-func (s *TextComponent) Node() *js.Object {
+func (s *textComponent) Node() *js.Object {
 	return s.node
 }
 
