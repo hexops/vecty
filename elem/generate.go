@@ -90,7 +90,9 @@ func main() {
 
 	fmt.Fprint(file, `//go:generate go run generate.go
 
-// Documentation source: "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
+// Package elem defines markup to create DOM elements.
+//
+// Generated from "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
 package elem
 
 import "github.com/gopherjs/vecty"
