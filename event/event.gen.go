@@ -2,7 +2,7 @@
 
 // Package event defines markup to bind DOM events.
 //
-// See https://developer.mozilla.org/en-US/docs/Web/Events.
+// Generated from "Event reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/Events, licensed under CC-BY-SA 2.5.
 package event
 
 import (
