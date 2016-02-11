@@ -138,6 +138,7 @@ func writeElem(w io.Writer, name, desc, link string) {
 
 	fmt.Fprintf(w, `
 // %s
+//
 // https://developer.mozilla.org%s
 func %s(markup ...vecty.Markup) *vecty.Element {
 	e := &vecty.Element{TagName: "%s"}
