@@ -44,7 +44,7 @@ var elemNameMap = map[string]string{
 	"img":        "Image",
 	"ins":        "InsertedText",
 	"kbd":        "KeyboardInput",
-	"keygen":     "KeyGen",
+	"keygen":     "KeyGeneration",
 	"li":         "ListItem",
 	"menuitem":   "MenuItem",
 	"nav":        "Navigation",
