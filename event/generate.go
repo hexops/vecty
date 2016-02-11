@@ -161,7 +161,9 @@ func main() {
 
 	fmt.Fprint(file, `//go:generate go run generate.go
 
-// Documentation source: "Event reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/Events, licensed under CC-BY-SA 2.5.
+// Package event defines markup to bind DOM events.
+//
+// Generated from "Event reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/Events, licensed under CC-BY-SA 2.5.
 package event
 
 import (
@@ -173,6 +175,7 @@ import (
 		e := events[name]
 		fmt.Fprintf(file, `
 // %s
+//
 // https://developer.mozilla.org%s
 func %s(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "%s", Listener: listener}
