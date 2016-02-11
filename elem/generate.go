@@ -44,7 +44,6 @@ var elemNameMap = map[string]string{
 	"img":        "Image",
 	"ins":        "InsertedText",
 	"kbd":        "KeyboardInput",
-	"keygen":     "KeyGen",
 	"li":         "ListItem",
 	"menuitem":   "MenuItem",
 	"nav":        "Navigation",
@@ -58,6 +57,7 @@ var elemNameMap = map[string]string{
 	"q":          "Quote",
 	"rp":         "RubyParenthesis",
 	"rt":         "RubyText",
+	"rtc":        "RubyTextContainer",
 	"s":          "Strikethrough",
 	"samp":       "Sample",
 	"sub":        "Subscript",
@@ -89,12 +89,12 @@ func main() {
 
 	fmt.Fprint(file, `//go:generate go run generate.go
 
-// Documentation source: "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
+// Package elem defines markup to create DOM elements.
+//
+// Generated from "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
 package elem
 
-import (
-	"github.com/gopherjs/vecty"
-)
+import "github.com/gopherjs/vecty"
 `)
 
 	doc.Find(".quick-links a").Each(func(i int, s *goquery.Selection) {
@@ -137,6 +137,7 @@ func writeElem(w io.Writer, name, desc, link string) {
 
 	fmt.Fprintf(w, `
 // %s
+//
 // https://developer.mozilla.org%s
 func %s(markup ...vecty.Markup) *vecty.Element {
 	e := &vecty.Element{TagName: "%s"}
