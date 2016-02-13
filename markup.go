@@ -11,13 +11,13 @@ type Markup interface {
 	Apply(element *Element)
 }
 
-type Property struct {
+type property struct {
 	Name  string
 	Value interface{}
 }
 
 // Apply implements the Markup interface.
-func (p *Property) Apply(element *Element) {
+func (p *property) Apply(element *Element) {
 	if element.Properties == nil {
 		element.Properties = make(map[string]interface{})
 	}
@@ -25,6 +25,12 @@ func (p *Property) Apply(element *Element) {
 		panic(fmt.Sprintf("duplicate property: %s", p.Name))
 	}
 	element.Properties[p.Name] = p.Value
+}
+
+// Property returns Markup which applies the given value to the named property
+// of an DOM element.
+func Property(name string, value interface{}) Markup {
+	return &property{Name: name, Value: value}
 }
 
 type ClassMap map[string]bool
@@ -37,11 +43,7 @@ func (m ClassMap) Apply(element *Element) {
 			classes = append(classes, name)
 		}
 	}
-	p := Property{
-		Name:  "className",
-		Value: strings.Join(classes, " "),
-	}
-	p.Apply(element)
+	Property("className", strings.Join(classes, " ")).Apply(element)
 }
 
 type Style struct {
