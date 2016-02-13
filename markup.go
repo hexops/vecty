@@ -46,13 +46,13 @@ func (m ClassMap) Apply(element *Element) {
 	Property("className", strings.Join(classes, " ")).Apply(element)
 }
 
-type Style struct {
+type style struct {
 	Name  string
 	Value interface{}
 }
 
 // Apply implements the Markup interface.
-func (s *Style) Apply(element *Element) {
+func (s *style) Apply(element *Element) {
 	if element.Style == nil {
 		element.Style = make(map[string]interface{})
 	}
@@ -60,6 +60,12 @@ func (s *Style) Apply(element *Element) {
 		panic(fmt.Sprintf("duplicate style: %s", s.Name))
 	}
 	element.Style[s.Name] = s.Value
+}
+
+// Style returns Markup which applies the style with the given value to an
+// element.
+func Style(name string, value interface{}) Markup {
+	return &style{Name: name, Value: value}
 }
 
 type EventListener struct {
