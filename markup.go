@@ -7,7 +7,11 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
+// Markup represents some markup that can be applied to a DOM element. For
+// example, styles like font size, properties like checked status of an input,
+// or child elements.
 type Markup interface {
+	// Apply should apply the markup to the given element.
 	Apply(element *Element)
 }
 
@@ -33,6 +37,8 @@ func Property(name string, value interface{}) Markup {
 	return &property{Name: name, Value: value}
 }
 
+// ClassMap is markup that specifies classes to be applied to an element if
+// their boolean value are true.
 type ClassMap map[string]bool
 
 // Apply implements the Markup interface.
@@ -68,6 +74,8 @@ func Style(name string, value interface{}) Markup {
 	return &style{Name: name, Value: value}
 }
 
+// EventListener is markup that specifies a callback function to be invoked when
+// the named DOM event is fired.
 type EventListener struct {
 	Name               string
 	Listener           func(*Event)
@@ -75,6 +83,9 @@ type EventListener struct {
 	wrapper            func(jsEvent *js.Object)
 }
 
+// PreventDefault prevents the default behavior of the event from occuring.
+//
+// See https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault.
 func (l *EventListener) PreventDefault() *EventListener {
 	l.callPreventDefault = true
 	return l
@@ -85,10 +96,12 @@ func (l *EventListener) Apply(element *Element) {
 	element.EventListeners = append(element.EventListeners, l)
 }
 
+// Event represents a DOM event.
 type Event struct {
 	Target *js.Object
 }
 
+// List represents a list of markup which will all be applied to an element.
 type List []Markup
 
 // Apply implements the Markup interface.
@@ -100,6 +113,7 @@ func (g List) Apply(element *Element) {
 	}
 }
 
+// If returns nil if cond is false, otherwise it returns a list of markup.
 func If(cond bool, markup ...Markup) Markup {
 	if cond {
 		return List(markup)
