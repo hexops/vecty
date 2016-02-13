@@ -34,42 +34,42 @@ const (
 	TypeWeek                    = "week"
 )
 
-func Autofocus(autofocus bool) *vecty.Property {
-	return &vecty.Property{Name: "autofocus", Value: autofocus}
+func Autofocus(autofocus bool) *vecty.Prop {
+	return &vecty.Prop{Name: "autofocus", Value: autofocus}
 }
 
-func Checked(checked bool) *vecty.Property {
-	return &vecty.Property{Name: "checked", Value: checked}
+func Checked(checked bool) *vecty.Prop {
+	return &vecty.Prop{Name: "checked", Value: checked}
 }
 
-func Class(class string) *vecty.Property {
-	return &vecty.Property{Name: "className", Value: class}
+func Class(class string) *vecty.Prop {
+	return &vecty.Prop{Name: "className", Value: class}
 }
 
-func For(id string) *vecty.Property {
-	return &vecty.Property{Name: "htmlFor", Value: id}
+func For(id string) *vecty.Prop {
+	return &vecty.Prop{Name: "htmlFor", Value: id}
 }
 
-func Href(url string) *vecty.Property {
-	return &vecty.Property{Name: "href", Value: url}
+func Href(url string) *vecty.Prop {
+	return &vecty.Prop{Name: "href", Value: url}
 }
 
-func Id(id string) *vecty.Property {
-	return &vecty.Property{Name: "id", Value: id}
+func Id(id string) *vecty.Prop {
+	return &vecty.Prop{Name: "id", Value: id}
 }
 
-func Placeholder(text string) *vecty.Property {
-	return &vecty.Property{Name: "placeholder", Value: text}
+func Placeholder(text string) *vecty.Prop {
+	return &vecty.Prop{Name: "placeholder", Value: text}
 }
 
-func Src(url string) *vecty.Property {
-	return &vecty.Property{Name: "src", Value: url}
+func Src(url string) *vecty.Prop {
+	return &vecty.Prop{Name: "src", Value: url}
 }
 
-func Type(t InputType) *vecty.Property {
-	return &vecty.Property{Name: "type", Value: string(t)}
+func Type(t InputType) *vecty.Prop {
+	return &vecty.Prop{Name: "type", Value: string(t)}
 }
 
-func Value(v string) *vecty.Property {
-	return &vecty.Property{Name: "value", Value: v}
+func Value(v string) *vecty.Prop {
+	return &vecty.Prop{Name: "value", Value: v}
 }

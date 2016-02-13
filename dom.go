@@ -149,12 +149,12 @@ func (e *Element) Node() *js.Object {
 	return e.node
 }
 
-type Property struct {
+type Prop struct {
 	Name  string
 	Value interface{}
 }
 
-func (p *Property) Apply(element *Element) {
+func (p *Prop) Apply(element *Element) {
 	if element.Properties == nil {
 		element.Properties = make(map[string]interface{})
 	}
@@ -173,7 +173,7 @@ func (m ClassMap) Apply(element *Element) {
 			classes = append(classes, name)
 		}
 	}
-	p := Property{
+	p := Prop{
 		Name:  "className",
 		Value: strings.Join(classes, " "),
 	}
