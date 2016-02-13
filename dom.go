@@ -70,7 +70,7 @@ func (e *Element) Apply(element *Element) {
 func (e *Element) Reconcile(oldComp Component) {
 	for _, l := range e.EventListeners {
 		l.wrapper = func(jsEvent *js.Object) {
-			if l.CallPreventDefault {
+			if l.callPreventDefault {
 				jsEvent.Call("preventDefault")
 			}
 			l.Listener(&Event{Target: jsEvent.Get("target")})

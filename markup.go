@@ -63,12 +63,12 @@ func (s *Style) Apply(element *Element) {
 type EventListener struct {
 	Name               string
 	Listener           func(*Event)
-	CallPreventDefault bool
+	callPreventDefault bool
 	wrapper            func(jsEvent *js.Object)
 }
 
 func (l *EventListener) PreventDefault() *EventListener {
-	l.CallPreventDefault = true
+	l.callPreventDefault = true
 	return l
 }
 
