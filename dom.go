@@ -24,10 +24,6 @@ type textComponent struct {
 	node *js.Object
 }
 
-func Text(text string) Component {
-	return &textComponent{text: text}
-}
-
 // Apply implements the Markup interface.
 func (s *textComponent) Apply(element *Element) {
 	element.Children = append(element.Children, s)
@@ -47,6 +43,10 @@ func (s *textComponent) Reconcile(oldComp Component) {
 
 func (s *textComponent) Node() *js.Object {
 	return s.node
+}
+
+func Text(text string) Component {
+	return &textComponent{text: text}
 }
 
 type Element struct {
