@@ -37,6 +37,28 @@ func Property(name string, value interface{}) Markup {
 	return &property{Name: name, Value: value}
 }
 
+type data struct {
+	name  string
+	value string
+}
+
+// Apply implements the Markup interface.
+func (d *data) Apply(element *Element) {
+	if element.Dataset == nil {
+		element.Dataset = make(map[string]string)
+	}
+	if _, ok := element.Dataset[d.name]; ok {
+		panic(fmt.Sprintf("duplicate data: %s", d.name))
+	}
+	element.Dataset[d.name] = d.value
+}
+
+// Data returns Markup which applies the given value to the named custom data
+// attribute of a DOM element.
+func Data(name, value string) Markup {
+	return &data{name: name, value: value}
+}
+
 // ClassMap is markup that specifies classes to be applied to an element if
 // their boolean value are true.
 type ClassMap map[string]bool

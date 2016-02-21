@@ -61,6 +61,7 @@ type Element struct {
 	TagName        string
 	Properties     map[string]interface{}
 	Style          map[string]interface{}
+	Dataset        map[string]string
 	EventListeners []*EventListener
 	Children       []Component
 	node           *js.Object
@@ -134,6 +135,9 @@ func (e *Element) Reconcile(oldComp Component) {
 	e.node = js.Global.Get("document").Call("createElement", e.TagName)
 	for name, value := range e.Properties {
 		e.node.Set(name, value)
+	}
+	for name, value := range e.Dataset {
+		e.node.Get("dataset").Set(name, value)
 	}
 	style := e.node.Get("style")
 	for name, value := range e.Style {
