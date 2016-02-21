@@ -32,7 +32,7 @@ func (p *property) Apply(element *Element) {
 }
 
 // Property returns Markup which applies the given value to the named property
-// of an DOM element.
+// of a DOM element.
 func Property(name string, value interface{}) Markup {
 	return &property{Name: name, Value: value}
 }
