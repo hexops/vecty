@@ -101,10 +101,15 @@ func (e *Element) Reconcile(oldComp Component) {
 			}
 		}
 
-		// TODO fix style reset
 		style := e.node.Get("style")
 		for name, value := range e.Style {
 			style.Call("setProperty", name, value)
+		}
+		for name := range oldElement.Style {
+			if _, ok := e.Style[name]; !ok {
+				// Style was removed.
+				style.Call("removeProperty", name)
+			}
 		}
 
 		for _, l := range oldElement.EventListeners {
