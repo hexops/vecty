@@ -21,6 +21,7 @@ type PageView struct {
 	newItemTitle string
 }
 
+// Apply implements the vecty.Markup interface.
 func (p *PageView) Apply(element *vecty.Element) {
 	element.AddChild(p)
 }

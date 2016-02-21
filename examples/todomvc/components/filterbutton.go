@@ -18,6 +18,7 @@ type FilterButton struct {
 	Filter model.FilterState
 }
 
+// Apply implements the vecty.Markup interface.
 func (b *FilterButton) Apply(element *vecty.Element) {
 	element.AddChild(b)
 }

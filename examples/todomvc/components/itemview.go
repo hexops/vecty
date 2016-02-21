@@ -20,6 +20,7 @@ type ItemView struct {
 	editTitle string
 }
 
+// Apply implements the vecty.Markup interface.
 func (p *ItemView) Apply(element *vecty.Element) {
 	element.AddChild(p)
 }

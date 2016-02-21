@@ -28,6 +28,7 @@ func Text(text string) Component {
 	return &textComponent{text: text}
 }
 
+// Apply implements the Markup interface.
 func (s *textComponent) Apply(element *Element) {
 	element.Children = append(element.Children, s)
 }
@@ -61,6 +62,7 @@ func (e *Element) AddChild(s Component) {
 	e.Children = append(e.Children, s)
 }
 
+// Apply implements the Markup interface.
 func (e *Element) Apply(element *Element) {
 	element.Children = append(element.Children, e)
 }

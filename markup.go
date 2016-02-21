@@ -16,6 +16,7 @@ type Property struct {
 	Value interface{}
 }
 
+// Apply implements the Markup interface.
 func (p *Property) Apply(element *Element) {
 	if element.Properties == nil {
 		element.Properties = make(map[string]interface{})
@@ -28,6 +29,7 @@ func (p *Property) Apply(element *Element) {
 
 type ClassMap map[string]bool
 
+// Apply implements the Markup interface.
 func (m ClassMap) Apply(element *Element) {
 	var classes []string
 	for name, active := range m {
@@ -47,6 +49,7 @@ type Style struct {
 	Value interface{}
 }
 
+// Apply implements the Markup interface.
 func (s *Style) Apply(element *Element) {
 	if element.Style == nil {
 		element.Style = make(map[string]interface{})
@@ -69,6 +72,7 @@ func (l *EventListener) PreventDefault() *EventListener {
 	return l
 }
 
+// Apply implements the Markup interface.
 func (l *EventListener) Apply(element *Element) {
 	element.EventListeners = append(element.EventListeners, l)
 }
@@ -79,6 +83,7 @@ type Event struct {
 
 type List []Markup
 
+// Apply implements the Markup interface.
 func (g List) Apply(element *Element) {
 	for _, m := range g {
 		if m != nil {
