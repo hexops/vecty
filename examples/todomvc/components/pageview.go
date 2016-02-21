@@ -171,7 +171,7 @@ func (p *PageView) renderItemList() vecty.Component {
 		prop.Class("main"),
 
 		elem.Input(
-			prop.Id("toggle-all"),
+			prop.ID("toggle-all"),
 			prop.Class("toggle-all"),
 			prop.Type(prop.TypeCheckbox),
 			prop.Checked(store.CompletedItemCount() == len(store.Items)),
