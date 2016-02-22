@@ -48,9 +48,9 @@ type OverflowOption string
 
 const (
 	OverflowVisible OverflowOption = "visible"
-	OverflowHidden                 = "hidden"
-	OverflowScroll                 = "scroll"
-	OverflowAuto                   = "auto"
+	OverflowHidden  OverflowOption = "hidden"
+	OverflowScroll  OverflowOption = "scroll"
+	OverflowAuto    OverflowOption = "auto"
 )
 
 func Overflow(option OverflowOption) vecty.Markup {
