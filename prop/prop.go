@@ -54,7 +54,7 @@ func Href(url string) vecty.Markup {
 	return vecty.Property("href", url)
 }
 
-func Id(id string) vecty.Markup {
+func ID(id string) vecty.Markup {
 	return vecty.Property("id", id)
 }
 
