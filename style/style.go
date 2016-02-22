@@ -63,5 +63,4 @@ func OverflowX(option OverflowOption) vecty.Markup {
 
 func OverflowY(option OverflowOption) vecty.Markup {
 	return vecty.Style("overflow-y", option)
->>>>>>> Stashed changes
 }
