@@ -107,7 +107,6 @@ func (e *Element) Reconcile(oldComp Component) {
 		}
 		for name := range oldElement.Style {
 			if _, ok := e.Style[name]; !ok {
-				// Style was removed.
 				style.Call("removeProperty", name)
 			}
 		}
