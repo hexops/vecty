@@ -19,6 +19,15 @@ func (c *Core) Apply(e *Element) {
 	e.AddChild(c.component)
 }
 
+// Unmount implements the Component interface.
+func (c *Core) Unmount() {
+	// Break the circular link between c (Core) and c.component (Renderable) or
+	// else one object could not be garbage collector without the other (both
+	// would have to be unused).
+	c.component = nil
+	c.body.Unmount()
+}
+
 // Node implements the Component interface.
 func (c *Core) Node() *js.Object {
 	return c.body.Node()
@@ -47,6 +56,11 @@ func New(component Renderable) *Core {
 // Component represents a Vecty component.
 type Component interface {
 	Markup
+
+	// Unmount is called when the component should be unmounted. i.e., when all
+	// of its event listeners and DOM elements should be removed.
+	Unmount()
+
 	Reconcile(oldComp Component)
 	Node() *js.Object
 }
@@ -74,6 +88,11 @@ type textComponent struct {
 // Apply implements the Markup interface.
 func (s *textComponent) Apply(element *Element) {
 	element.Children = append(element.Children, s)
+}
+
+// Unmount unmounts this textComponent by removing its node from the DOM.
+func (s *textComponent) Unmount() {
+	removeNode(s.node)
 }
 
 func (s *textComponent) Reconcile(oldComp Component) {
@@ -117,6 +136,17 @@ func (e *Element) AddChild(s Component) {
 // Apply implements the Markup interface.
 func (e *Element) Apply(element *Element) {
 	element.Children = append(element.Children, e)
+}
+
+// Unmount unmounts this Element component by removing its node from the DOM.
+func (e *Element) Unmount() {
+	for _, child := range e.Children {
+		child.Unmount()
+	}
+	for _, l := range e.EventListeners {
+		e.node.Call("removeEventListener", l.Name, l.wrapper)
+	}
+	removeNode(e.node)
 }
 
 // Reconcile implements the Component interface.
@@ -173,7 +203,7 @@ func (e *Element) Reconcile(oldComp Component) {
 			replaceNode(newChild.Node(), oldChild.Node())
 		}
 		for i := len(e.Children); i < len(oldElement.Children); i++ {
-			removeNode(oldElement.Children[i].Node())
+			oldElement.Children[i].Unmount()
 		}
 		return
 	}
