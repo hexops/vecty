@@ -23,3 +23,8 @@ Goals
 	-	Same performance as just using plain JS/HTML/CSS.
 -	Composability
 	-	Nest components to form your entire user interface, seperate them logically as you would any normal Go package.
+
+Community
+=========
+
+- Join us in the [#gopherjs channel](https://gophers.slack.com/messages/gopherjs/) on the [Gophers Slack](https://gophersinvite.herokuapp.com/)!
