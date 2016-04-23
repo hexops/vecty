@@ -2,6 +2,48 @@ package vecty
 
 import "github.com/gopherjs/gopherjs/js"
 
+// Renderable is a user-defined renderable component.
+type Renderable interface {
+	Component
+	Render() Component
+}
+
+// Core is the struct which all components embed.
+type Core struct {
+	component Renderable
+	body      Component
+}
+
+// Apply implements the Markup interface.
+func (c *Core) Apply(e *Element) {
+	e.AddChild(c.component)
+}
+
+// Node implements the Component interface.
+func (c *Core) Node() *js.Object {
+	return c.body.Node()
+}
+
+// Reconcile implements the Component interface.
+func (c *Core) Reconcile(oldComp Component) {
+	oldBody := c.body
+	c.body = c.component.Render()
+	c.body.Reconcile(oldBody)
+	if oldBody != nil {
+		replaceNode(c.body.Node(), oldBody.Node())
+	}
+}
+
+// Rerender causes the component to rerender the body and reconcile it.
+func (c *Core) Rerender() {
+	c.Reconcile(nil)
+}
+
+// New creates a new Core component object.
+func New(component Renderable) *Core {
+	return &Core{component: component}
+}
+
 // Component represents a Vecty component.
 type Component interface {
 	Markup
@@ -172,25 +214,4 @@ func AddStylesheet(url string) {
 	link.Set("rel", "stylesheet")
 	link.Set("href", url)
 	js.Global.Get("document").Get("head").Call("appendChild", link)
-}
-
-// Composite is the struct which all components embed.
-type Composite struct {
-	RenderFunc func() Component
-	Body       Component
-}
-
-// Node implements the Component interface.
-func (c *Composite) Node() *js.Object {
-	return c.Body.Node()
-}
-
-// ReconcileBody implements the Component interface.
-func (c *Composite) ReconcileBody() {
-	oldBody := c.Body
-	c.Body = c.RenderFunc()
-	c.Body.Reconcile(oldBody)
-	if oldBody != nil {
-		replaceNode(c.Body.Node(), oldBody.Node())
-	}
 }

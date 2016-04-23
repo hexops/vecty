@@ -11,28 +11,25 @@ import (
 	"github.com/gopherjs/vecty/style"
 )
 
-type ItemView struct {
-	vecty.Composite
+type ItemViewProps struct {
+	Index int
+	Item  *model.Item
+}
 
-	Index     int
-	Item      *model.Item
+type ItemView struct {
+	*vecty.Core
+	*ItemViewProps
+
 	editing   bool
 	editTitle string
 }
 
-// Apply implements the vecty.Markup interface.
-func (p *ItemView) Apply(element *vecty.Element) {
-	element.AddChild(p)
-}
-
-func (p *ItemView) Reconcile(oldComp vecty.Component) {
-	if oldComp, ok := oldComp.(*ItemView); ok {
-		p.Body = oldComp.Body
-		p.editing = oldComp.editing
-		p.editTitle = oldComp.editTitle
+func (p *ItemView) Reconcile(prev vecty.Component) {
+	if v, ok := prev.(*ItemView); ok {
+		p.editing = v.editing
+		p.editTitle = v.editTitle
 	}
-	p.RenderFunc = p.render
-	p.ReconcileBody()
+	p.Core.Reconcile(prev)
 }
 
 func (p *ItemView) onDestroy(event *vecty.Event) {
@@ -51,24 +48,24 @@ func (p *ItemView) onToggleCompleted(event *vecty.Event) {
 func (p *ItemView) onStartEdit(event *vecty.Event) {
 	p.editing = true
 	p.editTitle = p.Item.Title
-	p.ReconcileBody()
+	p.Rerender()
 }
 
 func (p *ItemView) onEditInput(event *vecty.Event) {
 	p.editTitle = event.Target.Get("value").String()
-	p.ReconcileBody()
+	p.Rerender()
 }
 
 func (p *ItemView) onStopEdit(event *vecty.Event) {
 	p.editing = false
-	p.ReconcileBody()
+	p.Rerender()
 	dispatcher.Dispatch(&actions.SetTitle{
 		Index: p.Index,
 		Title: p.editTitle,
 	})
 }
 
-func (p *ItemView) render() vecty.Component {
+func (p *ItemView) Render() vecty.Component {
 	return elem.ListItem(
 		vecty.ClassMap{
 			"completed": p.Item.Completed,
@@ -103,4 +100,10 @@ func (p *ItemView) render() vecty.Component {
 			),
 		),
 	)
+}
+
+func NewItemView(props *ItemViewProps) *ItemView {
+	p := &ItemView{ItemViewProps: props}
+	p.Core = vecty.New(p)
+	return p
 }
