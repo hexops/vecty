@@ -11,24 +11,14 @@ import (
 	"github.com/gopherjs/vecty/prop"
 )
 
-type FilterButton struct {
-	vecty.Composite
-
+type FilterButtonProps struct {
 	Label  string
 	Filter model.FilterState
 }
 
-// Apply implements the vecty.Markup interface.
-func (b *FilterButton) Apply(element *vecty.Element) {
-	element.AddChild(b)
-}
-
-func (b *FilterButton) Reconcile(oldComp vecty.Component) {
-	if oldComp, ok := oldComp.(*FilterButton); ok {
-		b.Body = oldComp.Body
-	}
-	b.RenderFunc = b.render
-	b.ReconcileBody()
+type FilterButton struct {
+	*vecty.Core
+	*FilterButtonProps
 }
 
 func (b *FilterButton) onClick(event *vecty.Event) {
@@ -37,7 +27,7 @@ func (b *FilterButton) onClick(event *vecty.Event) {
 	})
 }
 
-func (b *FilterButton) render() vecty.Component {
+func (b *FilterButton) Render() vecty.Component {
 	return elem.ListItem(
 		elem.Anchor(
 			vecty.If(store.Filter == b.Filter, prop.Class("selected")),
@@ -47,4 +37,12 @@ func (b *FilterButton) render() vecty.Component {
 			vecty.Text(b.Label),
 		),
 	)
+}
+
+func NewFilterButton(props *FilterButtonProps) *FilterButton {
+	b := &FilterButton{
+		FilterButtonProps: props,
+	}
+	b.Core = vecty.New(b)
+	return b
 }

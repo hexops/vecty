@@ -15,29 +15,22 @@ import (
 )
 
 type PageView struct {
-	vecty.Composite
+	*vecty.Core
 
 	Items        []*model.Item
 	newItemTitle string
 }
 
-// Apply implements the vecty.Markup interface.
-func (p *PageView) Apply(element *vecty.Element) {
-	element.AddChild(p)
-}
-
-func (p *PageView) Reconcile(oldComp vecty.Component) {
-	if oldComp, ok := oldComp.(*PageView); ok {
-		p.Body = oldComp.Body
-		p.newItemTitle = oldComp.newItemTitle
+func (p *PageView) Reconcile(prev vecty.Component) {
+	if v, ok := prev.(*PageView); ok {
+		v.newItemTitle = v.newItemTitle
 	}
-	p.RenderFunc = p.render
-	p.ReconcileBody()
+	p.Core.Reconcile(prev)
 }
 
 func (p *PageView) onNewItemTitleInput(event *vecty.Event) {
 	p.newItemTitle = event.Target.Get("value").String()
-	p.ReconcileBody()
+	p.Rerender()
 }
 
 func (p *PageView) onAdd(event *vecty.Event) {
@@ -45,7 +38,7 @@ func (p *PageView) onAdd(event *vecty.Event) {
 		Title: p.newItemTitle,
 	})
 	p.newItemTitle = ""
-	p.ReconcileBody()
+	p.Rerender()
 }
 
 func (p *PageView) onClearCompleted(event *vecty.Event) {
@@ -58,7 +51,7 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 	})
 }
 
-func (p *PageView) render() vecty.Component {
+func (p *PageView) Render() vecty.Component {
 	return elem.Div(
 		elem.Section(
 			prop.Class("todoapp"),
@@ -117,11 +110,11 @@ func (p *PageView) renderFooter() vecty.Component {
 
 		elem.UnorderedList(
 			prop.Class("filters"),
-			&FilterButton{Label: "All", Filter: model.All},
+			NewFilterButton(&FilterButtonProps{Label: "All", Filter: model.All}),
 			vecty.Text(" "),
-			&FilterButton{Label: "Active", Filter: model.Active},
+			NewFilterButton(&FilterButtonProps{Label: "Active", Filter: model.Active}),
 			vecty.Text(" "),
-			&FilterButton{Label: "Completed", Filter: model.Completed},
+			NewFilterButton(&FilterButtonProps{Label: "Completed", Filter: model.Completed}),
 		),
 
 		vecty.If(store.CompletedItemCount() > 0,
@@ -164,7 +157,7 @@ func (p *PageView) renderItemList() vecty.Component {
 		if (store.Filter == model.Active && item.Completed) || (store.Filter == model.Completed && !item.Completed) {
 			continue
 		}
-		items = append(items, &ItemView{Index: i, Item: item})
+		items = append(items, NewItemView(&ItemViewProps{i, item}))
 	}
 
 	return elem.Section(
@@ -187,4 +180,10 @@ func (p *PageView) renderItemList() vecty.Component {
 			items,
 		),
 	)
+}
+
+func NewPageView() *PageView {
+	p := &PageView{}
+	p.Core = vecty.New(p)
+	return p
 }
