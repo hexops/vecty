@@ -18,6 +18,7 @@ type ItemView struct {
 	Item      *model.Item
 	editing   bool
 	editTitle string
+	input     *vecty.Element
 }
 
 // Apply implements the vecty.Markup interface.
@@ -52,6 +53,7 @@ func (p *ItemView) onStartEdit(event *vecty.Event) {
 	p.editing = true
 	p.editTitle = p.Item.Title
 	p.ReconcileBody()
+	p.input.Node().Call("focus")
 }
 
 func (p *ItemView) onEditInput(event *vecty.Event) {
@@ -69,6 +71,12 @@ func (p *ItemView) onStopEdit(event *vecty.Event) {
 }
 
 func (p *ItemView) render() vecty.Component {
+	p.input = elem.Input(
+		prop.Class("edit"),
+		prop.Value(p.editTitle),
+		event.Input(p.onEditInput),
+	)
+
 	return elem.ListItem(
 		vecty.ClassMap{
 			"completed": p.Item.Completed,
@@ -96,11 +104,7 @@ func (p *ItemView) render() vecty.Component {
 		elem.Form(
 			style.Margin(style.Px(0)),
 			event.Submit(p.onStopEdit).PreventDefault(),
-			elem.Input(
-				prop.Class("edit"),
-				prop.Value(p.editTitle),
-				event.Input(p.onEditInput),
-			),
+			p.input,
 		),
 	)
 }
