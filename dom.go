@@ -19,9 +19,16 @@ func Render(comp Component, container *js.Object) {
 // RenderAsBody renders the given component as the body of the page, replacing
 // whatever existing content in the page body there may be.
 func RenderAsBody(comp Component) {
-	body := js.Global.Get("document").Call("createElement", "body")
+	doc := js.Global.Get("document")
+	body := doc.Call("createElement", "body")
 	Render(comp, body)
-	js.Global.Get("document").Set("body", body)
+	if doc.Get("readyState").String() == "loading" {
+		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
+			doc.Set("body", body)
+		})
+		return
+	}
+	doc.Set("body", body)
 }
 
 type textComponent struct {
