@@ -1,6 +1,10 @@
 package vecty
 
-import "github.com/gopherjs/gopherjs/js"
+import (
+	"reflect"
+
+	"github.com/gopherjs/gopherjs/js"
+)
 
 // Renderable is a user-defined renderable component.
 type Renderable interface {
@@ -30,18 +34,29 @@ func (c *Core) Node() *js.Object {
 }
 
 // Reconcile implements the Component interface.
-func (c *Core) Reconcile(oldComp Component) {
+func (c *Core) Reconcile(prev Component) {
+	// This function is the generic equivalent to:
+	//
+	// 	if p, ok := prev.(*UserComponent); ok {
+	// 		c.body = oldComp.body
+	// 	}
+	// 	b.Rerender()
+	//
+	if reflect.TypeOf(c.component) == reflect.TypeOf(prev) {
+		prevCore := reflect.Indirect(reflect.ValueOf(prev)).FieldByName("Core").Interface().(*Core)
+		c.body = prevCore.body
+	}
+	c.Rerender()
+}
+
+// Rerender causes the component to rerender the body and reconcile it.
+func (c *Core) Rerender() {
 	oldBody := c.body
 	c.body = c.component.Render()
 	c.body.Reconcile(oldBody)
 	if oldBody != nil {
 		replaceNode(c.body.Node(), oldBody.Node())
 	}
-}
-
-// Rerender causes the component to rerender the body and reconcile it.
-func (c *Core) Rerender() {
-	c.Reconcile(nil)
 }
 
 // New creates a new Core component object.
