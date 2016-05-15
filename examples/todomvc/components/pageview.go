@@ -23,7 +23,7 @@ type PageView struct {
 
 func (p *PageView) Reconcile(prev vecty.Component) {
 	if v, ok := prev.(*PageView); ok {
-		v.newItemTitle = v.newItemTitle
+		p.newItemTitle = v.newItemTitle
 	}
 	p.Core.Reconcile(prev)
 }
