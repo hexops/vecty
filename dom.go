@@ -38,7 +38,7 @@ func (c *Core) Reconcile(prev Component) {
 	// This function is the generic equivalent to:
 	//
 	// 	if p, ok := prev.(*UserComponent); ok {
-	// 		c.body = oldComp.body
+	// 		c.body = p.body
 	// 	}
 	// 	b.Rerender()
 	//
