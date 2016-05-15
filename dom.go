@@ -57,8 +57,8 @@ func New(component Renderable) *Core {
 type Component interface {
 	Markup
 
-	// Unmount is called when the component should be unmounted. i.e., when all
-	// of its event listeners and DOM elements should be removed.
+	// Unmount is called before the component is unmounted. i.e., when all of
+	// its event listeners and DOM elements will be removed.
 	Unmount()
 
 	Reconcile(oldComp Component)
@@ -90,10 +90,8 @@ func (s *textComponent) Apply(element *Element) {
 	element.Children = append(element.Children, s)
 }
 
-// Unmount unmounts this textComponent by removing its node from the DOM.
-func (s *textComponent) Unmount() {
-	removeNode(s.node)
-}
+// Unmount implements the Component interface and is no-op.
+func (s *textComponent) Unmount() {}
 
 func (s *textComponent) Reconcile(oldComp Component) {
 	if oldText, ok := oldComp.(*textComponent); ok {
@@ -138,7 +136,8 @@ func (e *Element) Apply(element *Element) {
 	element.Children = append(element.Children, e)
 }
 
-// Unmount unmounts this Element component by removing its node from the DOM.
+// Unmount unmounts this Element component by calling unmount on all children
+// and removing all event listeners.
 func (e *Element) Unmount() {
 	for _, child := range e.Children {
 		child.Unmount()
@@ -146,7 +145,6 @@ func (e *Element) Unmount() {
 	for _, l := range e.EventListeners {
 		e.node.Call("removeEventListener", l.Name, l.wrapper)
 	}
-	removeNode(e.node)
 }
 
 // Reconcile implements the Component interface.
@@ -204,6 +202,7 @@ func (e *Element) Reconcile(oldComp Component) {
 		}
 		for i := len(e.Children); i < len(oldElement.Children); i++ {
 			oldElement.Children[i].Unmount()
+			removeNode(oldElement.Children[i].Node())
 		}
 		return
 	}
