@@ -21,10 +21,6 @@ func (c *Core) Apply(e *Element) {
 
 // Unmount implements the Component interface.
 func (c *Core) Unmount() {
-	// Break the circular link between c (Core) and c.component (Renderable) or
-	// else one object could not be garbage collector without the other (both
-	// would have to be unused).
-	c.component = nil
 	c.body.Unmount()
 }
 
