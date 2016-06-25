@@ -22,9 +22,9 @@ func main() {
 	p := &components.PageView{}
 	store.Listeners.Add(p, func() {
 		p.Items = store.Items
-		p.ReconcileBody()
+		vecty.Rerender(p)
 	})
-	vecty.RenderAsBody(p)
+	vecty.RenderBody(p)
 }
 
 func attachLocalStorage() {

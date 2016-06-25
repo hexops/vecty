@@ -12,28 +12,21 @@ import (
 )
 
 type ItemView struct {
-	vecty.Composite
+	vecty.Core
 
 	Index     int
 	Item      *model.Item
 	editing   bool
 	editTitle string
-	input     *vecty.Element
+	input     *vecty.HTML
 }
 
-// Apply implements the vecty.Markup interface.
-func (p *ItemView) Apply(element *vecty.Element) {
-	element.AddChild(p)
-}
-
-func (p *ItemView) Reconcile(oldComp vecty.Component) {
-	if oldComp, ok := oldComp.(*ItemView); ok {
-		p.Body = oldComp.Body
-		p.editing = oldComp.editing
-		p.editTitle = oldComp.editTitle
+func (p *ItemView) Restore(prev vecty.Component) bool {
+	if old, ok := prev.(*ItemView); ok {
+		p.editing = old.editing
+		p.editTitle = old.editTitle
 	}
-	p.RenderFunc = p.render
-	p.ReconcileBody()
+	return false
 }
 
 func (p *ItemView) onDestroy(event *vecty.Event) {
@@ -52,25 +45,25 @@ func (p *ItemView) onToggleCompleted(event *vecty.Event) {
 func (p *ItemView) onStartEdit(event *vecty.Event) {
 	p.editing = true
 	p.editTitle = p.Item.Title
-	p.ReconcileBody()
-	p.input.Node().Call("focus")
+	vecty.Rerender(p)
+	p.input.Node.Call("focus")
 }
 
 func (p *ItemView) onEditInput(event *vecty.Event) {
 	p.editTitle = event.Target.Get("value").String()
-	p.ReconcileBody()
+	vecty.Rerender(p)
 }
 
 func (p *ItemView) onStopEdit(event *vecty.Event) {
 	p.editing = false
-	p.ReconcileBody()
+	vecty.Rerender(p)
 	dispatcher.Dispatch(&actions.SetTitle{
 		Index: p.Index,
 		Title: p.editTitle,
 	})
 }
 
-func (p *ItemView) render() vecty.Component {
+func (p *ItemView) Render() *vecty.HTML {
 	p.input = elem.Input(
 		prop.Class("edit"),
 		prop.Value(p.editTitle),
