@@ -15,6 +15,7 @@ type Event struct {
 	Name string
 	Link string
 	Desc string
+	Spec string
 }
 
 func main() {
@@ -141,6 +142,7 @@ func main() {
 		if e.Desc == "" {
 			e.Desc = "(no documentation)"
 		}
+		e.Spec = strings.TrimSpace(cols.Eq(2).Text())
 
 		funName := nameMap[e.Name]
 		if funName == "" {
@@ -166,7 +168,9 @@ func main() {
 
 // Package event defines markup to bind DOM events.
 //
-// Generated from "Event reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/Events, licensed under CC-BY-SA 2.5.
+// Generated from "Event reference" by Mozilla Contributors,
+// https://developer.mozilla.org/en-US/docs/Web/Events, licensed under
+// CC-BY-SA 2.5.
 package event
 
 import "github.com/gopherjs/vecty"
@@ -174,17 +178,33 @@ import "github.com/gopherjs/vecty"
 
 	for _, name := range names {
 		e := events[name]
-		fmt.Fprintf(file, `
-// %s
+		if e.Spec == "WebVR API" {
+			continue // not stabilized
+		}
+		fmt.Fprintf(file, `%s
 //
 // https://developer.mozilla.org%s
 func %s(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "%s", Listener: listener}
 }
-`, e.Desc, e.Link[6:], name, e.Name)
+`, descToComments(e.Desc), e.Link[6:], name, e.Name)
 	}
 }
 
 func capitalize(s string) string {
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func descToComments(desc string) string {
+	c := ""
+	length := 80
+	for _, word := range strings.Split(desc, " ") {
+		if length+len(word)+1 > 80 {
+			length = 3
+			c += "\n//"
+		}
+		c += " " + word
+		length += len(word) + 1
+	}
+	return c
 }
