@@ -91,7 +91,9 @@ func main() {
 
 // Package elem defines markup to create DOM elements.
 //
-// Generated from "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
+// Generated from "HTML element reference" by Mozilla Contributors,
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under
+// CC-BY-SA 2.5.
 package elem
 
 import "github.com/gopherjs/vecty"
@@ -135,8 +137,7 @@ func writeElem(w io.Writer, name, desc, link string) {
 		funName = capitalize(name)
 	}
 
-	fmt.Fprintf(w, `
-// %s
+	fmt.Fprintf(w, `%s
 //
 // https://developer.mozilla.org%s
 func %s(markup ...vecty.Markup) *vecty.Element {
@@ -144,9 +145,23 @@ func %s(markup ...vecty.Markup) *vecty.Element {
 	vecty.List(markup).Apply(e)
 	return e
 }
-`, desc, link, funName, name)
+`, descToComments(desc), link, funName, name)
 }
 
 func capitalize(s string) string {
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func descToComments(desc string) string {
+	c := ""
+	length := 80
+	for _, word := range strings.Split(desc, " ") {
+		if length+len(word)+1 > 80 {
+			length = 3
+			c += "\n//"
+		}
+		c += " " + word
+		length += len(word) + 1
+	}
+	return c
 }
