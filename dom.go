@@ -91,6 +91,9 @@ func (e *Element) Reconcile(oldComp Component) {
 			if l.callPreventDefault {
 				jsEvent.Call("preventDefault")
 			}
+			if l.callStopPropagation {
+				jsEvent.Call("stopPropagation")
+			}
 			l.Listener(&Event{Target: jsEvent.Get("target")})
 		}
 	}

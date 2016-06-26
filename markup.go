@@ -99,10 +99,11 @@ func Style(name string, value interface{}) Markup {
 // EventListener is markup that specifies a callback function to be invoked when
 // the named DOM event is fired.
 type EventListener struct {
-	Name               string
-	Listener           func(*Event)
-	callPreventDefault bool
-	wrapper            func(jsEvent *js.Object)
+	Name                string
+	Listener            func(*Event)
+	callPreventDefault  bool
+	callStopPropagation bool
+	wrapper             func(jsEvent *js.Object)
 }
 
 // PreventDefault prevents the default behavior of the event from occuring.
@@ -110,6 +111,15 @@ type EventListener struct {
 // See https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault.
 func (l *EventListener) PreventDefault() *EventListener {
 	l.callPreventDefault = true
+	return l
+}
+
+// StopPropagation prevents further propagation of the current event in the
+// capturing and bubbling phases.
+//
+// See https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation.
+func (l *EventListener) StopPropagation() *EventListener {
+	l.callStopPropagation = true
 	return l
 }
 
