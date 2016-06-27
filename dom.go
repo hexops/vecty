@@ -101,8 +101,16 @@ func (e *Element) Reconcile(oldComp Component) {
 	if oldElement, ok := oldComp.(*Element); ok && oldElement.TagName == e.TagName {
 		e.node = oldElement.node
 		for name, value := range e.Properties {
-			oldValue := oldElement.Properties[name]
-			if value != oldValue || name == "value" || name == "checked" {
+			var oldValue interface{}
+			switch name {
+			case "value":
+				oldValue = e.node.Get("value").String()
+			case "checked":
+				oldValue = e.node.Get("checked").Bool()
+			default:
+				oldValue = oldElement.Properties[name]
+			}
+			if value != oldValue {
 				e.node.Set(name, value)
 			}
 		}
