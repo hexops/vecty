@@ -385,7 +385,7 @@ func Italic(markup ...vecty.Markup) *vecty.Element {
 	return e
 }
 
-// The HTML Inline Frame Element (<iframe>) represents a nested browsing context, effectively embedding another HTML page into the current page. In HTML 4.01, a document may contain a head and a body or a head and a frame-set, but not both a body and a frame-set. However, an <iframe> can be used within a normal document body. Each browsing context has its own session history and active document. The browsing context that contains the embedded content is called the parent browsing context. The top-level browsing context (which has no parent) is typically the browser window.
+// The HTML Inline Frame Element (<iframe>) represents a nested browsing context, effectively embedding another HTML page into the current page. In HTML 4.01, a document may contain a head and a body or a head and a frameset, but not both a body and a frameset. However, an <iframe> can be used within a normal document body. Each browsing context has its own session history and active document. The browsing context that contains the embedded content is called the parent browsing context. The top-level browsing context (which has no parent) is typically the browser window.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
 func InlineFrame(markup ...vecty.Markup) *vecty.Element {
@@ -655,7 +655,7 @@ func Quote(markup ...vecty.Markup) *vecty.Element {
 	return e
 }
 
-// The HTML <rp> element is used to provide fall-back parenthesis for browsers non-supporting ruby annotations. Ruby annotations are for showing pronounciation of East Asian characters, like using Japanese furigana or Taiwainese bopomofo characters. The <rp> element is used in the case of lack of <ruby> element support its content has what should be displayed in order to indicate the presence of a ruby annotation, usually parentheses.
+// The HTML <rp> element is used to provide fall-back parenthesis for browsers non-supporting ruby annotations. Ruby annotations are for showing pronunciation of East Asian characters, like using Japanese furigana or Taiwainese bopomofo characters. The <rp> element is used in the case of lack of <ruby> element support its content has what should be displayed in order to indicate the presence of a ruby annotation, usually parentheses.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp
 func RubyParenthesis(markup ...vecty.Markup) *vecty.Element {
@@ -727,7 +727,7 @@ func Section(markup ...vecty.Markup) *vecty.Element {
 	return e
 }
 
-// Technical review completed.
+// The HTML select (<select>) element represents a control that presents a menu of options. The options within the menu are represented by <option> elements, which can be grouped by <optgroup> elements. Options can be pre-selected for the user.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
 func Select(markup ...vecty.Markup) *vecty.Element {
@@ -817,7 +817,7 @@ func Superscript(markup ...vecty.Markup) *vecty.Element {
 	return e
 }
 
-// The HTML Table Element (<table>) represents data in two dimensions or more.
+// The HTML Table Element (<table>) represents tabular data: information expressed via two dimensions or more.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
 func Table(markup ...vecty.Markup) *vecty.Element {
