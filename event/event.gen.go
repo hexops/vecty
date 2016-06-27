@@ -70,7 +70,7 @@ func BeforePrint(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "beforeprint", Listener: listener}
 }
 
-// (no documentation)
+// The window, the document and its resources are about to be unloaded.
 //
 // https://developer.mozilla.org/docs/Web/Events/beforeunload
 func BeforeUnload(listener func(*vecty.Event)) *vecty.EventListener {
@@ -350,14 +350,14 @@ func EndEvent(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "endEvent", Listener: listener}
 }
 
-// (no documentation)
+// Playback has stopped because the end of the media was reached.
 //
 // https://developer.mozilla.org/docs/Web/Events/ended_(Web_Audio)
 func Ended(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "ended", Listener: listener}
 }
 
-// An error occurs that prevents the utterance from being succesfully spoken.
+// An error occurs that prevents the utterance from being successfully spoken.
 //
 // https://developer.mozilla.org/docs/Web/Events/error_(SpeechSynthesisError)
 func Error(listener func(*vecty.Event)) *vecty.EventListener {
@@ -462,7 +462,7 @@ func KeyUp(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "keyup", Listener: listener}
 }
 
-// (no documentation)
+// The user's preferred languages have changed.
 //
 // https://developer.mozilla.org/docs/Web/Events/languagechange
 func LanguageChange(listener func(*vecty.Event)) *vecty.EventListener {
@@ -651,7 +651,7 @@ func PageShow(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "pageshow", Listener: listener}
 }
 
-// Data has been transfered from the system clipboard to the document.
+// Data has been transferred from the system clipboard to the document.
 //
 // https://developer.mozilla.org/docs/Web/Events/paste
 func Paste(listener func(*vecty.Event)) *vecty.EventListener {
@@ -1029,20 +1029,6 @@ func TouchEnd(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "touchend", Listener: listener}
 }
 
-// A touch point is moved onto the interactive area of an element.
-//
-// https://developer.mozilla.org/docs/Web/Events/touchenter
-func TouchEnter(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "touchenter", Listener: listener}
-}
-
-// A touch point is moved off the interactive area of an element.
-//
-// https://developer.mozilla.org/docs/Web/Events/touchleave
-func TouchLeave(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "touchleave", Listener: listener}
-}
-
 // A touch point is moved along the touch surface.
 //
 // https://developer.mozilla.org/docs/Web/Events/touchmove
@@ -1090,6 +1076,27 @@ func UpgradeNeeded(listener func(*vecty.Event)) *vecty.EventListener {
 // https://developer.mozilla.org/docs/Web/Events/userproximity
 func UserProximity(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "userproximity", Listener: listener}
+}
+
+// A compatible VR device has been connected to the computer.
+//
+// https://developer.mozilla.org/docs/Web/Events/vrdisplayconnected
+func VRDisplayConnected(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "vrdisplayconnected", Listener: listener}
+}
+
+// A compatible VR device has been disconnected from the computer.
+//
+// https://developer.mozilla.org/docs/Web/Events/vrdisplaydisconnected
+func VRDisplayDisconnected(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "vrdisplaydisconnected", Listener: listener}
+}
+
+// The presenting state of a VR device has changed — i.e. from presenting to not presenting, or vice versa.
+//
+// https://developer.mozilla.org/docs/Web/Events/vrdisplaypresentchange
+func VRDisplayPresentChange(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "vrdisplaypresentchange", Listener: listener}
 }
 
 // A versionchange transaction completed.
