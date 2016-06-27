@@ -116,6 +116,9 @@ func main() {
 		"visibilitychange":         "VisibilityChange",
 		"voiceschanged":            "VoicesChanged",
 		"volumechange":             "VolumeChange",
+		"vrdisplayconnected":       "VRDisplayConnected",
+		"vrdisplaydisconnected":    "VRDisplayDisconnected",
+		"vrdisplaypresentchange":   "VRDisplayPresentChange",
 	}
 
 	doc, err := goquery.NewDocument("https://developer.mozilla.org/en-US/docs/Web/Events")
