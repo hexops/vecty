@@ -139,9 +139,6 @@ func main() {
 		e.Name = link.Text()
 		e.Link, _ = link.Attr("href")
 		e.Desc = strings.TrimSpace(cols.Eq(3).Text())
-		if e.Desc == "" {
-			e.Desc = "(no documentation)"
-		}
 		e.Spec = strings.TrimSpace(cols.Eq(2).Text())
 
 		funName := nameMap[e.Name]
@@ -149,6 +146,13 @@ func main() {
 			funName = capitalize(e.Name)
 		}
 
+		if e.Desc != "" {
+			// Lowercase the first letter of the description.
+			lowercaseDesc := strings.ToLower(string(e.Desc[0])) + e.Desc[1:]
+			e.Desc = fmt.Sprintf("%s is an event fired when %s", funName, lowercaseDesc)
+		} else {
+			e.Desc = "(no documentation)"
+		}
 		events[funName] = &e
 	})
 
