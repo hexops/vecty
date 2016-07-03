@@ -137,6 +137,25 @@ func writeElem(w io.Writer, name, desc, link string) {
 		funName = capitalize(name)
 	}
 
+	// Descriptions for elements generally read as:
+	//
+	//  The HTML <foobar> element ...
+	//
+	// Because these are consistent (sometimes with varying captalization,
+	// however) we can exploit that fact to reword the documentation in proper
+	// Go style:
+	//
+	//  Foobar ...
+	//
+	generalLowercase := fmt.Sprintf("the html <%s> element", strings.ToLower(name))
+
+	// Replace a number of 'no-break space' unicode characters which exist in
+	// the descriptions with normal spaces.
+	desc = strings.Replace(desc, "\u00a0", " ", -1)
+	if l := len(generalLowercase); len(desc) > l && strings.HasPrefix(strings.ToLower(desc), generalLowercase) {
+		desc = fmt.Sprintf("%s%s", funName, desc[l:])
+	}
+
 	fmt.Fprintf(w, `%s
 //
 // https://developer.mozilla.org%s
