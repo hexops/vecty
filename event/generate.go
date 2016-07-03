@@ -19,6 +19,12 @@ type Event struct {
 }
 
 func main() {
+	// nameMap translates lowercase HTML attribute names from the MDN source
+	// into a proper Go style name with MixedCaps and initialisms:
+	//
+	//  https://github.com/golang/go/wiki/CodeReviewComments#mixed-caps
+	//  https://github.com/golang/go/wiki/CodeReviewComments#initialisms
+	//
 	nameMap := map[string]string{
 		"afterprint":               "AfterPrint",
 		"animationend":             "AnimationEnd",

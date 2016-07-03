@@ -11,6 +11,12 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// elemNameMap translates lowercase HTML tag names from the MDN source into a
+// proper Go style name with MixedCaps and initialisms:
+//
+//  https://github.com/golang/go/wiki/CodeReviewComments#mixed-caps
+//  https://github.com/golang/go/wiki/CodeReviewComments#initialisms
+//
 var elemNameMap = map[string]string{
 	"a":          "Anchor",
 	"abbr":       "Abbreviation",
