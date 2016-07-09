@@ -15,9 +15,16 @@ type Event struct {
 	Name string
 	Link string
 	Desc string
+	Spec string
 }
 
 func main() {
+	// nameMap translates lowercase HTML attribute names from the MDN source
+	// into a proper Go style name with MixedCaps and initialisms:
+	//
+	//  https://github.com/golang/go/wiki/CodeReviewComments#mixed-caps
+	//  https://github.com/golang/go/wiki/CodeReviewComments#initialisms
+	//
 	nameMap := map[string]string{
 		"afterprint":               "AfterPrint",
 		"animationend":             "AnimationEnd",
@@ -138,15 +145,18 @@ func main() {
 		e.Name = link.Text()
 		e.Link, _ = link.Attr("href")
 		e.Desc = strings.TrimSpace(cols.Eq(3).Text())
-		if e.Desc == "" {
-			e.Desc = "(no documentation)"
-		}
+		e.Spec = strings.TrimSpace(cols.Eq(2).Text())
 
 		funName := nameMap[e.Name]
 		if funName == "" {
 			funName = capitalize(e.Name)
 		}
 
+		if e.Desc != "" {
+			e.Desc = fmt.Sprintf("%s is an event fired when %s", funName, lowercase(e.Desc))
+		} else {
+			e.Desc = "(no documentation)"
+		}
 		events[funName] = &e
 	})
 
@@ -166,7 +176,9 @@ func main() {
 
 // Package event defines markup to bind DOM events.
 //
-// Generated from "Event reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/Events, licensed under CC-BY-SA 2.5.
+// Generated from "Event reference" by Mozilla Contributors,
+// https://developer.mozilla.org/en-US/docs/Web/Events, licensed under
+// CC-BY-SA 2.5.
 package event
 
 import "github.com/gopherjs/vecty"
@@ -174,17 +186,37 @@ import "github.com/gopherjs/vecty"
 
 	for _, name := range names {
 		e := events[name]
-		fmt.Fprintf(file, `
-// %s
+		if e.Spec == "WebVR API" {
+			continue // not stabilized
+		}
+		fmt.Fprintf(file, `%s
 //
 // https://developer.mozilla.org%s
 func %s(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "%s", Listener: listener}
 }
-`, e.Desc, e.Link[6:], name, e.Name)
+`, descToComments(e.Desc), e.Link[6:], name, e.Name)
 	}
 }
 
 func capitalize(s string) string {
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func lowercase(s string) string {
+	return strings.ToLower(s[:1]) + s[1:]
+}
+
+func descToComments(desc string) string {
+	c := ""
+	length := 80
+	for _, word := range strings.Split(desc, " ") {
+		if length+len(word)+1 > 80 {
+			length = 3
+			c += "\n//"
+		}
+		c += " " + word
+		length += len(word) + 1
+	}
+	return c
 }

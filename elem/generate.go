@@ -11,6 +11,12 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// elemNameMap translates lowercase HTML tag names from the MDN source into a
+// proper Go style name with MixedCaps and initialisms:
+//
+//  https://github.com/golang/go/wiki/CodeReviewComments#mixed-caps
+//  https://github.com/golang/go/wiki/CodeReviewComments#initialisms
+//
 var elemNameMap = map[string]string{
 	"a":          "Anchor",
 	"abbr":       "Abbreviation",
@@ -91,7 +97,9 @@ func main() {
 
 // Package elem defines markup to create DOM elements.
 //
-// Generated from "HTML element reference" by Mozilla Contributors, https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under CC-BY-SA 2.5.
+// Generated from "HTML element reference" by Mozilla Contributors,
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element, licensed under
+// CC-BY-SA 2.5.
 package elem
 
 import "github.com/gopherjs/vecty"
@@ -135,8 +143,26 @@ func writeElem(w io.Writer, name, desc, link string) {
 		funName = capitalize(name)
 	}
 
-	fmt.Fprintf(w, `
-// %s
+	// Descriptions for elements generally read as:
+	//
+	//  The HTML <foobar> element ...
+	//
+	// Because these are consistent (sometimes with varying captalization,
+	// however) we can exploit that fact to reword the documentation in proper
+	// Go style:
+	//
+	//  Foobar ...
+	//
+	generalLowercase := fmt.Sprintf("the html <%s> element", strings.ToLower(name))
+
+	// Replace a number of 'no-break space' unicode characters which exist in
+	// the descriptions with normal spaces.
+	desc = strings.Replace(desc, "\u00a0", " ", -1)
+	if l := len(generalLowercase); len(desc) > l && strings.HasPrefix(strings.ToLower(desc), generalLowercase) {
+		desc = fmt.Sprintf("%s%s", funName, desc[l:])
+	}
+
+	fmt.Fprintf(w, `%s
 //
 // https://developer.mozilla.org%s
 func %s(markup ...vecty.Markup) *vecty.Element {
@@ -144,9 +170,23 @@ func %s(markup ...vecty.Markup) *vecty.Element {
 	vecty.List(markup).Apply(e)
 	return e
 }
-`, desc, link, funName, name)
+`, descToComments(desc), link, funName, name)
 }
 
 func capitalize(s string) string {
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func descToComments(desc string) string {
+	c := ""
+	length := 80
+	for _, word := range strings.Split(desc, " ") {
+		if length+len(word)+1 > 80 {
+			length = 3
+			c += "\n//"
+		}
+		c += " " + word
+		length += len(word) + 1
+	}
+	return c
 }
