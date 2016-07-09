@@ -153,9 +153,7 @@ func main() {
 		}
 
 		if e.Desc != "" {
-			// Lowercase the first letter of the description.
-			lowercaseDesc := strings.ToLower(string(e.Desc[0])) + e.Desc[1:]
-			e.Desc = fmt.Sprintf("%s is an event fired when %s", funName, lowercaseDesc)
+			e.Desc = fmt.Sprintf("%s is an event fired when %s", funName, lowercase(e.Desc))
 		} else {
 			e.Desc = "(no documentation)"
 		}
@@ -203,6 +201,10 @@ func %s(listener func(*vecty.Event)) *vecty.EventListener {
 
 func capitalize(s string) string {
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func lowercase(s string) string {
+	return strings.ToLower(s[:1]) + s[1:]
 }
 
 func descToComments(desc string) string {
