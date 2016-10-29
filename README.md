@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="https://googledrive.com/host/0B2Crq763J1N4QkNHcHdxcTdxYjg/vecty_logo.png" />
+	<img src="https://drive.google.com/uc?id=0B2Crq763J1N4SnpwalZTeVE5RmM" />
 </p>
 
 Vecty is a [React](https://facebook.github.io/react/)-like library for [GopherJS](https://github.com/gopherjs/gopherjs) so that you can do frontend development in Go instead of writing JavaScript/HTML/CSS.
