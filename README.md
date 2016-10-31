@@ -24,6 +24,15 @@ Goals
 -	Composability
 	-	Nest components to form your entire user interface, seperate them logically as you would any normal Go package.
 
+Current Status
+==============
+
+**Vecty is currently considered to be an experimental work-in-progress.**
+
+-	APIs will change.
+-	The scope of Vecty is only ~80% defined currently.
+-	There are a number of important [open issues](https://github.com/gopherjs/vecty/issues).
+
 Community
 =========
 
