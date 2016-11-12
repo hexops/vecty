@@ -94,7 +94,7 @@ func (e *Element) Reconcile(oldComp Component) {
 			if l.callStopPropagation {
 				jsEvent.Call("stopPropagation")
 			}
-			l.Listener(&Event{Target: jsEvent.Get("target")})
+			l.Listener(&Event{Object: jsEvent, Target: jsEvent.Get("target")})
 		}
 	}
 
