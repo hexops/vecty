@@ -174,10 +174,11 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 
 	if prev, ok := old.(*HTML); ok && prev != nil {
 		if h.text != "" && prev.text != "" {
+			// Two text nodes.
 			h.restoreText(prev)
 			return
-		}
-		if h.tag != "" && prev.tag != "" && h.tag == prev.tag {
+		} else if h.tag == prev.tag {
+			// Two HTML elements of the same tag.
 			h.restoreHTML(prev)
 			return
 		}
