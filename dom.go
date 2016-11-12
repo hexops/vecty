@@ -74,13 +74,17 @@ type HTML struct {
 	children        []ComponentOrHTML
 }
 
-func (h *HTML) restoreHTML(prev *HTML) {
+func (h *HTML) restoreText(prev *HTML) {
 	h.Node = prev.Node
 
 	// Text modifications.
 	if h.text != prev.text {
 		h.Node.Set("nodeValue", h.text)
 	}
+}
+
+func (h *HTML) restoreHTML(prev *HTML) {
+	h.Node = prev.Node
 
 	// Properties
 	for name, value := range h.properties {
@@ -169,8 +173,14 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	}
 
 	if prev, ok := old.(*HTML); ok && prev != nil {
-		h.restoreHTML(prev)
-		return
+		if h.text != "" && prev.text != "" {
+			h.restoreText(prev)
+			return
+		}
+		if h.tag != "" && prev.tag != "" && h.tag == prev.tag {
+			h.restoreHTML(prev)
+			return
+		}
 	}
 
 	if h.tag != "" && h.text != "" {
