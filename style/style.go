@@ -54,13 +54,13 @@ const (
 )
 
 func Overflow(option OverflowOption) vecty.Markup {
-	return vecty.Style("overflow", option)
+	return vecty.Style("overflow", string(option))
 }
 
 func OverflowX(option OverflowOption) vecty.Markup {
-	return vecty.Style("overflow-x", option)
+	return vecty.Style("overflow-x", string(option))
 }
 
 func OverflowY(option OverflowOption) vecty.Markup {
-	return vecty.Style("overflow-y", option)
+	return vecty.Style("overflow-y", string(option))
 }

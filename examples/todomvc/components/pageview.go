@@ -15,29 +15,22 @@ import (
 )
 
 type PageView struct {
-	vecty.Composite
+	vecty.Core
 
 	Items        []*model.Item
 	newItemTitle string
 }
 
-// Apply implements the vecty.Markup interface.
-func (p *PageView) Apply(element *vecty.Element) {
-	element.AddChild(p)
-}
-
-func (p *PageView) Reconcile(oldComp vecty.Component) {
-	if oldComp, ok := oldComp.(*PageView); ok {
-		p.Body = oldComp.Body
-		p.newItemTitle = oldComp.newItemTitle
+func (p *PageView) Restore(prev vecty.Component) bool {
+	if old, ok := prev.(*PageView); ok {
+		p.newItemTitle = old.newItemTitle
 	}
-	p.RenderFunc = p.render
-	p.ReconcileBody()
+	return false
 }
 
 func (p *PageView) onNewItemTitleInput(event *vecty.Event) {
 	p.newItemTitle = event.Target.Get("value").String()
-	p.ReconcileBody()
+	vecty.Rerender(p)
 }
 
 func (p *PageView) onAdd(event *vecty.Event) {
@@ -45,7 +38,7 @@ func (p *PageView) onAdd(event *vecty.Event) {
 		Title: p.newItemTitle,
 	})
 	p.newItemTitle = ""
-	p.ReconcileBody()
+	vecty.Rerender(p)
 }
 
 func (p *PageView) onClearCompleted(event *vecty.Event) {
@@ -58,8 +51,8 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 	})
 }
 
-func (p *PageView) render() vecty.Component {
-	return elem.Div(
+func (p *PageView) Render() *vecty.HTML {
+	return elem.Body(
 		elem.Section(
 			prop.Class("todoapp"),
 
@@ -74,7 +67,7 @@ func (p *PageView) render() vecty.Component {
 	)
 }
 
-func (p *PageView) renderHeader() vecty.Markup {
+func (p *PageView) renderHeader() *vecty.HTML {
 	return elem.Header(
 		prop.Class("header"),
 
@@ -96,7 +89,7 @@ func (p *PageView) renderHeader() vecty.Markup {
 	)
 }
 
-func (p *PageView) renderFooter() vecty.Component {
+func (p *PageView) renderFooter() *vecty.HTML {
 	count := store.ActiveItemCount()
 	var itemsLeftText = " items left"
 	if count == 1 {
@@ -134,7 +127,7 @@ func (p *PageView) renderFooter() vecty.Component {
 	)
 }
 
-func (p *PageView) renderInfo() vecty.Component {
+func (p *PageView) renderInfo() *vecty.HTML {
 	return elem.Footer(
 		prop.Class("info"),
 
@@ -158,7 +151,7 @@ func (p *PageView) renderInfo() vecty.Component {
 	)
 }
 
-func (p *PageView) renderItemList() vecty.Component {
+func (p *PageView) renderItemList() *vecty.HTML {
 	var items vecty.List
 	for i, item := range store.Items {
 		if (store.Filter == model.Active && item.Completed) || (store.Filter == model.Completed && !item.Completed) {

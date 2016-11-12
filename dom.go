@@ -1,92 +1,166 @@
 package vecty
 
-import "github.com/gopherjs/gopherjs/js"
+import (
+	"fmt"
 
-// Component represents a Vecty component.
+	"github.com/gopherjs/gopherjs/js"
+)
+
+// Core implements the Context method of the Component interface, and is the
+// core/central struct which all Component implementations should embed.
+type Core struct {
+	prevRender *HTML
+}
+
+// Context implements the Component interface.
+func (c *Core) Context() *Core { return c }
+
+// Component represents a single visual component within an application. To
+// define a new component simply implement the Render method and embed the Core
+// struct:
+//
+// 	type MyComponent struct {
+// 		vecty.Core
+// 		... additional component fields (state or properties) ...
+// 	}
+//
+// 	func (c *MyComponent) Render() *vecty.HTML {
+// 		... rendering ...
+// 	}
+//
 type Component interface {
-	Markup
-	Reconcile(oldComp Component)
-	Node() *js.Object
+	// Render is responsible for building HTML which represents the component.
+	Render() *HTML
+
+	// Context returns the components context, which is used internally by
+	// Vecty in order to store the previous component render for diffing.
+	Context() *Core
 }
 
-// Render renders a component into the given container element. It is appended
-// as a child element.
-func Render(comp Component, container *js.Object) {
-	comp.Reconcile(nil)
-	container.Call("appendChild", comp.Node())
+// ComponentOrHTML represents one of:
+//
+//  Component
+//  *HTML
+//
+// If the underlying value is not one of these types, the code handling the
+// value is expected to panic.
+type ComponentOrHTML interface{}
+
+// Restorer is an optional interface that Component's can implement in order to
+// restore state during component reconciliation and also to short-circuit
+// the reconciliation of a Component's body.
+type Restorer interface {
+	// Restore is called when the component should restore itself against a
+	// previous instance of a component. The previous component may be nil or
+	// of a different type than this Restorer itself, thus a type assertion
+	// should be used.
+	//
+	// If skip = true is returned, restoration of this component's body is
+	// skipped. That is, the component is not rerendered. If the component can
+	// prove when Restore is called that the HTML rendered by Component.Render
+	// would not change, true should be returned.
+	Restore(prev Component) (skip bool)
 }
 
-// RenderAsBody renders the given component as the body of the page, replacing
-// whatever existing content in the page body there may be.
-func RenderAsBody(comp Component) {
-	doc := js.Global.Get("document")
-	body := doc.Call("createElement", "body")
-	Render(comp, body)
-	if doc.Get("readyState").String() == "loading" {
-		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
-			doc.Set("body", body)
-		})
-		return
+// HTML represents some form of HTML: an element with a specific tag, or some
+// literal text (a TextNode).
+type HTML struct {
+	Node *js.Object
+
+	tag, text       string
+	styles, dataset map[string]string
+	properties      map[string]interface{}
+	eventListeners  []*EventListener
+	children        []ComponentOrHTML
+}
+
+func (h *HTML) restoreText(prev *HTML) {
+	h.Node = prev.Node
+
+	// Text modifications.
+	if h.text != prev.text {
+		h.Node.Set("nodeValue", h.text)
 	}
-	doc.Set("body", body)
 }
 
-type textComponent struct {
-	text string
-	node *js.Object
-}
+func (h *HTML) restoreHTML(prev *HTML) {
+	h.Node = prev.Node
 
-// Apply implements the Markup interface.
-func (s *textComponent) Apply(element *Element) {
-	element.Children = append(element.Children, s)
-}
-
-func (s *textComponent) Reconcile(oldComp Component) {
-	if oldText, ok := oldComp.(*textComponent); ok {
-		s.node = oldText.node
-		if oldText.text != s.text {
-			s.node.Set("nodeValue", s.text)
+	// Properties
+	for name, value := range h.properties {
+		var oldValue interface{}
+		switch name {
+		case "value":
+			oldValue = h.Node.Get("value").String()
+		case "checked":
+			oldValue = h.Node.Get("checked").Bool()
+		default:
+			oldValue = prev.properties[name]
 		}
-		return
+		if value != oldValue {
+			h.Node.Set(name, value)
+		}
+	}
+	for name := range prev.properties {
+		if _, ok := h.properties[name]; !ok {
+			h.Node.Set(name, nil)
+		}
 	}
 
-	s.node = js.Global.Get("document").Call("createTextNode", s.text)
+	// Styles
+	style := h.Node.Get("style")
+	for name, value := range h.styles {
+		oldValue := prev.styles[name]
+		if value != oldValue {
+			style.Call("setProperty", name, value)
+		}
+	}
+	for name := range prev.styles {
+		if _, ok := h.styles[name]; !ok {
+			style.Call("removeProperty", name)
+		}
+	}
+
+	for _, l := range prev.eventListeners {
+		h.Node.Call("removeEventListener", l.Name, l.wrapper)
+	}
+	for _, l := range h.eventListeners {
+		h.Node.Call("addEventListener", l.Name, l.wrapper)
+	}
+
+	// TODO better list element reuse
+	for i, nextChild := range h.children {
+		nextChildRender := doRender(nextChild)
+		if i >= len(prev.children) {
+			if doRestore(nil, nextChild, nil, nextChildRender) {
+				continue
+			}
+			h.Node.Call("appendChild", nextChildRender.Node)
+			continue
+		}
+		prevChild := prev.children[i]
+		prevChildRender, ok := prevChild.(*HTML)
+		if !ok {
+			prevChildRender = prevChild.(Component).Context().prevRender
+		}
+		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
+			continue
+		}
+		replaceNode(nextChildRender.Node, prevChildRender.Node)
+	}
+	for i := len(h.children); i < len(prev.children); i++ {
+		prevChild := prev.children[i]
+		prevChildRender, ok := prevChild.(*HTML)
+		if !ok {
+			prevChildRender = prevChild.(Component).Context().prevRender
+		}
+		removeNode(prevChildRender.Node)
+	}
 }
 
-func (s *textComponent) Node() *js.Object {
-	return s.node
-}
-
-// Text returns a component which renders the given text. The text is always
-// escaped, and as such feeding arbitrary user input to this function is safe.
-func Text(text string) Component {
-	return &textComponent{text: text}
-}
-
-// Element is a Component which virtually represents a DOM element.
-type Element struct {
-	TagName        string
-	Properties     map[string]interface{}
-	Style          map[string]interface{}
-	Dataset        map[string]string
-	EventListeners []*EventListener
-	Children       []Component
-	node           *js.Object
-}
-
-// AddChild adds a child component.
-func (e *Element) AddChild(s Component) {
-	e.Children = append(e.Children, s)
-}
-
-// Apply implements the Markup interface.
-func (e *Element) Apply(element *Element) {
-	element.Children = append(element.Children, e)
-}
-
-// Reconcile implements the Component interface.
-func (e *Element) Reconcile(oldComp Component) {
-	for _, l := range e.EventListeners {
+// Restore implements the Restorer interface.
+func (h *HTML) Restore(old ComponentOrHTML) {
+	for _, l := range h.eventListeners {
 		l.wrapper = func(jsEvent *js.Object) {
 			if l.callPreventDefault {
 				jsEvent.Call("preventDefault")
@@ -98,85 +172,135 @@ func (e *Element) Reconcile(oldComp Component) {
 		}
 	}
 
-	if oldElement, ok := oldComp.(*Element); ok && oldElement.TagName == e.TagName {
-		e.node = oldElement.node
-		for name, value := range e.Properties {
-			var oldValue interface{}
-			switch name {
-			case "value":
-				oldValue = e.node.Get("value").String()
-			case "checked":
-				oldValue = e.node.Get("checked").Bool()
-			default:
-				oldValue = oldElement.Properties[name]
-			}
-			if value != oldValue {
-				e.node.Set(name, value)
-			}
+	if prev, ok := old.(*HTML); ok && prev != nil {
+		if h.text != "" && prev.text != "" {
+			h.restoreText(prev)
+			return
 		}
-		for name := range oldElement.Properties {
-			if _, ok := e.Properties[name]; !ok {
-				e.node.Set(name, nil)
-			}
+		if h.tag != "" && prev.tag != "" && h.tag == prev.tag {
+			h.restoreHTML(prev)
+			return
 		}
-
-		style := e.node.Get("style")
-		for name, value := range e.Style {
-			style.Call("setProperty", name, value)
-		}
-		for name := range oldElement.Style {
-			if _, ok := e.Style[name]; !ok {
-				style.Call("removeProperty", name)
-			}
-		}
-
-		for _, l := range oldElement.EventListeners {
-			e.node.Call("removeEventListener", l.Name, l.wrapper)
-		}
-		for _, l := range e.EventListeners {
-			e.node.Call("addEventListener", l.Name, l.wrapper)
-		}
-
-		// TODO better list element reuse
-		for i, newChild := range e.Children {
-			if i >= len(oldElement.Children) {
-				newChild.Reconcile(nil)
-				e.node.Call("appendChild", newChild.Node())
-				continue
-			}
-			oldChild := oldElement.Children[i]
-			newChild.Reconcile(oldChild)
-			replaceNode(newChild.Node(), oldChild.Node())
-		}
-		for i := len(e.Children); i < len(oldElement.Children); i++ {
-			removeNode(oldElement.Children[i].Node())
-		}
-		return
 	}
 
-	e.node = js.Global.Get("document").Call("createElement", e.TagName)
-	for name, value := range e.Properties {
-		e.node.Set(name, value)
+	if h.tag != "" && h.text != "" {
+		panic("vecty: only one of HTML.tag or HTML.text may be set")
 	}
-	for name, value := range e.Dataset {
-		e.node.Get("dataset").Set(name, value)
+	if h.tag != "" {
+		h.Node = js.Global.Get("document").Call("createElement", h.tag)
+	} else {
+		h.Node = js.Global.Get("document").Call("createTextNode", h.text)
 	}
-	style := e.node.Get("style")
-	for name, value := range e.Style {
+	for name, value := range h.properties {
+		h.Node.Set(name, value)
+	}
+	dataset := h.Node.Get("dataset")
+	for name, value := range h.dataset {
+		dataset.Set(name, value)
+	}
+	style := h.Node.Get("style")
+	for name, value := range h.styles {
 		style.Call("setProperty", name, value)
 	}
-	for _, l := range e.EventListeners {
-		e.node.Call("addEventListener", l.Name, l.wrapper)
+	for _, l := range h.eventListeners {
+		h.Node.Call("addEventListener", l.Name, l.wrapper)
 	}
-	for _, c := range e.Children {
-		c.Reconcile(nil)
-		e.node.Call("appendChild", c.Node())
+	for _, nextChild := range h.children {
+		nextChildRender, isHTML := nextChild.(*HTML)
+		if !isHTML {
+			nextChildComp := nextChild.(Component)
+			nextChildRender = nextChildComp.Render()
+			nextChildComp.Context().prevRender = nextChildRender
+		}
+
+		if doRestore(nil, nextChild, nil, nextChildRender) {
+			continue
+		}
+		h.Node.Call("appendChild", nextChildRender.Node)
 	}
 }
 
-// Node implements the Component interface.
-func (e *Element) Node() *js.Object {
-	return e.node
+// Tag returns an HTML element with the given tag name. Generally, this
+// function is not used directly but rather the elem subpackage (which is type
+// safe) is used instead.
+func Tag(tag string, m ...MarkupOrComponentOrHTML) *HTML {
+	h := &HTML{
+		tag: tag,
+	}
+	for _, m := range m {
+		apply(m, h)
+	}
+	return h
+}
+
+// Text returns a TextNode with the given literal text. Because the returned
+// HTML represents a TextNode, the text does not have to be escaped (arbitrary
+// user input fed into this function will always be safely rendered).
+func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
+	h := &HTML{
+		text: text,
+	}
+	for _, m := range m {
+		apply(m, h)
+	}
+	return h
+}
+
+// Rerender causes the body of the given component (i.e. the HTML returned by
+// the Component's Render method) to be re-rendered and subsequently restored.
+func Rerender(c Component) {
+	prevRender := c.Context().prevRender
+	nextRender := doRender(c)
+	var prevComponent Component = nil // TODO
+	if doRestore(prevComponent, c, prevRender, nextRender) {
+		return
+	}
+	if prevRender != nil {
+		replaceNode(nextRender.Node, prevRender.Node)
+	}
+}
+
+func doRender(c ComponentOrHTML) *HTML {
+	if h, isHTML := c.(*HTML); isHTML {
+		return h
+	}
+	comp := c.(Component)
+	r := comp.Render()
+	comp.Context().prevRender = r
+	return r
+}
+
+func doRestore(prev, next ComponentOrHTML, prevRender, nextRender *HTML) (skip bool) {
+	if r, ok := next.(Restorer); ok {
+		var p Component
+		if prev != nil {
+			p = prev.(Component)
+		}
+		if r.Restore(p) {
+			return true
+		}
+	}
+	nextRender.Restore(prevRender)
+	return false
+}
+
+// RenderBody renders the given component as the document body. The given
+// Component's Render method must return a "body" element.
+func RenderBody(body Component) {
+	nextRender := doRender(body)
+	if nextRender.tag != "body" {
+		panic(fmt.Sprintf("vecty: RenderBody expected Component.Render to return a body tag, found %q", nextRender.tag))
+	}
+	doRestore(nil, body, nil, nextRender)
+	// TODO: doRestore skip == true here probably implies a user code bug
+	doc := js.Global.Get("document")
+	if doc.Get("readyState").String() == "loading" {
+		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
+			doc.Set("body", nextRender.Node)
+		})
+		return
+	}
+	doc.Set("body", nextRender.Node)
 }
 
 // SetTitle sets the title of the document.
@@ -190,25 +314,4 @@ func AddStylesheet(url string) {
 	link.Set("rel", "stylesheet")
 	link.Set("href", url)
 	js.Global.Get("document").Get("head").Call("appendChild", link)
-}
-
-// Composite is the struct which all components embed.
-type Composite struct {
-	RenderFunc func() Component
-	Body       Component
-}
-
-// Node implements the Component interface.
-func (c *Composite) Node() *js.Object {
-	return c.Body.Node()
-}
-
-// ReconcileBody implements the Component interface.
-func (c *Composite) ReconcileBody() {
-	oldBody := c.Body
-	c.Body = c.RenderFunc()
-	c.Body.Reconcile(oldBody)
-	if oldBody != nil {
-		replaceNode(c.Body.Node(), oldBody.Node())
-	}
 }
