@@ -108,6 +108,9 @@ func Property(key string, value interface{}) Markup {
 // Data returns Markup which applies the given data attribute.
 func Data(key, value string) Markup {
 	return markupFunc(func(h *HTML) {
+		if h.dataset == nil {
+			h.dataset = make(map[string]string)
+		}
 		h.dataset[key] = value
 	})
 }
