@@ -189,7 +189,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	}
 	if h.tag != "" {
 		h.Node = js.Global.Get("document").Call("createElement", h.tag)
-	} else if h.text != "" {
+	} else {
 		h.Node = js.Global.Get("document").Call("createTextNode", h.text)
 	}
 	for name, value := range h.properties {
