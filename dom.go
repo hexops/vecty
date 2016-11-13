@@ -37,6 +37,14 @@ type Component interface {
 	Context() *Core
 }
 
+// Unmounter is an optional interface that a Component can implement in order
+// to receive component unmount events.
+type Unmounter interface {
+	// Unmount is called after the component has been unmounted, in a separate
+	// goroutine, after the DOM element has been removed.
+	Unmount()
+}
+
 // ComponentOrHTML represents one of:
 //
 //  Component
@@ -158,6 +166,9 @@ func (h *HTML) restoreHTML(prev *HTML) {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
 		removeNode(prevChildRender.Node)
+		if u, ok := prevChild.(Unmounter); ok {
+			u.Unmount()
+		}
 	}
 }
 
