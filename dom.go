@@ -161,7 +161,8 @@ func (h *HTML) restoreHTML(prev *HTML) {
 
 // Restore implements the Restorer interface.
 func (h *HTML) Restore(old ComponentOrHTML) {
-	for _, l := range h.eventListeners {
+	for _, lrange := range h.eventListeners {
+		l := lrange
 		l.wrapper = func(jsEvent *js.Object) {
 			if l.callPreventDefault {
 				jsEvent.Call("preventDefault")
