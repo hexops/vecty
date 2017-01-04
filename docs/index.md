@@ -14,6 +14,10 @@ Let's get started! Here's what you should read first before using Vecty:
 
 API documentation for Vecty is [available via godoc.org](https://godoc.org/github.com/gopherjs/vecty).
 
+## Examples
+
+Various code examples are given throughout the above documentation links (you *really* should read them!), but if you're eager to just dive in: [check out the examples](/examples)!
+
 ## Get in touch
 
 If you enjoy using Vecty, ran into trouble, or even just want to say hi, then we'd love to hear from you! :)
