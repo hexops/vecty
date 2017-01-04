@@ -4,7 +4,7 @@ Let's get started! Here's what you should read first before using Vecty:
 
 -	[DOM Operations: the lowest level](dom_operations.md)
 -	[Components: a composition of DOM operations](components.md)
--	[Rendering](rendering.md)
+-	[Rendering: how it works](rendering.md)
 -	[Diff Algorithm](diff_algorithm.md)
 - [Safety: rendering raw HTML safely](safety.md)
 - [FAQ](FAQ.md)
