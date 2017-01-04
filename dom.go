@@ -143,6 +143,9 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
+		if nextChildRender == prevChildRender {
+			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
+		}
 		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
 			continue
 		}
