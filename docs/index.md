@@ -7,7 +7,6 @@ Let's get started! Here's what you should read first before using Vecty:
 -	[Rendering](rendering.md)
 -	[Safety and Unsafety](safety_and_unsafety.md)
 -	[Diff Algorithm](diff_algorithm.md)
--	[Known Issues](known_issues.md)
 - [FAQ](faq.md)
 
 # Get in touch
