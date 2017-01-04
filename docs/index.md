@@ -12,11 +12,7 @@ Let's get started! Here's what you should read first before using Vecty:
 
 ## API Documentation
 
-API documentation is available via [godoc.org](godoc.org) for every Vecty package:
-
-- [github.com/gopherjs/vecty](https://godoc.org/github.com/gopherjs/vecty)
-
-Because a few packages (namely `elem`, `prop`, and `style`) are auto-generated they can be quite verbose to view in godoc.org. Instead, we suggest that you install Go autocompletion for your editor of choice for searching these packages efficiently.
+API documentation for Vecty is available [via godoc.org](https://godoc.org/github.com/gopherjs/vecty).
 
 ## Get in touch
 
