@@ -8,7 +8,7 @@ Let's get started! Here's what you should read first before using Vecty:
 -	[Diff Algorithm](diff_algorithm.md)
 - [FAQ](faq.md)
 
-# Get in touch
+## Get in touch
 
 If you enjoy using Vecty, ran into trouble, or even just want to say hi, then we'd love to hear from you! :)
 
