@@ -130,8 +130,8 @@ func (h *HTML) restoreHTML(prev *HTML) {
 
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
+		nextChildRender := doRender(nextChild)
 		if i >= len(prev.children) {
-			nextChildRender := doRender(nextChild)
 			if doRestore(nil, nextChild, nil, nextChildRender) {
 				continue
 			}
@@ -143,7 +143,6 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
-		nextChildRender := doRender(nextChild)
 		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
 			continue
 		}
