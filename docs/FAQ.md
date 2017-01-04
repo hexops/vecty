@@ -1,6 +1,7 @@
 # FAQ
 
 - [Does Vecty support server-side rendering?](#does-vecty-support-server-side-rendering)
+- [Is Vecty being ued in production?](#is-vecty-being-used-in-production)
 
 ## Does Vecty support server-side rendering?
 
@@ -20,3 +21,6 @@ While these are two very serious and very real problems: we think that server-si
 
 We are open to hearing opposing thoughts, though, so please [get in touch](index.md#get-in-touch)!
 
+## Is Vecty being used in production?
+
+Due to the project's [current experimental status](/README.md#current-status), we're not aware of anyone using Vecty in production yet.
