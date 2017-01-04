@@ -36,7 +36,7 @@ Goals
 Getting Started
 ===============
 
-Interested in learning more or getting started? [Check out the docs](https://github.com/gopherjs/vecty/blob/docfest/docs/index.md#vecty-introduction)!
+Interested in learning more or getting started? [Check out the docs](docs/index.md#vecty-introduction)!
 
 Community
 =========
