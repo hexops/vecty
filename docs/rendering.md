@@ -1,3 +1,3 @@
-# Rendering: How it works
+# Rendering: how it works
 
 TODO(slimsag): write this :)
