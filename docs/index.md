@@ -6,6 +6,7 @@ Let's get started! Here's what you should read first before using Vecty:
 -	[Components: a composition of DOM operations](components.md)
 -	[Rendering](rendering.md)
 -	[Diff Algorithm](diff_algorithm.md)
+- [Safety: rendering raw HTML safely](safety.md)
 - [FAQ](faq.md)
 
 ## Get in touch
