@@ -24,6 +24,11 @@ Goals
 -	Composability
 	-	Nest components to form your entire user interface, seperate them logically as you would any normal Go package.
 
+Getting Started
+===============
+
+Check out [the docs](https://github.com/gopherjs/vecty/blob/docfest/docs/index.md#vecty-introduction) to get started and learn more!
+
 Current Status
 ==============
 
