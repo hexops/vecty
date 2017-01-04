@@ -8,6 +8,7 @@ Let's get started! Here's what you should read first before using Vecty:
 -	[Diffing: the algorithm](diffing.md)
 - [Safety: rendering raw HTML safely](safety.md)
 - [Sharing code: frontend & backend](sharing_code.md)
+- [How-to: Communicating with a REST endpoint](how_to_rest.md)
 - [FAQ](FAQ.md)
 
 ## API Documentation
