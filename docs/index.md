@@ -7,6 +7,7 @@ Let's get started! Here's what you should read first before using Vecty:
 -	[Rendering: how it works](rendering.md)
 -	[Diffing: the algorithm](diffing.md)
 - [Safety: rendering raw HTML safely](safety.md)
+- [Sharing code: frontend & backend](sharing_code.md)
 - [FAQ](FAQ.md)
 
 ## Get in touch
