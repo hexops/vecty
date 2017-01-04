@@ -4,6 +4,15 @@
 
 Vecty is a [React](https://facebook.github.io/react/)-like library for [GopherJS](https://github.com/gopherjs/gopherjs) so that you can do frontend development in Go instead of writing JavaScript/HTML/CSS.
 
+Current Status
+==============
+
+**Vecty is currently considered to be an experimental work-in-progress.**
+
+-	APIs will change.
+-	The scope of Vecty is only ~80% defined currently.
+-	There are a number of important [open issues](https://github.com/gopherjs/vecty/issues).
+
 Features
 ========
 
@@ -28,15 +37,6 @@ Getting Started
 ===============
 
 Interested in learning more or getting started? [Check out the docs](https://github.com/gopherjs/vecty/blob/docfest/docs/index.md#vecty-introduction)!
-
-Current Status
-==============
-
-**Vecty is currently considered to be an experimental work-in-progress.**
-
--	APIs will change.
--	The scope of Vecty is only ~80% defined currently.
--	There are a number of important [open issues](https://github.com/gopherjs/vecty/issues).
 
 Community
 =========
