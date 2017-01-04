@@ -1,4 +1,4 @@
-# Introduction
+# Vecty: Introduction
 
 Let's get started! Here's what you should read first before using Vecty:
 
