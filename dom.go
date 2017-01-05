@@ -40,8 +40,8 @@ type Component interface {
 // Unmounter is an optional interface that a Component can implement in order
 // to receive component unmount events.
 type Unmounter interface {
-	// Unmount is called after the component has been unmounted, in a separate
-	// goroutine, after the DOM element has been removed.
+	// Unmount is called after the component has been unmounted, after the DOM
+	// element has been removed.
 	Unmount()
 }
 
