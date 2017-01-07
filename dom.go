@@ -30,6 +30,10 @@ func (c *Core) Context() *Core { return c }
 //
 type Component interface {
 	// Render is responsible for building HTML which represents the component.
+	//
+	// If Render returns nil, the component will render as nothing (in reality,
+	// a noscript tag, which has no display or action, and is compatible with
+	// Vecty's diffing algorithm).
 	Render() *HTML
 
 	// Context returns the components context, which is used internally by
@@ -234,7 +238,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		nextChildRender, isHTML := nextChild.(*HTML)
 		if !isHTML {
 			nextChildComp := nextChild.(Component)
-			nextChildRender = nextChildComp.Render()
+			nextChildRender = renderHandleNil(nextChildComp)
 			nextChildComp.Context().prevRender = nextChildRender
 		}
 
@@ -290,8 +294,17 @@ func doRender(c ComponentOrHTML) *HTML {
 		return h
 	}
 	comp := c.(Component)
-	r := comp.Render()
+	r := renderHandleNil(comp)
 	comp.Context().prevRender = r
+	return r
+}
+
+func renderHandleNil(c Component) *HTML {
+	r := c.Render()
+	if r == nil {
+		// nil renders are translated into noscript tags.
+		r = Tag("noscript")
+	}
 	return r
 }
 
