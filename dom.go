@@ -75,11 +75,11 @@ type Restorer interface {
 type HTML struct {
 	Node *js.Object
 
-	tag, text       string
-	styles, dataset map[string]string
-	properties      map[string]interface{}
-	eventListeners  []*EventListener
-	children        []ComponentOrHTML
+	tag, text, innerHTML string
+	styles, dataset      map[string]string
+	properties           map[string]interface{}
+	eventListeners       []*EventListener
+	children             []ComponentOrHTML
 }
 
 func (h *HTML) restoreText(prev *HTML) {
@@ -134,6 +134,10 @@ func (h *HTML) restoreHTML(prev *HTML) {
 	}
 	for _, l := range h.eventListeners {
 		h.Node.Call("addEventListener", l.Name, l.wrapper)
+	}
+
+	if h.innerHTML != prev.innerHTML {
+		h.Node.Set("innerHTML", h.innerHTML)
 	}
 
 	// TODO better list element reuse
@@ -201,10 +205,16 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	if h.tag != "" && h.text != "" {
 		panic("vecty: only one of HTML.tag or HTML.text may be set")
 	}
+	if h.text != "" && h.innerHTML != "" {
+		panic("vecty: only HTML may have UnsafeHTML attribute")
+	}
 	if h.tag != "" {
 		h.Node = js.Global.Get("document").Call("createElement", h.tag)
 	} else {
 		h.Node = js.Global.Get("document").Call("createTextNode", h.text)
+	}
+	if h.innerHTML != "" {
+		h.Node.Set("innerHTML", h.innerHTML)
 	}
 	for name, value := range h.properties {
 		h.Node.Set(name, value)

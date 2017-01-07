@@ -152,3 +152,22 @@ func If(cond bool, markup ...MarkupOrComponentOrHTML) MarkupOrComponentOrHTML {
 	}
 	return nil
 }
+
+// UnsafeHTML is Markup which unsafely sets the inner HTML of an HTML element.
+//
+// It is entirely up to the caller to ensure the input HTML is properly
+// sanitized.
+//
+// It is akin to innerHTML in standard JavaScript and dangerouslySetInnerHTML
+// in React, and is said to be unsafe because Vecty makes no effort to validate
+// or ensure the HTML is safe for insertion in the DOM. If the HTML came from a
+// user, for example, it would create a cross-site-scripting (XSS) exploit in
+// the application.
+//
+// The returned Markup can only be applied to HTML, not vecty.Text, or else a
+// panic will occur.
+func UnsafeHTML(html string) Markup {
+	return markupFunc(func(h *HTML) {
+		h.innerHTML = html
+	})
+}
