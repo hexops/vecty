@@ -109,6 +109,22 @@ func Property(key string, value interface{}) Markup {
 	})
 }
 
+// Attribute returns Markup which applies the given HTML attribute to an HTML
+// element.
+//
+// In most situations, you should use Property function, or the prop subpackage
+// (which is type-safe) instead. There are only a few attributes (aria-*, role,
+// etc) which do not have equivalent properties. Always opt for the property
+// first, before relying on an attribute.
+func Attribute(key string, value interface{}) Markup {
+	return markupFunc(func(h *HTML) {
+		if h.attributes == nil {
+			h.attributes = make(map[string]interface{})
+		}
+		h.attributes[key] = value
+	})
+}
+
 // Data returns Markup which applies the given data attribute.
 func Data(key, value string) Markup {
 	return markupFunc(func(h *HTML) {

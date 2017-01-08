@@ -79,11 +79,11 @@ type Restorer interface {
 type HTML struct {
 	Node *js.Object
 
-	tag, text, innerHTML string
-	styles, dataset      map[string]string
-	properties           map[string]interface{}
-	eventListeners       []*EventListener
-	children             []ComponentOrHTML
+	tag, text, innerHTML   string
+	styles, dataset        map[string]string
+	properties, attributes map[string]interface{}
+	eventListeners         []*EventListener
+	children               []ComponentOrHTML
 }
 
 func (h *HTML) restoreText(prev *HTML) {
@@ -116,6 +116,18 @@ func (h *HTML) restoreHTML(prev *HTML) {
 	for name := range prev.properties {
 		if _, ok := h.properties[name]; !ok {
 			h.Node.Set(name, nil)
+		}
+	}
+
+	// Attributes
+	for name, value := range h.attributes {
+		if value != prev.attributes[name] {
+			h.Node.Call("setAttribute", name, value)
+		}
+	}
+	for name := range prev.attributes {
+		if _, ok := h.attributes[name]; !ok {
+			h.Node.Call("removeAttribute", name)
 		}
 	}
 
@@ -222,6 +234,9 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	}
 	for name, value := range h.properties {
 		h.Node.Set(name, value)
+	}
+	for name, value := range h.attributes {
+		h.Node.Call("setAttribute", name, value)
 	}
 	dataset := h.Node.Get("dataset")
 	for name, value := range h.dataset {
