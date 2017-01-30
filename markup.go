@@ -91,9 +91,12 @@ func (m markupFunc) Apply(h *HTML) { m(h) }
 func Style(key, value string) Markup {
 	return markupFunc(func(h *HTML) {
 		if h.styles == nil {
-			h.styles = make(map[string]string)
+			h.styles = make(map[string]map[string]bool)
 		}
-		h.styles[key] = value
+		if h.styles[key] == nil {
+			h.styles[key] = make(map[string]bool)
+		}
+		h.styles[key][value] = true
 	})
 }
 
