@@ -2,7 +2,6 @@ package vecty
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -144,13 +143,24 @@ type ClassMap map[string]bool
 
 // Apply implements the Markup interface.
 func (m ClassMap) Apply(h *HTML) {
-	var classes []string
-	for name, active := range m {
-		if active {
-			classes = append(classes, name)
-		}
+	if h.classes == nil {
+		h.classes = make(map[string]bool)
 	}
-	Property("className", strings.Join(classes, " ")).Apply(h)
+	for name, active := range m {
+		h.classes[name] = active
+	}
+}
+
+// Class returns markup that applies all given classes to an element
+func Class(classes ...string) Markup {
+	return markupFunc(func(h *HTML) {
+		if h.classes == nil {
+			h.classes = make(map[string]bool)
+		}
+		for _, name := range classes {
+			h.classes[name] = true
+		}
+	})
 }
 
 // List represents a list of Markup, Component, or HTML which is individually

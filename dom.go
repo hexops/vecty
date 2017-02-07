@@ -2,6 +2,7 @@ package vecty
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -80,6 +81,7 @@ type HTML struct {
 	Node *js.Object
 
 	tag, text, innerHTML   string
+	classes                map[string]bool
 	styles                 map[string]map[string]bool
 	dataset                map[string]string
 	properties, attributes map[string]interface{}
@@ -131,6 +133,8 @@ func (h *HTML) restoreHTML(prev *HTML) {
 			h.Node.Call("removeAttribute", name)
 		}
 	}
+
+	h.populateClassNameProperty()
 
 	// Styles
 	style := h.Node.Get("style")
@@ -258,6 +262,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	for name, value := range h.dataset {
 		dataset.Set(name, value)
 	}
+	h.populateClassNameProperty()
 	style := h.Node.Get("style")
 	for name, value := range h.styles {
 		for value, _ := range value {
@@ -279,6 +284,18 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 			continue
 		}
 		h.Node.Call("appendChild", nextChildRender.Node)
+	}
+}
+
+func (h *HTML) populateClassNameProperty() {
+	var classes []string
+	for class, set := range h.classes {
+		if set {
+			classes = append(classes, class)
+		}
+	}
+	if len(classes) > 0 {
+		h.Node.Set("className", strings.Join(classes, " "))
 	}
 }
 
