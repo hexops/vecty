@@ -299,6 +299,14 @@ func (h *HTML) populateClassNameProperty() {
 	}
 }
 
+func (h *HTML) Add(m ...MarkupOrComponentOrHTML) *HTML {
+	for _, m := range m {
+		apply(m, h)
+	}
+
+	return h
+}
+
 // Tag returns an HTML element with the given tag name. Generally, this
 // function is not used directly but rather the elem subpackage (which is type
 // safe) is used instead.
