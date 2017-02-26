@@ -70,7 +70,7 @@ func apply(m MarkupOrComponentOrHTML, h *HTML) {
 		}
 		h.children = append(h.children, m)
 	default:
-		panic(fmt.Sprintf("vecty: invalid type %T does not match MarkupOrComponent interface", m))
+		panic(fmt.Sprintf("vecty: invalid type %T does not match MarkupOrComponentOrHTML interface", m))
 	}
 }
 
