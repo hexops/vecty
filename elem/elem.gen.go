@@ -334,7 +334,7 @@ func Form(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Header1(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading1(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 	return vecty.Tag("h1", markup...)
 }
 
@@ -342,7 +342,7 @@ func Header1(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Header2(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading2(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 	return vecty.Tag("h2", markup...)
 }
 
@@ -350,7 +350,7 @@ func Header2(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Header3(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading3(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 	return vecty.Tag("h3", markup...)
 }
 
@@ -358,7 +358,7 @@ func Header3(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Header4(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading4(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 	return vecty.Tag("h4", markup...)
 }
 
@@ -366,7 +366,7 @@ func Header4(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Header5(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading5(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 	return vecty.Tag("h5", markup...)
 }
 
@@ -374,7 +374,7 @@ func Header5(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Header6(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading6(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 	return vecty.Tag("h6", markup...)
 }
 
