@@ -118,7 +118,7 @@ import "github.com/gopherjs/vecty"
 		desc, _ := s.Attr("title")
 
 		text := s.Text()
-		if text == "Heading elements" {
+		if text == "<h1>–<h6>" {
 			writeElem(file, "h1", desc, link)
 			writeElem(file, "h2", desc, link)
 			writeElem(file, "h3", desc, link)
