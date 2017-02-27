@@ -71,7 +71,7 @@ func (p *PageView) renderHeader() *vecty.HTML {
 	return elem.Header(
 		prop.Class("header"),
 
-		elem.Header1(
+		elem.Heading1(
 			vecty.Text("todos"),
 		),
 		elem.Form(
