@@ -186,9 +186,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
 		removeNode(prevChildRender.Node)
-		if u, ok := prevChild.(Unmounter); ok {
-			u.Unmount()
-		}
+		doUnmount(prevChild)
 	}
 }
 
@@ -367,4 +365,11 @@ func AddStylesheet(url string) {
 	link.Set("rel", "stylesheet")
 	link.Set("href", url)
 	js.Global.Get("document").Get("head").Call("appendChild", link)
+}
+
+// doUnmount calls the Unmount function on Unmounter components
+func doUnmount(h ComponentOrHTML) {
+	if u, ok := h.(Unmounter); ok {
+		u.Unmount()
+	}
 }
