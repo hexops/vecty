@@ -166,6 +166,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 				continue
 			}
 			h.node.Call("appendChild", nextChildRender.node)
+			doMount(nextChild)
 			continue
 		}
 		prevChild := prev.children[i]
@@ -179,7 +180,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
 			continue
 		}
-		replaceNode(nextChildRender.node, prevChildRender.node)
+		doReplace(prevChild, nextChild, prevChildRender, nextChildRender)
 	}
 	for i := len(h.children); i < len(prev.children); i++ {
 		prevChild := prev.children[i]
@@ -187,8 +188,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
-		removeNode(prevChildRender.node)
-		doUnmount(prevChild)
+		doRemove(prevChild, prevChildRender)
 	}
 }
 
@@ -261,6 +261,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 			continue
 		}
 		h.node.Call("appendChild", nextChildRender.node)
+		doMount(nextChild)
 	}
 }
 
@@ -300,7 +301,7 @@ func Rerender(c Component) {
 		return
 	}
 	if prevRender != nil {
-		replaceNode(nextRender.node, prevRender.node)
+		doReplace(c, c, prevRender, nextRender)
 	}
 }
 
@@ -350,10 +351,12 @@ func RenderBody(body Component) {
 	if doc.Get("readyState").String() == "loading" {
 		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
 			doc.Set("body", nextRender.node)
+			doMount(body)
 		})
 		return
 	}
 	doc.Set("body", nextRender.node)
+	doMount(body)
 }
 
 // SetTitle sets the title of the document.
@@ -369,10 +372,56 @@ func AddStylesheet(url string) {
 	global.Get("document").Get("head").Call("appendChild", link)
 }
 
+func doReplace(prev, next ComponentOrHTML, prevRender, nextRender *HTML) {
+	replaceNode(nextRender.node, prevRender.node)
+	doMountUnmount(prev, next)
+}
+
+func doRemove(prev ComponentOrHTML, prevRender *HTML) {
+	removeNode(prevRender.node)
+	doUnmount(prev)
+}
+
+func doMountUnmount(prev, next ComponentOrHTML) {
+	var shouldMount, shouldUnmount bool
+	prevComponent, prevIsComponent := prev.(Component)
+	nextComponent, nextIsComponent := next.(Component)
+	if prev == nil && next != nil && nextIsComponent {
+		// Had nil, now have Component, mount next
+		shouldMount = true
+	} else if nextIsComponent != prevIsComponent {
+		if prevIsComponent {
+			// Had Component, now have HTML, unmount prev
+			shouldUnmount = true
+		} else {
+			// Had HTML, now have Component, mount next
+			shouldMount = true
+		}
+	} else if nextIsComponent && prevComponent != nextComponent {
+		// Have inequal Components, unmount prev, mount next
+		shouldUnmount = true
+		shouldMount = true
+	}
+	if shouldUnmount {
+		doUnmount(prev)
+	}
+	if shouldMount {
+		doMount(next)
+	}
+}
+
+// doMount calls the Mount function on Mounter components
+func doMount(h ComponentOrHTML) {
+	if m, ok := h.(Mounter); ok {
+		m.Mount()
+	}
+}
+
 // doUnmount calls the Unmount function on Unmounter components
 func doUnmount(h ComponentOrHTML) {
 	if u, ok := h.(Unmounter); ok {
 		u.Unmount()
+	}
 }
 
 var global jsObject = wrapObject(js.Global)
