@@ -17,7 +17,24 @@ var _ = func() bool {
 // TODO(slimsag): TestRestorer; Restorer.Restore
 // TODO(slimsag): TestHTML; HTML.Restore
 // TODO(slimsag): TestTag
-// TODO(slimsag): TestText
+
+func TestText(t *testing.T) {
+	markupCalled := false
+	want := "Hello world!"
+	h := Text(want, markupFunc(func(h *HTML) {
+		markupCalled = true
+	}))
+	if !markupCalled {
+		t.Fatal("expected markup to be applied")
+	}
+	if h.text != want {
+		t.Fatalf("got text %q want text %q", h.text, want)
+	}
+	if h.tag != "" {
+		t.Fatal("expected no tag")
+	}
+}
+
 // TODO(slimsag): TestRerender
 
 // TestRenderBody_ExpectsBody tests that RenderBody always expects a "body" tag
