@@ -16,7 +16,23 @@ var _ = func() bool {
 // TODO(slimsag): TestComponentOrHTML
 // TODO(slimsag): TestRestorer; Restorer.Restore
 // TODO(slimsag): TestHTML; HTML.Restore
-// TODO(slimsag): TestTag
+
+func TestTag(t *testing.T) {
+	markupCalled := false
+	want := "foobar"
+	h := Tag(want, markupFunc(func(h *HTML) {
+		markupCalled = true
+	}))
+	if !markupCalled {
+		t.Fatal("expected markup to be applied")
+	}
+	if h.tag != want {
+		t.Fatalf("got tag %q want tag %q", h.text, want)
+	}
+	if h.text != "" {
+		t.Fatal("expected no text")
+	}
+}
 
 func TestText(t *testing.T) {
 	markupCalled := false
