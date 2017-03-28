@@ -494,10 +494,10 @@ func Link(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 	return vecty.Tag("link", markup...)
 }
 
-// Main represents the main content of  the <body> of a document or
-// application. The main content area consists of content that is directly
-// related to, or expands upon the central topic of a document or the central
-// functionality of an application.
+// Main represents the main content of the <body> of a document or application.
+// The main content area consists of content that is directly related to, or
+// expands upon the central topic of a document or the central functionality of
+// an application.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main
 func Main(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
@@ -663,7 +663,7 @@ func Progress(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 	return vecty.Tag("progress", markup...)
 }
 
-// Quote  indicates that the enclosed text is a short inline quotation. This
+// Quote indicates that the enclosed text is a short inline quotation. This
 // element is intended for short quotations that don't require paragraph
 // breaks; for long quotations use the <blockquote> element.
 //
@@ -756,7 +756,7 @@ func Slot(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 }
 
 // Small makes the text font size one size smaller (for example, from large to
-// medium, or from small to x-small) down to the browser's minimum font size. 
+// medium, or from small to x-small) down to the browser's minimum font size.
 // In HTML5, this element is repurposed to represent side-comments and small
 // print, including copyright and legal text, independent of its styled
 // presentation.
@@ -851,7 +851,7 @@ func TableData(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 
 // Template is a mechanism for holding client-side content that is not to be
 // rendered when a page is loaded but may subsequently be instantiated during
-// runtime using JavaScript. 
+// runtime using JavaScript.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
 func Template(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
