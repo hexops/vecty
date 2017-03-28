@@ -210,7 +210,7 @@ func lowercase(s string) string {
 func descToComments(desc string) string {
 	c := ""
 	length := 80
-	for _, word := range strings.Split(desc, " ") {
+	for _, word := range strings.Fields(desc) {
 		if length+len(word)+1 > 80 {
 			length = 3
 			c += "\n//"
