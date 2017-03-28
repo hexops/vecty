@@ -87,7 +87,7 @@ func (m markupFunc) Apply(h *HTML) { m(h) }
 
 // Style returns Markup which applies the given CSS style. Generally, this
 // function is not used directly but rather the style subpackage (which is type
-// safe) is used instead.
+// safe) should be used instead.
 func Style(key, value string) Markup {
 	return markupFunc(func(h *HTML) {
 		if h.styles == nil {
@@ -99,8 +99,13 @@ func Style(key, value string) Markup {
 
 // Property returns Markup which applies the given JavaScript property to an
 // HTML element or text node. Generally, this function is not used directly but
-// rather the style subpackage (which is type safe) is used instead.
+// rather the prop and style subpackages (which are type safe) should be used instead.
+//
+// To set style, use style package or Style. Property panics if key is "style".
 func Property(key string, value interface{}) Markup {
+	if key == "style" {
+		panic(`vecty: Property called with key "style"; style package or Style should be used instead`)
+	}
 	return markupFunc(func(h *HTML) {
 		if h.properties == nil {
 			h.properties = make(map[string]interface{})
