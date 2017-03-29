@@ -2,6 +2,7 @@ package vecty
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -80,7 +81,9 @@ type HTML struct {
 	Node *js.Object
 
 	tag, text, innerHTML   string
-	styles, dataset        map[string]string
+	classes                map[string]bool
+	styles                 map[string]map[string]bool
+	dataset                map[string]string
 	properties, attributes map[string]interface{}
 	eventListeners         []*EventListener
 	children               []ComponentOrHTML
@@ -131,12 +134,29 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		}
 	}
 
+	h.populateClassNameProperty()
+
 	// Styles
 	style := h.Node.Get("style")
-	for name, value := range h.styles {
-		oldValue := prev.styles[name]
-		if value != oldValue {
-			style.Call("setProperty", name, value)
+	for propName, prop := range h.styles {
+		setProperty := func() {
+			for value, _ := range prop {
+				style.Call("setProperty", propName, value)
+			}
+		}
+		if oldProp, ok := prev.styles[propName]; !ok {
+			setProperty()
+		} else {
+			if len(prop) != len(oldProp) {
+				setProperty()
+			} else {
+				for value, _ := range prop {
+					if !oldProp[value] {
+						setProperty()
+						break
+					}
+				}
+			}
 		}
 	}
 	for name := range prev.styles {
@@ -242,9 +262,12 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	for name, value := range h.dataset {
 		dataset.Set(name, value)
 	}
+	h.populateClassNameProperty()
 	style := h.Node.Get("style")
 	for name, value := range h.styles {
-		style.Call("setProperty", name, value)
+		for value, _ := range value {
+			style.Call("setProperty", name, value)
+		}
 	}
 	for _, l := range h.eventListeners {
 		h.Node.Call("addEventListener", l.Name, l.wrapper)
@@ -262,6 +285,26 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		}
 		h.Node.Call("appendChild", nextChildRender.Node)
 	}
+}
+
+func (h *HTML) populateClassNameProperty() {
+	var classes []string
+	for class, set := range h.classes {
+		if set {
+			classes = append(classes, class)
+		}
+	}
+	if len(classes) > 0 {
+		h.Node.Set("className", strings.Join(classes, " "))
+	}
+}
+
+func (h *HTML) Add(m ...MarkupOrComponentOrHTML) *HTML {
+	for _, m := range m {
+		apply(m, h)
+	}
+
+	return h
 }
 
 // Tag returns an HTML element with the given tag name. Generally, this
