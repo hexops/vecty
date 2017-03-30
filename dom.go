@@ -79,11 +79,11 @@ type Restorer interface {
 type HTML struct {
 	node jsObject
 
-	tag, text, innerHTML   string
-	styles, dataset        map[string]string
-	properties, attributes map[string]interface{}
-	eventListeners         []*EventListener
-	children               []ComponentOrHTML
+	namespace, tag, text, innerHTML string
+	styles, dataset                 map[string]string
+	properties, attributes          map[string]interface{}
+	eventListeners                  []*EventListener
+	children                        []ComponentOrHTML
 }
 
 func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
@@ -224,9 +224,12 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	if h.text != "" && h.innerHTML != "" {
 		panic("vecty: only HTML may have UnsafeHTML attribute")
 	}
-	if h.tag != "" {
+	switch {
+	case h.tag != "" && h.namespace == "":
 		h.node = global.Get("document").Call("createElement", h.tag)
-	} else {
+	case h.tag != "" && h.namespace != "":
+		h.node = global.Get("document").Call("createElementNS", h.namespace, h.tag)
+	default:
 		h.node = global.Get("document").Call("createTextNode", h.text)
 	}
 	if h.innerHTML != "" {
@@ -269,8 +272,16 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 // function is not used directly but rather the elem subpackage (which is type
 // safe) is used instead.
 func Tag(tag string, m ...MarkupOrComponentOrHTML) *HTML {
+	return NamespacedTag("", tag, m...)
+}
+
+// NamespacedTag returns an HTML element with the given tag name, and namespace.
+// Generally, this function is not used directly but rather the elem subpackage
+// (which is type safe) is used instead.
+func NamespacedTag(namespace, tag string, m ...MarkupOrComponentOrHTML) *HTML {
 	h := &HTML{
-		tag: tag,
+		namespace: namespace,
+		tag:       tag,
 	}
 	for _, m := range m {
 		apply(m, h)
