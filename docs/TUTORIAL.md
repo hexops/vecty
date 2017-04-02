@@ -1,6 +1,6 @@
 # Vecty Tutorial
 
-You will need to install gopherjs and vecty. _TODO link to install guide_
+You will need to install gopherjs and vecty.
 
 This tutorial assumes you have Go installed, and that you will follow along by
 writing code in a directory somewhere on your GOPATH.
