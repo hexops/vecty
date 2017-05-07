@@ -41,6 +41,14 @@ type Component interface {
 	Context() *Core
 }
 
+// Mounter is an optional interface that a Component can implement in order
+// to receive component mount events.
+type Mounter interface {
+	// Mount is called after the component has been mounted, after the DOM
+	// element has been added.
+	Mount()
+}
+
 // Unmounter is an optional interface that a Component can implement in order
 // to receive component unmount events.
 type Unmounter interface {
@@ -164,6 +172,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 				continue
 			}
 			h.Node.Call("appendChild", nextChildRender.Node)
+			doMount(nextChild)
 			continue
 		}
 		prevChild := prev.children[i]
@@ -177,7 +186,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
 			continue
 		}
-		replaceNode(nextChildRender.Node, prevChildRender.Node)
+		doReplace(prevChild, nextChild, prevChildRender, nextChildRender)
 	}
 	for i := len(h.children); i < len(prev.children); i++ {
 		prevChild := prev.children[i]
@@ -185,10 +194,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
-		removeNode(prevChildRender.Node)
-		if u, ok := prevChild.(Unmounter); ok {
-			u.Unmount()
-		}
+		doRemove(prevChild, prevChildRender)
 	}
 }
 
@@ -261,6 +267,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 			continue
 		}
 		h.Node.Call("appendChild", nextChildRender.Node)
+		doMount(nextChild)
 	}
 }
 
@@ -300,7 +307,7 @@ func Rerender(c Component) {
 		return
 	}
 	if prevRender != nil {
-		replaceNode(nextRender.Node, prevRender.Node)
+		doReplace(c, c, prevRender, nextRender)
 	}
 }
 
@@ -350,10 +357,12 @@ func RenderBody(body Component) {
 	if doc.Get("readyState").String() == "loading" {
 		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
 			doc.Set("body", nextRender.Node)
+			doMount(body)
 		})
 		return
 	}
 	doc.Set("body", nextRender.Node)
+	doMount(body)
 }
 
 // SetTitle sets the title of the document.
@@ -367,4 +376,56 @@ func AddStylesheet(url string) {
 	link.Set("rel", "stylesheet")
 	link.Set("href", url)
 	js.Global.Get("document").Get("head").Call("appendChild", link)
+}
+
+func doReplace(prev, next ComponentOrHTML, prevRender, nextRender *HTML) {
+	replaceNode(nextRender.Node, prevRender.Node)
+	doMountUnmount(prev, next)
+}
+
+func doRemove(prev ComponentOrHTML, prevRender *HTML) {
+	removeNode(prevRender.Node)
+	doUnmount(prev)
+}
+
+func doMountUnmount(prev, next ComponentOrHTML) {
+	var shouldMount, shouldUnmount bool
+	prevComponent, prevIsComponent := prev.(Component)
+	nextComponent, nextIsComponent := next.(Component)
+	if prev == nil && next != nil && nextIsComponent {
+		// Had nil, now have Component, mount next
+		shouldMount = true
+	} else if nextIsComponent != prevIsComponent {
+		if prevIsComponent {
+			// Had Component, now have HTML, unmount prev
+			shouldUnmount = true
+		} else {
+			// Had HTML, now have Component, mount next
+			shouldMount = true
+		}
+	} else if nextIsComponent && prevComponent != nextComponent {
+		// Have inequal Components, unmount prev, mount next
+		shouldUnmount = true
+		shouldMount = true
+	}
+	if shouldUnmount {
+		doUnmount(prev)
+	}
+	if shouldMount {
+		doMount(next)
+	}
+}
+
+// doMount calls the Mount function on Mounter components
+func doMount(h ComponentOrHTML) {
+	if m, ok := h.(Mounter); ok {
+		m.Mount()
+	}
+}
+
+// doUnmount calls the Unmount function on Unmounter components
+func doUnmount(h ComponentOrHTML) {
+	if u, ok := h.(Unmounter); ok {
+		u.Unmount()
+	}
 }
