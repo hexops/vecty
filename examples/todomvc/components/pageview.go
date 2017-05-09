@@ -14,6 +14,7 @@ import (
 	"github.com/gopherjs/vecty/style"
 )
 
+// PageView is the top-level component
 type PageView struct {
 	vecty.Core
 
@@ -21,16 +22,8 @@ type PageView struct {
 	newItemTitle string
 }
 
-func (p *PageView) Restore(prev vecty.Component) bool {
-	if old, ok := prev.(*PageView); ok {
-		p.newItemTitle = old.newItemTitle
-	}
-	return false
-}
-
 func (p *PageView) onNewItemTitleInput(event *vecty.Event) {
 	p.newItemTitle = event.Target.Get("value").String()
-	vecty.Rerender(p)
 }
 
 func (p *PageView) onAdd(event *vecty.Event) {
@@ -51,6 +44,7 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 	})
 }
 
+// Render implements vecty.Component
 func (p *PageView) Render() *vecty.HTML {
 	return elem.Body(
 		elem.Section(

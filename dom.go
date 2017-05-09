@@ -2,18 +2,39 @@ package vecty
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/gopherjs/gopherjs/js"
 )
 
-// Core implements the Context method of the Component interface, and is the
-// core/central struct which all Component implementations should embed.
+// Core implements the private context method of the Component interface, and
+// is the core/central struct which all Component implementations should embed.
 type Core struct {
-	prevRender *HTML
+	prevRender   *HTML
+	prevInstance Component
 }
 
-// Context implements the Component interface.
-func (c *Core) Context() *Core { return c }
+// context implements the Component interface.
+func (c *Core) context() *Core { return c }
+
+// Clone is a general implementation for the Updater interface. This uses
+// reflection, so it incurs a performance penalty, and will panic if the
+// Component is not a pointer to struct. Components should provide their own
+// implementation to avoid these limitations.
+//
+// See documentation for the Updater interface for an example
+// of a component-specific implementation.
+func (c *Core) Clone(current Component) Component {
+	v := reflect.ValueOf(current)
+	if v.Kind() != reflect.Ptr || v.IsNil() || v.Elem().Kind() != reflect.Struct {
+		panic("Clone expects pointer to struct")
+	}
+
+	copy := reflect.New(v.Elem().Type())
+	copy.Elem().Set(v.Elem())
+
+	return copy.Interface().(Component)
+}
 
 // Component represents a single visual component within an application. To
 // define a new component simply implement the Render method and embed the Core
@@ -36,9 +57,17 @@ type Component interface {
 	// Vecty's diffing algorithm).
 	Render() *HTML
 
-	// Context returns the components context, which is used internally by
+	// context returns the component's context, which is used internally by
 	// Vecty in order to store the previous component render for diffing.
-	Context() *Core
+	context() *Core
+}
+
+// Mounter is an optional interface that a Component can implement in order
+// to receive component mount events.
+type Mounter interface {
+	// Mount is called after the component has been mounted, after the DOM
+	// element has been added.
+	Mount()
 }
 
 // Unmounter is an optional interface that a Component can implement in order
@@ -58,20 +87,71 @@ type Unmounter interface {
 // value is expected to panic.
 type ComponentOrHTML interface{}
 
-// Restorer is an optional interface that Component's can implement in order to
+// Updater is an optional interface that Components can implement in order to
 // restore state during component reconciliation and also to short-circuit
-// the reconciliation of a Component's body.
-type Restorer interface {
-	// Restore is called when the component should restore itself against a
-	// previous instance of a component. The previous component may be nil or
-	// of a different type than this Restorer itself, thus a type assertion
-	// should be used.
+// the reconciliation of a Component's output.
+//
+// Example implementation:
+//  type MyComponent struct {
+//  	vecty.Core
+//  	state string
+//  }
+//
+//  func (c *MyComponent) ShouldUpdate(prev Component) bool {
+//  	p, ok := prev.(*MyComponent)
+//  	if !ok {
+//  		return true
+//  	}
+//  	if p.state != c.state {
+//  		return true
+//  	}
+//  	return false
+//  }
+//
+// You may optionally (and preferably) implement the Clone method (more on this
+// below):
+//
+//  func (c *MyComponent) Clone(current vecty.Component) vecty.Component {
+//  	m := &MyComponent{}
+//  	*m = *c
+//  	return m
+//  }
+type Updater interface {
+	// ShouldUpdate is called before the component is requested to render, and
+	// is passed a previous instance of a component. The previous component may
+	// be nil.
 	//
-	// If skip = true is returned, restoration of this component's body is
-	// skipped. That is, the component is not rerendered. If the component can
-	// prove when Restore is called that the HTML rendered by Component.Render
-	// would not change, true should be returned.
-	Restore(prev Component) (skip bool)
+	// If ShouldUpdate determines that an update of the Component's rendered
+	// output is required, `true` should be returned, and the component will be
+	// rendered. If properties or state that would affect the component's output
+	// have not changed, returning `false` will skip rendering of the component
+	// for this pass.
+	ShouldUpdate(prev Component) bool
+
+	// Clone returns a copy of the current state of the component, used during
+	// reconcilliation by the Updater interface.
+	//
+	// If a Component does not implement this method, a general implementation
+	// from vecty.Core will be used, however this uses reflection, so it will
+	// be slower, and will panic if the Component is not a pointer to struct.
+	//
+	// The `current` argument is guaranteed to be equal to the Component, and so
+	// may be ignored by implementers - it is only there to serve the generic
+	// implementation in vecty.Core.
+	Clone(current Component) Component
+}
+
+// Keyer is an optional interface that Components may implement to uniquely
+// identify an instance amongst a list of its siblings.  Implementing Keyer
+// will provide a significant performance boost when rendering siblings that
+// may change order.
+//
+// Inside lists of Markup (e.g. vecty.List), vecty.Key(string) may be used
+// instead.
+type Keyer interface {
+	// Key must return a string that is unique amongst sibiling elements when
+	// implemented, otherwise the renderer will panic.
+	Key() string
 }
 
 // HTML represents some form of HTML: an element with a specific tag, or some
@@ -79,26 +159,55 @@ type Restorer interface {
 type HTML struct {
 	node jsObject
 
-	namespace, tag, text, innerHTML string
-	styles, dataset                 map[string]string
-	properties, attributes          map[string]interface{}
-	eventListeners                  []*EventListener
-	children                        []ComponentOrHTML
+	namespace, tag, text, innerHTML, key string
+	styles, dataset                      map[string]string
+	properties, attributes               map[string]interface{}
+	eventListeners                       []*EventListener
+	children                             []ComponentOrHTML
+	childIndex                           map[string]int
+}
+
+// Key satisfies the Keyer interface
+func (h *HTML) Key() string {
+	return h.key
 }
 
 func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 
-func (h *HTML) restoreText(prev *HTML) {
-	h.node = prev.node
-
-	// Text modifications.
-	if h.text != prev.text {
-		h.node.Set("nodeValue", h.text)
+// newNode returns a new element node or panics on invalid HTML.
+func (h *HTML) newNode() jsObject {
+	switch {
+	case h.tag != "" && h.text != "":
+		panic("vecty: only one of HTML.tag or HTML.text may be set")
+	case h.text != "" && h.innerHTML != "":
+		panic("vecty: only HTML may have UnsafeHTML attribute")
+	case h.tag != "" && h.namespace == "":
+		return global.Get("document").Call("createElement", h.tag)
+	case h.tag != "" && h.namespace != "":
+		return global.Get("document").Call("createElementNS", h.namespace, h.tag)
+	default:
+		return global.Get("document").Call("createTextNode", h.text)
 	}
 }
 
-func (h *HTML) restoreHTML(prev *HTML) {
-	h.node = prev.node
+// mutate the prev HTML Node to the desired state for the current element.
+func (h *HTML) mutate(prev *HTML) *HTML {
+	// On compatible tag, mutate previous node, otherwise start from clean element
+	var clean bool
+	if (h.text != "" && prev.text != "") || (h.tag != "" && prev.tag != "" && h.tag == prev.tag && h.namespace == prev.namespace) {
+		h.node = prev.node
+	} else {
+		h.node = h.newNode()
+		clean = true
+	}
+
+	// Mutate text element
+	if h.text != "" {
+		if h.text != prev.text {
+			h.node.Set("nodeValue", h.text)
+		}
+		return h
+	}
 
 	// Properties
 	for name, value := range h.properties {
@@ -115,9 +224,12 @@ func (h *HTML) restoreHTML(prev *HTML) {
 			h.node.Set(name, value)
 		}
 	}
-	for name := range prev.properties {
-		if _, ok := h.properties[name]; !ok {
-			h.node.Set(name, nil)
+	if !clean {
+		for name := range prev.properties {
+			if _, ok := h.properties[name]; !ok {
+				// TODO: Set(name, js.Undefined)
+				h.node.Set(name, nil)
+			}
 		}
 	}
 
@@ -127,9 +239,11 @@ func (h *HTML) restoreHTML(prev *HTML) {
 			h.node.Call("setAttribute", name, value)
 		}
 	}
-	for name := range prev.attributes {
-		if _, ok := h.attributes[name]; !ok {
-			h.node.Call("removeAttribute", name)
+	if !clean {
+		for name := range prev.attributes {
+			if _, ok := h.attributes[name]; !ok {
+				h.node.Call("removeAttribute", name)
+			}
 		}
 	}
 
@@ -141,59 +255,123 @@ func (h *HTML) restoreHTML(prev *HTML) {
 			style.Call("setProperty", name, value)
 		}
 	}
-	for name := range prev.styles {
-		if _, ok := h.styles[name]; !ok {
-			style.Call("removeProperty", name)
+	if !clean {
+		for name := range prev.styles {
+			if _, ok := h.styles[name]; !ok {
+				style.Call("removeProperty", name)
+			}
 		}
 	}
 
-	for _, l := range prev.eventListeners {
-		h.node.Call("removeEventListener", l.Name, l.wrapper)
+	// Event listeners
+	if !clean {
+		for _, l := range prev.eventListeners {
+			h.node.Call("removeEventListener", l.Name, l.wrapper)
+		}
 	}
 	for _, l := range h.eventListeners {
 		h.node.Call("addEventListener", l.Name, l.wrapper)
 	}
 
+	// Unsafe innerHTML
 	if h.innerHTML != prev.innerHTML {
 		h.node.Set("innerHTML", h.innerHTML)
 	}
 
-	// TODO better list element reuse
+	// If there are no children, we're finished.
+	if len(h.children) == 0 && len(prev.children) == 0 {
+		return h
+	}
+
+	// Iterate over child elements and render recursively
+	h.childIndex = make(map[string]int)
+	nextKeyed := false
+	prevKeyed := len(prev.children) == len(prev.childIndex)
+	focus := global.Get("document").Get("activeElement")
 	for i, nextChild := range h.children {
-		nextChildRender := doRender(nextChild)
-		if i >= len(prev.children) {
-			if doRestore(nil, nextChild, nil, nextChildRender) {
-				continue
+		var (
+			key        string
+			prevChild  ComponentOrHTML
+			prevIndex  int
+			foundKey   bool
+			nextRender *HTML
+		)
+
+		// key detection
+		if keyer, ok := nextChild.(Keyer); ok {
+			key = keyer.Key()
+			if key != "" {
+				nextKeyed = true
+				h.childIndex[key] = i
+			} else if nextKeyed {
+				panic("All siblings must have keys when using keyed elements")
 			}
-			h.node.Call("appendChild", nextChildRender.node)
-			doMount(nextChild)
-			continue
 		}
-		prevChild := prev.children[i]
-		prevChildRender, ok := prevChild.(*HTML)
-		if !ok {
-			prevChildRender = prevChild.(Component).Context().prevRender
+
+		// Find prevChild by key or index, otherwise it is nil
+		switch {
+		case prevKeyed:
+			if prevIndex, foundKey = prev.childIndex[key]; foundKey {
+				prevChild = prev.children[prevIndex]
+				delete(prev.childIndex, key)
+			}
+		case i < len(prev.children):
+			prevChild = prev.children[i]
 		}
-		if nextChildRender == prevChildRender {
-			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
+
+		// Render new child
+		nextRender = renderComponentOrHTML(nextChild, prevChild)
+
+		// Select best insertion method
+		switch {
+		case i >= len(prev.children):
+			appendHTML(nextRender, h)
+		case prevKeyed:
+			// If we have a stable position, skip re-insert
+			if !foundKey || i != prevIndex {
+				if err := insertElementAfter(nextRender, prev.children[i]); err != nil {
+					appendHTML(nextRender, h)
+				}
+			}
+		default:
+			if err := replaceElement(nextChild, prevChild); err != nil {
+				panic(err)
+			}
 		}
-		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
-			continue
-		}
-		doReplace(prevChild, nextChild, prevChildRender, nextChildRender)
+
+		// Trigger mount/unmount handlers
+		mountUnmount(nextChild, prevChild)
 	}
+
+	// TODO: focus != nil && focus != js.Undefined
+	if focus != nil {
+		focus.Call("focus")
+	}
+
+	// Remove dangling children
+	if prevKeyed {
+		for _, i := range prev.childIndex {
+			if err := removeElement(prev.children[i]); err != nil {
+				panic(err)
+			}
+			unmount(prev)
+		}
+		return h
+	}
+
 	for i := len(h.children); i < len(prev.children); i++ {
-		prevChild := prev.children[i]
-		prevChildRender, ok := prevChild.(*HTML)
-		if !ok {
-			prevChildRender = prevChild.(Component).Context().prevRender
+		if err := removeElement(prev.children[i]); err != nil {
+			panic(err)
 		}
-		doRemove(prevChild, prevChildRender)
+		unmount(prev)
 	}
+
+	return h
 }
 
-// Restore implements the Restorer interface.
-func (h *HTML) Restore(old ComponentOrHTML) {
+// render generates the DOM representation of the HTML.
+func (h *HTML) render(prev *HTML) *HTML {
+	// Wrap eventListeners
 	for _, l := range h.eventListeners {
 		l := l
 		l.wrapper = func(jsEvent *js.Object) {
@@ -207,193 +385,119 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		}
 	}
 
-	if prev, ok := old.(*HTML); ok && prev != nil {
-		if h.text != "" && prev.text != "" {
-			h.restoreText(prev)
-			return
-		}
-		if h.tag != "" && prev.tag != "" && h.tag == prev.tag {
-			h.restoreHTML(prev)
-			return
-		}
+	// Populate prev if empty
+	if prev == nil {
+		prev = &HTML{}
+	}
+	if prev.node == nil {
+		prev.node = h.newNode()
 	}
 
-	if h.tag != "" && h.text != "" {
-		panic("vecty: only one of HTML.tag or HTML.text may be set")
-	}
-	if h.text != "" && h.innerHTML != "" {
-		panic("vecty: only HTML may have UnsafeHTML attribute")
-	}
-	switch {
-	case h.tag != "" && h.namespace == "":
-		h.node = global.Get("document").Call("createElement", h.tag)
-	case h.tag != "" && h.namespace != "":
-		h.node = global.Get("document").Call("createElementNS", h.namespace, h.tag)
-	default:
-		h.node = global.Get("document").Call("createTextNode", h.text)
-	}
-	if h.innerHTML != "" {
-		h.node.Set("innerHTML", h.innerHTML)
-	}
-	for name, value := range h.properties {
-		h.node.Set(name, value)
-	}
-	for name, value := range h.attributes {
-		h.node.Call("setAttribute", name, value)
-	}
-	dataset := h.node.Get("dataset")
-	for name, value := range h.dataset {
-		dataset.Set(name, value)
-	}
-	style := h.node.Get("style")
-	for name, value := range h.styles {
-		style.Call("setProperty", name, value)
-	}
-	for _, l := range h.eventListeners {
-		h.node.Call("addEventListener", l.Name, l.wrapper)
-	}
-	for _, nextChild := range h.children {
-		nextChildRender, isHTML := nextChild.(*HTML)
-		if !isHTML {
-			nextChildComp := nextChild.(Component)
-			nextChildRender = renderHandleNil(nextChildComp)
-			nextChildComp.Context().prevRender = nextChildRender
-		}
-
-		if doRestore(nil, nextChild, nil, nextChildRender) {
-			continue
-		}
-		h.node.Call("appendChild", nextChildRender.node)
-		doMount(nextChild)
-	}
+	// Mutate element
+	return h.mutate(prev)
 }
 
-// Tag returns an HTML element with the given tag name. Generally, this
-// function is not used directly but rather the elem subpackage (which is type
-// safe) is used instead.
-func Tag(tag string, m ...MarkupOrComponentOrHTML) *HTML {
-	return NamespacedTag("", tag, m...)
+// shouldUpdate component?
+func shouldUpdate(c Component) bool {
+	// Always render new components
+	if c.context().prevRender == nil {
+		return true
+	}
+	// Check with component, when supported
+	if updater, ok := c.(Updater); ok {
+		return updater.ShouldUpdate(c.context().prevInstance)
+	}
+	// Update by default
+	return true
 }
 
-// NamespacedTag returns an HTML element with the given tag name, and namespace.
-// Generally, this function is not used directly but rather the elem subpackage
-// (which is type safe) is used instead.
-func NamespacedTag(namespace, tag string, m ...MarkupOrComponentOrHTML) *HTML {
-	h := &HTML{
-		namespace: namespace,
-		tag:       tag,
+// renderComponent returns the HTML output from the Component.
+func renderComponent(c Component, prev ComponentOrHTML) Component {
+	if !shouldUpdate(c) {
+		return c
 	}
-	for _, m := range m {
-		apply(m, h)
+
+	// Render component HTML
+	render := renderComponentOrHTML(c.Render(), prev)
+	// Store current instance after render, in case render updates state
+	if updater, ok := c.(Updater); ok {
+		c.context().prevInstance = updater.Clone(c)
 	}
-	return h
+	// Store previous render
+	c.context().prevRender = render
+
+	return c
 }
 
-// Text returns a TextNode with the given literal text. Because the returned
-// HTML represents a TextNode, the text does not have to be escaped (arbitrary
-// user input fed into this function will always be safely rendered).
-func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
-	h := &HTML{
-		text: text,
+// renderComponentOrHTML is the main entry point for the render chain.
+func renderComponentOrHTML(next, prev ComponentOrHTML) *HTML {
+	// Empty output rendered as `noscript` tag
+	if next == nil {
+		next = Tag("noscript")
 	}
-	for _, m := range m {
-		apply(m, h)
+
+	n, ok := next.(*HTML)
+	if !ok {
+		// Render Component
+		c := next.(Component)
+		return renderComponent(c, prev).context().prevRender
 	}
-	return h
+
+	// Render HTML with mutation
+	return n.render(assertHTML(prev))
 }
 
 // Rerender causes the body of the given component (i.e. the HTML returned by
-// the Component's Render method) to be re-rendered and subsequently restored.
+// the Component's Render method) to be re-rendered.
 func Rerender(c Component) {
-	prevRender := c.Context().prevRender
-	nextRender := doRender(c)
-	var prevComponent Component = nil // TODO
-	if doRestore(prevComponent, c, prevRender, nextRender) {
-		return
-	}
+	prevRender := c.context().prevRender
+	nextRender := renderComponentOrHTML(c, prevRender)
 	if prevRender != nil {
-		doReplace(c, c, prevRender, nextRender)
-	}
-}
-
-func doRender(c ComponentOrHTML) *HTML {
-	if h, isHTML := c.(*HTML); isHTML {
-		return h
-	}
-	comp := c.(Component)
-	r := renderHandleNil(comp)
-	comp.Context().prevRender = r
-	return r
-}
-
-func renderHandleNil(c Component) *HTML {
-	r := c.Render()
-	if r == nil {
-		// nil renders are translated into noscript tags.
-		r = Tag("noscript")
-	}
-	return r
-}
-
-func doRestore(prev, next ComponentOrHTML, prevRender, nextRender *HTML) (skip bool) {
-	if r, ok := next.(Restorer); ok {
-		var p Component
-		if prev != nil {
-			p = prev.(Component)
-		}
-		if r.Restore(p) {
-			return true
+		if err := replaceElement(nextRender, prevRender); err != nil {
+			panic(err)
 		}
 	}
-	nextRender.Restore(prevRender)
-	return false
 }
 
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
-	nextRender := doRender(body)
-	if nextRender.tag != "body" {
-		panic(fmt.Sprintf("vecty: RenderBody expected Component.Render to return a body tag, found %q", nextRender.tag))
+	render := renderComponentOrHTML(body, nil)
+	if render.tag != "body" {
+		panic(fmt.Sprintf("vecty: RenderBody expected Component.Render to return a body tag, found %q", render.tag))
 	}
-	doRestore(nil, body, nil, nextRender)
-	// TODO: doRestore skip == true here probably implies a user code bug
 	doc := global.Get("document")
-	if doc.Get("readyState").String() == "loading" {
-		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
-			doc.Set("body", nextRender.node)
-			doMount(body)
-		})
+	if doc.Get("readyState").String() != "loading" {
+		doc.Set("body", render.node)
+		mount(body)
 		return
 	}
-	doc.Set("body", nextRender.node)
-	doMount(body)
+	doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
+		doc.Set("body", render.node)
+		mount(body)
+	})
 }
 
-// SetTitle sets the title of the document.
-func SetTitle(title string) {
-	global.Get("document").Set("title", title)
+func removeElement(prev ComponentOrHTML) error {
+	if prev == nil {
+		return nil
+	}
+	p, ok := prev.(*HTML)
+	if !ok {
+		p = prev.(Component).context().prevRender
+		prev.(Component).context().prevRender = nil
+	}
+	if p.node == nil {
+		return nil
+	}
+	if err := removeNode(p.node); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-// AddStylesheet adds an external stylesheet to the document.
-func AddStylesheet(url string) {
-	link := global.Get("document").Call("createElement", "link")
-	link.Set("rel", "stylesheet")
-	link.Set("href", url)
-	global.Get("document").Get("head").Call("appendChild", link)
-}
-
-func doReplace(prev, next ComponentOrHTML, prevRender, nextRender *HTML) {
-	replaceNode(nextRender.node, prevRender.node)
-	doMountUnmount(prev, next)
-}
-
-func doRemove(prev ComponentOrHTML, prevRender *HTML) {
-	removeNode(prevRender.node)
-	doUnmount(prev)
-}
-
-func doMountUnmount(prev, next ComponentOrHTML) {
+func mountUnmount(next, prev ComponentOrHTML) {
 	var shouldMount, shouldUnmount bool
 	prevComponent, prevIsComponent := prev.(Component)
 	nextComponent, nextIsComponent := next.(Component)
@@ -414,25 +518,40 @@ func doMountUnmount(prev, next ComponentOrHTML) {
 		shouldMount = true
 	}
 	if shouldUnmount {
-		doUnmount(prev)
+		unmount(prev)
 	}
 	if shouldMount {
-		doMount(next)
+		mount(next)
 	}
 }
 
-// doMount calls the Mount function on Mounter components
-func doMount(h ComponentOrHTML) {
+// mount calls the Mount function on Mounter components
+func mount(h ComponentOrHTML) {
 	if m, ok := h.(Mounter); ok {
 		m.Mount()
 	}
 }
 
-// doUnmount calls the Unmount function on Unmounter components
-func doUnmount(h ComponentOrHTML) {
+// unmount calls the Unmount function on Unmounter components
+func unmount(h ComponentOrHTML) {
 	if u, ok := h.(Unmounter); ok {
 		u.Unmount()
 	}
+}
+
+// assertHTML is a convenience method for casting to *HTML
+func assertHTML(e ComponentOrHTML) *HTML {
+	if e == nil {
+		return nil
+	}
+	h, ok := e.(*HTML)
+	if !ok {
+		if c, ok := e.(Component); ok {
+			h = c.context().prevRender
+		}
+	}
+
+	return h
 }
 
 var global jsObject = wrapObject(js.Global)
