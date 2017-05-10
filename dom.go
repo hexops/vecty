@@ -7,6 +7,11 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
+var (
+	errMissingParent = fmt.Errorf("Missing parent node")
+	errEmptyElement  = fmt.Errorf("Empty element or node")
+)
+
 // Core implements the private context method of the Component interface, and
 // is the core/central struct which all Component implementations should embed.
 type Core struct {
@@ -165,6 +170,7 @@ type HTML struct {
 	eventListeners                       []*EventListener
 	children                             []ComponentOrHTML
 	childIndex                           map[string]int
+	new                                  bool
 }
 
 // Key satisfies the Keyer interface
@@ -176,6 +182,7 @@ func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 
 // newNode returns a new element node or panics on invalid HTML.
 func (h *HTML) newNode() jsObject {
+	h.new = true
 	switch {
 	case h.tag != "" && h.text != "":
 		panic("vecty: only one of HTML.tag or HTML.text may be set")
@@ -190,15 +197,137 @@ func (h *HTML) newNode() jsObject {
 	}
 }
 
+// parentNode returns the parent Node for a ComponentOrHTML
+func (h *HTML) parentNode(el ComponentOrHTML) (jsObject, error) {
+	e := assertHTML(el)
+	if e == nil || e.node == nil {
+		return nil, errEmptyElement
+	}
+
+	parent := e.node.Get(`parentNode`)
+	// TODO: parent == nil || parent == js.Undefined
+	if parent == nil {
+		return nil, errMissingParent
+	}
+
+	return parent, nil
+}
+
+// appendChild to this HTML
+func (h *HTML) appendChild(next ComponentOrHTML) {
+	n := assertHTML(next)
+	if n == nil {
+		return
+	}
+	h.node.Call("appendChild", n.node)
+}
+
+// replace prev with self in prev's parent
+func (h *HTML) replace(prev ComponentOrHTML) error {
+	if prev == nil {
+		return errEmptyElement
+	}
+	p := assertHTML(prev)
+	if p == nil || p.node == nil {
+		return errEmptyElement
+	}
+
+	if h.node == p.node {
+		return nil
+	}
+
+	parent, err := h.parentNode(p)
+	if err != nil {
+		return err
+	}
+
+	parent.Call("replaceChild", h.node, p.node)
+	return nil
+}
+
+// replaceChild on prev parent Node, or append to this HTML on failure
+func (h *HTML) replaceChild(next, prev ComponentOrHTML) error {
+	if next == prev {
+		return nil
+	} else if h.new {
+		h.appendChild(next)
+		return nil
+	}
+
+	n, p := assertHTML(next), assertHTML(prev)
+	if n == nil || n.node == nil || p == nil || p.node == nil {
+		return errEmptyElement
+	}
+	if n.node == p.node {
+		return nil
+	}
+	parent, err := h.parentNode(p)
+	if err != nil {
+		return err
+	}
+
+	parent.Call("replaceChild", n.node, p.node)
+	return nil
+}
+
+// insert next element before prev element in prev parent
+func (h *HTML) insertChildBefore(next, prev ComponentOrHTML) error {
+	parent, err := h.parentNode(prev)
+	if err != nil {
+		return err
+	}
+
+	n, p := assertHTML(next), assertHTML(prev)
+	if n == nil || n.node == nil {
+		return errEmptyElement
+	}
+	if p == nil {
+		p = &HTML{}
+	}
+
+	parent.Call("insertBefore", n.node, p.node)
+	return nil
+}
+
+// insert next element after prev element in prev parent
+func (h *HTML) insertChildAfter(next, prev ComponentOrHTML) error {
+	p := assertHTML(prev)
+	if p == nil {
+		return errEmptyElement
+	}
+
+	return h.insertChildBefore(next, p.node.Get("nextSibling"))
+}
+
+// remove previous child
+func (h *HTML) removeChild(prev ComponentOrHTML) error {
+	if prev == nil {
+		return nil
+	}
+	p, ok := prev.(*HTML)
+	if !ok {
+		p = prev.(Component).context().prevRender
+		prev.(Component).context().prevRender = nil
+	}
+	if p.node == nil {
+		return nil
+	}
+	parent, err := h.parentNode(p)
+	if err != nil {
+		return err
+	}
+	parent.Call("removeChild", p.node)
+
+	return nil
+}
+
 // mutate the prev HTML Node to the desired state for the current element.
 func (h *HTML) mutate(prev *HTML) *HTML {
 	// On compatible tag, mutate previous node, otherwise start from clean element
-	var clean bool
 	if (h.text != "" && prev.text != "") || (h.tag != "" && prev.tag != "" && h.tag == prev.tag && h.namespace == prev.namespace) {
 		h.node = prev.node
 	} else {
 		h.node = h.newNode()
-		clean = true
 	}
 
 	// Mutate text element
@@ -224,7 +353,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 			h.node.Set(name, value)
 		}
 	}
-	if !clean {
+	if !h.new {
 		for name := range prev.properties {
 			if _, ok := h.properties[name]; !ok {
 				// TODO: Set(name, js.Undefined)
@@ -239,7 +368,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 			h.node.Call("setAttribute", name, value)
 		}
 	}
-	if !clean {
+	if !h.new {
 		for name := range prev.attributes {
 			if _, ok := h.attributes[name]; !ok {
 				h.node.Call("removeAttribute", name)
@@ -255,7 +384,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 			style.Call("setProperty", name, value)
 		}
 	}
-	if !clean {
+	if !h.new {
 		for name := range prev.styles {
 			if _, ok := h.styles[name]; !ok {
 				style.Call("removeProperty", name)
@@ -264,7 +393,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 	}
 
 	// Event listeners
-	if !clean {
+	if !h.new {
 		for _, l := range prev.eventListeners {
 			h.node.Call("removeEventListener", l.Name, l.wrapper)
 		}
@@ -286,7 +415,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 	// Iterate over child elements and render recursively
 	h.childIndex = make(map[string]int)
 	nextKeyed := false
-	prevKeyed := len(prev.children) == len(prev.childIndex)
+	prevKeyed := len(prev.children) == len(prev.childIndex) && len(prev.children) > 0
 	focus := global.Get("document").Get("activeElement")
 	for i, nextChild := range h.children {
 		var (
@@ -324,17 +453,21 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 
 		// Select best insertion method
 		switch {
-		case i >= len(prev.children):
-			appendHTML(nextRender, h)
+		case i >= len(prev.children) || h.new:
+			// Append the child to this container
+			h.appendChild(nextRender)
 		case prevKeyed:
-			// If we have a stable position, skip re-insert
-			if !foundKey || i != prevIndex {
-				if err := insertElementAfter(nextRender, prev.children[i]); err != nil {
-					appendHTML(nextRender, h)
+			// If we couldn't re-use the element, didn't find an existing key,
+			// or the element position wasn't stable, insert at the correct
+			// position.  Insert will move the element for us.
+			if h.new || !foundKey || i != prevIndex {
+				if err := h.insertChildAfter(nextRender, prev.children[i]); err != nil {
+					h.appendChild(nextRender)
 				}
 			}
 		default:
-			if err := replaceElement(nextChild, prevChild); err != nil {
+			// Otherwise, replace elements where necessary
+			if err := h.replaceChild(nextChild, prevChild); err != nil {
 				panic(err)
 			}
 		}
@@ -351,7 +484,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 	// Remove dangling children
 	if prevKeyed {
 		for _, i := range prev.childIndex {
-			if err := removeElement(prev.children[i]); err != nil {
+			if err := h.removeChild(prev.children[i]); err != nil {
 				panic(err)
 			}
 			unmount(prev)
@@ -360,7 +493,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 	}
 
 	for i := len(h.children); i < len(prev.children); i++ {
-		if err := removeElement(prev.children[i]); err != nil {
+		if err := h.removeChild(prev.children[i]); err != nil {
 			panic(err)
 		}
 		unmount(prev)
@@ -453,7 +586,7 @@ func Rerender(c Component) {
 	prevRender := c.context().prevRender
 	nextRender := renderComponentOrHTML(c, prevRender)
 	if prevRender != nil {
-		if err := replaceElement(nextRender, prevRender); err != nil {
+		if err := nextRender.replace(prevRender); err != nil {
 			panic(err)
 		}
 	}
@@ -478,25 +611,7 @@ func RenderBody(body Component) {
 	})
 }
 
-func removeElement(prev ComponentOrHTML) error {
-	if prev == nil {
-		return nil
-	}
-	p, ok := prev.(*HTML)
-	if !ok {
-		p = prev.(Component).context().prevRender
-		prev.(Component).context().prevRender = nil
-	}
-	if p.node == nil {
-		return nil
-	}
-	if err := removeNode(p.node); err != nil {
-		return err
-	}
-
-	return nil
-}
-
+// mountUnmount determines whether Mounter/Unmounter hooks should be triggerd
 func mountUnmount(next, prev ComponentOrHTML) {
 	var shouldMount, shouldUnmount bool
 	prevComponent, prevIsComponent := prev.(Component)
