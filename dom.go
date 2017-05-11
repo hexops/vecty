@@ -586,7 +586,7 @@ func renderComponentOrHTML(next, prev ComponentOrHTML) *HTML {
 func Rerender(c Component) {
 	prevRender := c.context().prevRender
 	nextRender := renderComponentOrHTML(c, prevRender)
-	if prevRender != nil {
+	if prevRender != nil && nextRender.new {
 		if err := nextRender.replace(prevRender); err != nil {
 			panic(err)
 		}
