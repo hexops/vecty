@@ -1,6 +1,7 @@
 package vecty
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -8,8 +9,8 @@ import (
 )
 
 var (
-	errMissingParent = fmt.Errorf("Missing parent node")
-	errEmptyElement  = fmt.Errorf("Empty element or node")
+	errMissingParent = errors.New("missing parent node")
+	errEmptyElement  = errors.New("empty element or node")
 )
 
 // Core implements the private context method of the Component interface, and
@@ -147,7 +148,7 @@ type Updater interface {
 }
 
 // Keyer is an optional interface that Components may implement to uniquely
-// identify an instance amongst a list of its siblings.  Implementing Keyer
+// identify an instance amongst a list of its siblings. Implementing Keyer
 // will provide a significant performance boost when rendering siblings that
 // may change order.
 //
@@ -459,7 +460,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 		case prevKeyed && nextKeyed:
 			// If we couldn't re-use the element, didn't find an existing key,
 			// or the element position wasn't stable, insert at the correct
-			// position.  Insert will move the element for us.
+			// position. Insert will move the element for us.
 			if h.new || !foundKey || i != prevIndex {
 				if err := h.insertChildAfter(nextRender, prev.children[i]); err != nil {
 					h.appendChild(nextRender)
