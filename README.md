@@ -39,3 +39,8 @@ Community
 =========
 
 - Join us in the [#gopherjs](https://gophers.slack.com/messages/gopherjs/) and [#vecty](https://gophers.slack.com/messages/vecty/) channels on the [Gophers Slack](https://gophersinvite.herokuapp.com/)!
+
+Changelog
+=========
+
+See the [docs/CHANGELOG.md](docs/CHANGELOG.md) file.
