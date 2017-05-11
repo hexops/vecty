@@ -439,7 +439,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 
 		// Find prevChild by key or index, otherwise it is nil
 		switch {
-		case prevKeyed:
+		case prevKeyed && nextKeyed:
 			if prevIndex, foundKey = prev.childIndex[key]; foundKey {
 				prevChild = prev.children[prevIndex]
 				delete(prev.childIndex, key)
@@ -456,7 +456,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 		case i >= len(prev.children) || h.new:
 			// Append the child to this container
 			h.appendChild(nextRender)
-		case prevKeyed:
+		case prevKeyed && nextKeyed:
 			// If we couldn't re-use the element, didn't find an existing key,
 			// or the element position wasn't stable, insert at the correct
 			// position.  Insert will move the element for us.
@@ -482,7 +482,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 	}
 
 	// Remove dangling children
-	if prevKeyed {
+	if prevKeyed && nextKeyed {
 		for _, i := range prev.childIndex {
 			if err := h.removeChild(prev.children[i]); err != nil {
 				panic(err)
