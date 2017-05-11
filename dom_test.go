@@ -53,8 +53,8 @@ func TestText(t *testing.T) {
 
 // TODO(slimsag): TestRerender
 
-// TestRenderBody_ExpectsBody tests that RenderBody always expects a "body" tag
-// and panics otherwise.
+// TestRenderBody_ExpectsBody tests that RenderBody panics when something other
+// than a "body" tag is rendered by the component.
 func TestRenderBody_ExpectsBody(t *testing.T) {
 	cases := []struct {
 		name      string
@@ -64,17 +64,12 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 		{
 			name:      "text",
 			render:    Text("Hello world!"),
-			wantPanic: "vecty: RenderBody expected Component.Render to return a body tag, found \"\"", // TODO(slimsag): bug
+			wantPanic: "vecty: RenderBody expected Component.Render to return a body tag, found \"\"", // TODO(slimsag): error message bug
 		},
 		{
 			name:      "div",
 			render:    Tag("div"),
 			wantPanic: "vecty: RenderBody expected Component.Render to return a body tag, found \"div\"",
-		},
-		{
-			name:      "body",
-			render:    Tag("body"),
-			wantPanic: "runtime error: invalid memory address or nil pointer dereference", // TODO(slimsag): relies on js
 		},
 	}
 	for _, c := range cases {
@@ -98,7 +93,115 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 	}
 }
 
-// TODO(slimsag): TestRenderBody_Standard
+// TestRenderBody_Standard_loaded tests that RenderBody properly handles the
+// standard case of rendering into the "body" tag when the DOM is in a loaded
+// state.
+func TestRenderBody_Standard_loaded(t *testing.T) {
+	body := &mockObject{}
+	bodySet := false
+	document := &mockObject{
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "createElement" {
+				panic(fmt.Sprintf("expected call to createElement, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if args[0].(string) != "body" {
+				panic(`args[0].(string) != "body"`)
+			}
+			return body
+		},
+		get: map[string]jsObject{
+			"readyState": &mockObject{stringValue: "complete"},
+		},
+		set: func(key string, value interface{}) {
+			if key != "body" {
+				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+			}
+			if value != body {
+				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+			}
+			bodySet = true
+		},
+	}
+	global = &mockObject{
+		get: map[string]jsObject{
+			"document": document,
+		},
+	}
+	RenderBody(&componentFunc{render: func() *HTML {
+		return Tag("body")
+	}})
+	if !bodySet {
+		t.Fatalf("expected document.body to be set")
+	}
+}
+
+// TestRenderBody_Standard_loading tests that RenderBody properly handles the
+// standard case of rendering into the "body" tag when the DOM is in a loading
+// state.
+func TestRenderBody_Standard_loading(t *testing.T) {
+	body := &mockObject{}
+	bodySet := false
+	var domLoadedEventListener func()
+	document := &mockObject{
+		call: func(name string, args ...interface{}) jsObject {
+			switch name {
+			case "createElement":
+				if len(args) != 1 {
+					panic("len(args) != 1")
+				}
+				if args[0].(string) != "body" {
+					panic(`args[0].(string) != "body"`)
+				}
+				return body
+			case "addEventListener":
+				if len(args) != 2 {
+					panic("len(args) != 2")
+				}
+				if args[0].(string) != "DOMContentLoaded" {
+					panic(`args[0].(string) != "DOMContentLoaded"`)
+				}
+				domLoadedEventListener = args[1].(func())
+				return nil
+			default:
+				panic(fmt.Sprintf("unexpected call to %q", name))
+			}
+		},
+		get: map[string]jsObject{
+			"readyState": &mockObject{stringValue: "loading"},
+		},
+		set: func(key string, value interface{}) {
+			if key != "body" {
+				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+			}
+			if value != body {
+				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+			}
+			bodySet = true
+		},
+	}
+	global = &mockObject{
+		get: map[string]jsObject{
+			"document": document,
+		},
+	}
+	RenderBody(&componentFunc{render: func() *HTML {
+		return Tag("body")
+	}})
+	if domLoadedEventListener == nil {
+		t.Fatalf("domLoadedEventListener == nil")
+	}
+	if bodySet {
+		t.Fatalf("expected document.body to NOT be set")
+	}
+	domLoadedEventListener()
+	if !bodySet {
+		t.Fatalf("expected document.body to be set")
+	}
+}
+
 // TODO(slimsag): TestSetTitle
 // TODO(slimsag): TestAddStylesheet
 
@@ -108,3 +211,17 @@ type componentFunc struct {
 }
 
 func (c *componentFunc) Render() *HTML { return c.render() }
+
+type mockObject struct {
+	set         func(key string, value interface{})
+	get         map[string]jsObject
+	call        func(name string, args ...interface{}) jsObject
+	stringValue string
+	boolValue   bool
+}
+
+func (w *mockObject) Set(key string, value interface{})              { w.set(key, value) }
+func (w *mockObject) Get(key string) jsObject                        { return w.get[key] }
+func (w *mockObject) Call(name string, args ...interface{}) jsObject { return w.call(name, args...) }
+func (w *mockObject) String() string                                 { return w.stringValue }
+func (w *mockObject) Bool() bool                                     { return w.boolValue }
