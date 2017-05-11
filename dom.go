@@ -77,7 +77,7 @@ type Restorer interface {
 // HTML represents some form of HTML: an element with a specific tag, or some
 // literal text (a TextNode).
 type HTML struct {
-	Node *js.Object
+	node jsObject
 
 	tag, text, innerHTML   string
 	styles, dataset        map[string]string
@@ -86,53 +86,55 @@ type HTML struct {
 	children               []ComponentOrHTML
 }
 
+func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
+
 func (h *HTML) restoreText(prev *HTML) {
-	h.Node = prev.Node
+	h.node = prev.node
 
 	// Text modifications.
 	if h.text != prev.text {
-		h.Node.Set("nodeValue", h.text)
+		h.node.Set("nodeValue", h.text)
 	}
 }
 
 func (h *HTML) restoreHTML(prev *HTML) {
-	h.Node = prev.Node
+	h.node = prev.node
 
 	// Properties
 	for name, value := range h.properties {
 		var oldValue interface{}
 		switch name {
 		case "value":
-			oldValue = h.Node.Get("value").String()
+			oldValue = h.node.Get("value").String()
 		case "checked":
-			oldValue = h.Node.Get("checked").Bool()
+			oldValue = h.node.Get("checked").Bool()
 		default:
 			oldValue = prev.properties[name]
 		}
 		if value != oldValue {
-			h.Node.Set(name, value)
+			h.node.Set(name, value)
 		}
 	}
 	for name := range prev.properties {
 		if _, ok := h.properties[name]; !ok {
-			h.Node.Set(name, nil)
+			h.node.Set(name, nil)
 		}
 	}
 
 	// Attributes
 	for name, value := range h.attributes {
 		if value != prev.attributes[name] {
-			h.Node.Call("setAttribute", name, value)
+			h.node.Call("setAttribute", name, value)
 		}
 	}
 	for name := range prev.attributes {
 		if _, ok := h.attributes[name]; !ok {
-			h.Node.Call("removeAttribute", name)
+			h.node.Call("removeAttribute", name)
 		}
 	}
 
 	// Styles
-	style := h.Node.Get("style")
+	style := h.node.Get("style")
 	for name, value := range h.styles {
 		oldValue := prev.styles[name]
 		if value != oldValue {
@@ -146,14 +148,14 @@ func (h *HTML) restoreHTML(prev *HTML) {
 	}
 
 	for _, l := range prev.eventListeners {
-		h.Node.Call("removeEventListener", l.Name, l.wrapper)
+		h.node.Call("removeEventListener", l.Name, l.wrapper)
 	}
 	for _, l := range h.eventListeners {
-		h.Node.Call("addEventListener", l.Name, l.wrapper)
+		h.node.Call("addEventListener", l.Name, l.wrapper)
 	}
 
 	if h.innerHTML != prev.innerHTML {
-		h.Node.Set("innerHTML", h.innerHTML)
+		h.node.Set("innerHTML", h.innerHTML)
 	}
 
 	// TODO better list element reuse
@@ -163,7 +165,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 			if doRestore(nil, nextChild, nil, nextChildRender) {
 				continue
 			}
-			h.Node.Call("appendChild", nextChildRender.Node)
+			h.node.Call("appendChild", nextChildRender.node)
 			continue
 		}
 		prevChild := prev.children[i]
@@ -177,7 +179,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
 			continue
 		}
-		replaceNode(nextChildRender.Node, prevChildRender.Node)
+		replaceNode(nextChildRender.node, prevChildRender.node)
 	}
 	for i := len(h.children); i < len(prev.children); i++ {
 		prevChild := prev.children[i]
@@ -185,7 +187,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
-		removeNode(prevChildRender.Node)
+		removeNode(prevChildRender.node)
 		if u, ok := prevChild.(Unmounter); ok {
 			u.Unmount()
 		}
@@ -225,29 +227,29 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		panic("vecty: only HTML may have UnsafeHTML attribute")
 	}
 	if h.tag != "" {
-		h.Node = js.Global.Get("document").Call("createElement", h.tag)
+		h.node = global.Get("document").Call("createElement", h.tag)
 	} else {
-		h.Node = js.Global.Get("document").Call("createTextNode", h.text)
+		h.node = global.Get("document").Call("createTextNode", h.text)
 	}
 	if h.innerHTML != "" {
-		h.Node.Set("innerHTML", h.innerHTML)
+		h.node.Set("innerHTML", h.innerHTML)
 	}
 	for name, value := range h.properties {
-		h.Node.Set(name, value)
+		h.node.Set(name, value)
 	}
 	for name, value := range h.attributes {
-		h.Node.Call("setAttribute", name, value)
+		h.node.Call("setAttribute", name, value)
 	}
-	dataset := h.Node.Get("dataset")
+	dataset := h.node.Get("dataset")
 	for name, value := range h.dataset {
 		dataset.Set(name, value)
 	}
-	style := h.Node.Get("style")
+	style := h.node.Get("style")
 	for name, value := range h.styles {
 		style.Call("setProperty", name, value)
 	}
 	for _, l := range h.eventListeners {
-		h.Node.Call("addEventListener", l.Name, l.wrapper)
+		h.node.Call("addEventListener", l.Name, l.wrapper)
 	}
 	for _, nextChild := range h.children {
 		nextChildRender, isHTML := nextChild.(*HTML)
@@ -260,7 +262,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		if doRestore(nil, nextChild, nil, nextChildRender) {
 			continue
 		}
-		h.Node.Call("appendChild", nextChildRender.Node)
+		h.node.Call("appendChild", nextChildRender.node)
 	}
 }
 
@@ -300,7 +302,7 @@ func Rerender(c Component) {
 		return
 	}
 	if prevRender != nil {
-		replaceNode(nextRender.Node, prevRender.Node)
+		replaceNode(nextRender.node, prevRender.node)
 	}
 }
 
@@ -346,25 +348,76 @@ func RenderBody(body Component) {
 	}
 	doRestore(nil, body, nil, nextRender)
 	// TODO: doRestore skip == true here probably implies a user code bug
-	doc := js.Global.Get("document")
+	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {
 		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
-			doc.Set("body", nextRender.Node)
+			doc.Set("body", nextRender.node)
 		})
 		return
 	}
-	doc.Set("body", nextRender.Node)
+	doc.Set("body", nextRender.node)
 }
 
 // SetTitle sets the title of the document.
 func SetTitle(title string) {
-	js.Global.Get("document").Set("title", title)
+	global.Get("document").Set("title", title)
 }
 
 // AddStylesheet adds an external stylesheet to the document.
 func AddStylesheet(url string) {
-	link := js.Global.Get("document").Call("createElement", "link")
+	link := global.Get("document").Call("createElement", "link")
 	link.Set("rel", "stylesheet")
 	link.Set("href", url)
-	js.Global.Get("document").Get("head").Call("appendChild", link)
+	global.Get("document").Get("head").Call("appendChild", link)
+}
+
+var global jsObject = wrapObject(js.Global)
+
+type jsObject interface {
+	Set(key string, value interface{})
+	Get(key string) jsObject
+	Call(name string, args ...interface{}) jsObject
+	String() string
+	Bool() bool
+}
+
+func wrapObject(j *js.Object) jsObject {
+	if j == nil {
+		return nil
+	}
+	if j == js.Undefined {
+		panic("TODO")
+	}
+	return wrappedObject{j}
+}
+
+type wrappedObject struct {
+	j *js.Object
+}
+
+func (w wrappedObject) Set(key string, value interface{}) {
+	if v, ok := value.(wrappedObject); ok {
+		value = v.j
+	}
+	w.j.Set(key, value)
+}
+
+func (w wrappedObject) Get(key string) jsObject {
+	return wrapObject(w.j.Get(key))
+}
+
+func (w wrappedObject) Call(name string, args ...interface{}) jsObject {
+	for i, arg := range args {
+		if v, ok := arg.(wrappedObject); ok {
+			args[i] = v.j
+		}
+	}
+	return wrapObject(w.j.Call(name, args...))
+}
+
+func (w wrappedObject) String() string {
+	return w.j.String()
+}
+func (w wrappedObject) Bool() bool {
+	return w.j.Bool()
 }

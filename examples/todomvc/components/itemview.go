@@ -46,7 +46,7 @@ func (p *ItemView) onStartEdit(event *vecty.Event) {
 	p.editing = true
 	p.editTitle = p.Item.Title
 	vecty.Rerender(p)
-	p.input.Node.Call("focus")
+	p.input.Node().Call("focus")
 }
 
 func (p *ItemView) onEditInput(event *vecty.Event) {
