@@ -184,6 +184,7 @@ func (h *HTML) Key() string {
 	return h.key
 }
 
+// Node provides access to the underlying JS object
 func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 
 // newNode returns a new element node or panics on invalid HTML.
@@ -211,8 +212,8 @@ func (h *HTML) parentNode(el ComponentOrHTML) (jsObject, error) {
 	}
 
 	parent := e.node.Get(`parentNode`)
-	// TODO: parent == nil || parent == js.Undefined
-	if parent == nil {
+
+	if parent == nil || parent == jsUndefined {
 		return nil, errMissingParent
 	}
 
@@ -362,8 +363,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 	if !h.new {
 		for name := range prev.properties {
 			if _, ok := h.properties[name]; !ok {
-				// TODO: Set(name, js.Undefined)
-				h.node.Set(name, nil)
+				h.node.Set(name, js.Undefined)
 			}
 		}
 	}
@@ -482,8 +482,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 		h.lifecycleEvents = append(h.lifecycleEvents, &eventMountUnmount{next: nextChild, prev: prevChild})
 	}
 
-	// TODO: focus != nil && focus != js.Undefined
-	if focus != nil {
+	if focus != nil && focus != jsUndefined {
 		focus.Call("focus")
 	}
 
@@ -740,7 +739,7 @@ func assertHTML(e ComponentOrHTML) *HTML {
 	return h
 }
 
-var global jsObject = wrapObject(js.Global)
+var global = wrapObject(js.Global)
 
 type jsObject interface {
 	Set(key string, value interface{})
@@ -750,12 +749,14 @@ type jsObject interface {
 	Bool() bool
 }
 
+var jsUndefined = wrappedObject{js.Undefined}
+
 func wrapObject(j *js.Object) jsObject {
 	if j == nil {
 		return nil
 	}
 	if j == js.Undefined {
-		panic("TODO")
+		return jsUndefined
 	}
 	return wrappedObject{j}
 }
