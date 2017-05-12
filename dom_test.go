@@ -93,6 +93,53 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 	}
 }
 
+// TestRenderBody_Restore_Skip tests that RenderBody panics when the
+// component's Restore method returns skip == true.
+func TestRenderBody_Restore_Skip(t *testing.T) {
+	t.Skip("BUG")
+	body := &mockObject{}
+	bodySet := false
+	document := &mockObject{
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "createElement" {
+				panic(fmt.Sprintf("expected call to createElement, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if args[0].(string) != "body" {
+				panic(`args[0].(string) != "body"`)
+			}
+			return body
+		},
+		get: map[string]jsObject{
+			"readyState": &mockObject{stringValue: "complete"},
+		},
+		set: func(key string, value interface{}) {
+			if key != "body" {
+				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+			}
+			if value != body {
+				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+			}
+			bodySet = true
+		},
+	}
+	global = &mockObject{
+		get: map[string]jsObject{
+			"document": document,
+		},
+	}
+	RenderBody(&componentFunc{
+		render: func() *HTML {
+			return Tag("body")
+		},
+		restore: func(prev Component) (skip bool) {
+			return true
+		},
+	})
+}
+
 // TestRenderBody_Standard_loaded tests that RenderBody properly handles the
 // standard case of rendering into the "body" tag when the DOM is in a loaded
 // state.
@@ -140,7 +187,7 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 				t.Fatal("prev != nil")
 			}
 			restoreCalled = true
-			return false // TODO(slimsag): Make (and test) that skip == true here panics!
+			return false
 		},
 	})
 	if !restoreCalled {
@@ -210,7 +257,7 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 				t.Fatal("prev != nil")
 			}
 			restoreCalled = true
-			return false // TODO(slimsag): Make (and test) that skip == true here panics!
+			return false
 		},
 	})
 	if !restoreCalled {
