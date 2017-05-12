@@ -130,9 +130,22 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 			"document": document,
 		},
 	}
-	RenderBody(&componentFunc{render: func() *HTML {
-		return Tag("body")
-	}})
+	restoreCalled := false
+	RenderBody(&componentFunc{
+		render: func() *HTML {
+			return Tag("body")
+		},
+		restore: func(prev Component) (skip bool) {
+			if prev != nil {
+				t.Fatal("prev != nil")
+			}
+			restoreCalled = true
+			return false // TODO(slimsag): Make (and test) that skip == true here panics!
+		},
+	})
+	if !restoreCalled {
+		t.Fatal("expected Restore to be called")
+	}
 	if !bodySet {
 		t.Fatalf("expected document.body to be set")
 	}
@@ -187,9 +200,22 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 			"document": document,
 		},
 	}
-	RenderBody(&componentFunc{render: func() *HTML {
-		return Tag("body")
-	}})
+	restoreCalled := false
+	RenderBody(&componentFunc{
+		render: func() *HTML {
+			return Tag("body")
+		},
+		restore: func(prev Component) (skip bool) {
+			if prev != nil {
+				t.Fatal("prev != nil")
+			}
+			restoreCalled = true
+			return false // TODO(slimsag): Make (and test) that skip == true here panics!
+		},
+	})
+	if !restoreCalled {
+		t.Fatal("expected Restore to be called")
+	}
 	if domLoadedEventListener == nil {
 		t.Fatalf("domLoadedEventListener == nil")
 	}
@@ -293,10 +319,17 @@ func TestAddStylesheet(t *testing.T) {
 
 type componentFunc struct {
 	Core
-	render func() *HTML
+	render  func() *HTML
+	restore func(prev Component) (skip bool)
 }
 
 func (c *componentFunc) Render() *HTML { return c.render() }
+func (c *componentFunc) Restore(prev Component) (skip bool) {
+	if c.restore != nil {
+		return c.restore(prev)
+	}
+	return
+}
 
 type mockObject struct {
 	set         func(key string, value interface{})
