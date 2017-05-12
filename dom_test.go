@@ -202,7 +202,28 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 	}
 }
 
-// TODO(slimsag): TestSetTitle
+func TestSetTitle(t *testing.T) {
+	titleSet := ""
+	document := &mockObject{
+		set: func(key string, value interface{}) {
+			if key != "title" {
+				panic(fmt.Sprintf(`expected document.set "title", not %q`, key))
+			}
+			titleSet = value.(string)
+		},
+	}
+	global = &mockObject{
+		get: map[string]jsObject{
+			"document": document,
+		},
+	}
+	want := "foobar"
+	SetTitle(want)
+	if titleSet != want {
+		t.Fatalf("titleSet is %q, want %q", titleSet, want)
+	}
+}
+
 // TODO(slimsag): TestAddStylesheet
 
 type componentFunc struct {
