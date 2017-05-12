@@ -18,6 +18,8 @@ var (
 type Core struct {
 	prevRender   *HTML
 	prevInstance Component
+	mounted      bool
+	unmounted    bool
 }
 
 // context implements the Component interface.
@@ -71,6 +73,7 @@ type Component interface {
 // Mounter is an optional interface that a Component can implement in order
 // to receive component mount events.
 type Mounter interface {
+	Component
 	// Mount is called after the component has been mounted, after the DOM
 	// element has been added.
 	Mount()
@@ -79,6 +82,7 @@ type Mounter interface {
 // Unmounter is an optional interface that a Component can implement in order
 // to receive component unmount events.
 type Unmounter interface {
+	Component
 	// Unmount is called after the component has been unmounted, after the DOM
 	// element has been removed.
 	Unmount()
@@ -171,6 +175,7 @@ type HTML struct {
 	eventListeners                       []*EventListener
 	children                             []ComponentOrHTML
 	childIndex                           map[string]int
+	lifecycleEvents                      []lifecycleEvent
 	new                                  bool
 }
 
@@ -415,6 +420,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 
 	// Iterate over child elements and render recursively
 	h.childIndex = make(map[string]int)
+	h.lifecycleEvents = make([]lifecycleEvent, 0)
 	nextKeyed := false
 	prevKeyed := len(prev.children) == len(prev.childIndex) && len(prev.children) > 0
 	focus := global.Get("document").Get("activeElement")
@@ -473,8 +479,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 			}
 		}
 
-		// Trigger mount/unmount handlers
-		mountUnmount(nextChild, prevChild)
+		h.lifecycleEvents = append(h.lifecycleEvents, &eventMountUnmount{next: nextChild, prev: prevChild})
 	}
 
 	// TODO: focus != nil && focus != js.Undefined
@@ -488,7 +493,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 			if err := h.removeChild(prev.children[i]); err != nil {
 				panic(err)
 			}
-			unmount(prev)
+			h.lifecycleEvents = append(h.lifecycleEvents, &eventUnmount{prev: prev.children[i]})
 		}
 		return h
 	}
@@ -497,7 +502,7 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 		if err := h.removeChild(prev.children[i]); err != nil {
 			panic(err)
 		}
-		unmount(prev)
+		h.lifecycleEvents = append(h.lifecycleEvents, &eventUnmount{prev: prev.children[i]})
 	}
 
 	return h
@@ -591,6 +596,8 @@ func Rerender(c Component) {
 			panic(err)
 		}
 	}
+	e := &eventMountUnmount{next: c, prev: c}
+	e.trigger()
 }
 
 // RenderBody renders the given component as the document body. The given
@@ -603,24 +610,45 @@ func RenderBody(body Component) {
 	doc := global.Get("document")
 	if doc.Get("readyState").String() != "loading" {
 		doc.Set("body", render.node)
-		mount(body)
+		e := &eventMount{next: body}
+		e.trigger()
 		return
 	}
 	doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
 		doc.Set("body", render.node)
-		mount(body)
+		e := &eventMount{next: body}
+		e.trigger()
 	})
 }
 
-// mountUnmount determines whether Mounter/Unmounter hooks should be triggerd
-func mountUnmount(next, prev ComponentOrHTML) {
+type lifecycleEvent interface {
+	trigger()
+}
+
+// eventMountUnmount recursively triggers the Mount and Unmount handlers of
+// next and prev and their children respectively, if appropriate
+type eventMountUnmount struct {
+	prev ComponentOrHTML
+	next ComponentOrHTML
+}
+
+func (e *eventMountUnmount) trigger() {
+	h := assertHTML(e.next)
+	if h != nil {
+		for _, evt := range h.lifecycleEvents {
+			evt.trigger()
+		}
+		h.lifecycleEvents = nil
+	}
+
 	var shouldMount, shouldUnmount bool
-	prevComponent, prevIsComponent := prev.(Component)
-	nextComponent, nextIsComponent := next.(Component)
-	if prev == nil && next != nil && nextIsComponent {
+	nextComponent, nextIsComponent := e.next.(Component)
+	prevComponent, prevIsComponent := e.prev.(Component)
+	switch {
+	case e.prev == nil && e.next != nil && nextIsComponent:
 		// Had nil, now have Component, mount next
 		shouldMount = true
-	} else if nextIsComponent != prevIsComponent {
+	case nextIsComponent != prevIsComponent:
 		if prevIsComponent {
 			// Had Component, now have HTML, unmount prev
 			shouldUnmount = true
@@ -628,29 +656,71 @@ func mountUnmount(next, prev ComponentOrHTML) {
 			// Had HTML, now have Component, mount next
 			shouldMount = true
 		}
-	} else if nextIsComponent && prevComponent != nextComponent {
+	case nextIsComponent && nextComponent != prevComponent:
 		// Have inequal Components, unmount prev, mount next
 		shouldUnmount = true
 		shouldMount = true
 	}
 	if shouldUnmount {
-		unmount(prev)
+		unmount(e.prev)
 	}
 	if shouldMount {
-		mount(next)
+		mount(e.next)
 	}
 }
 
+// eventMount triggers the Mount event of next if appropriate
+type eventMount struct {
+	next ComponentOrHTML
+}
+
+func (e *eventMount) trigger() {
+	h := assertHTML(e.next)
+	if h != nil {
+		for _, evt := range h.lifecycleEvents {
+			evt.trigger()
+		}
+		h.lifecycleEvents = nil
+	}
+	mount(e.next)
+}
+
+// eventUnmount triggers the Unmount event of prev if appropriate
+type eventUnmount struct {
+	prev ComponentOrHTML
+}
+
+func (e *eventUnmount) trigger() {
+	h := assertHTML(e.prev)
+	if h != nil {
+		for _, evt := range h.lifecycleEvents {
+			evt.trigger()
+		}
+		h.lifecycleEvents = nil
+	}
+	unmount(e.prev)
+}
+
 // mount calls the Mount function on Mounter components
-func mount(h ComponentOrHTML) {
-	if m, ok := h.(Mounter); ok {
+func mount(e ComponentOrHTML) {
+	if m, ok := e.(Mounter); ok {
+		if m.context().mounted {
+			unmount(e)
+		}
+		m.context().mounted = true
+		m.context().unmounted = false
 		m.Mount()
 	}
 }
 
 // unmount calls the Unmount function on Unmounter components
-func unmount(h ComponentOrHTML) {
-	if u, ok := h.(Unmounter); ok {
+func unmount(e ComponentOrHTML) {
+	if u, ok := e.(Unmounter); ok {
+		if u.context().unmounted {
+			return
+		}
+		u.context().unmounted = true
+		u.context().mounted = false
 		u.Unmount()
 	}
 }
