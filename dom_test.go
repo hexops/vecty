@@ -51,7 +51,292 @@ func TestText(t *testing.T) {
 	}
 }
 
-// TODO(slimsag): TestRerender
+// TODO(slimsag): Rerender docs say "re-rendered and subsequently restored"
+// which is not right (Restore happens before Render).
+
+// TestRerender_nil tests that Rerender panics when the component argument is
+// nil.
+func TestRerender_nil(t *testing.T) {
+	gotPanic := ""
+	func() {
+		defer func() {
+			r := recover()
+			if r != nil {
+				gotPanic = fmt.Sprint(r)
+			}
+		}()
+		Rerender(nil)
+	}()
+	expected := "runtime error: invalid memory address or nil pointer dereference" // TODO(slimsag): error message bug
+	if gotPanic != expected {
+		t.Fatalf("got panic %q expected %q", gotPanic, expected)
+	}
+}
+
+// TestRerender_no_prevRender tests the behavior of Rerender when there is no
+// previous render.
+//
+// TODO(slimsag): Document in Rerender how this behaves (it should be no-op?).
+func TestRerender_no_prevRender(t *testing.T) {
+	t.Skip("BUG")
+	Rerender(&componentFunc{
+		render: func() *HTML {
+			panic("expected no Render call") // TODO(slimsag): bug!
+		},
+		restore: func(prev Component) (skip bool) {
+			panic("expected no Restore call") // TODO(slimsag): bug!
+		},
+	})
+}
+
+// TestRerender_identical tests the behavior of Rerender when there is a
+// previous render which is identical to the new render.
+func TestRerender_identical(t *testing.T) {
+	// Perform the initial render of the component.
+	body := &mockObject{}
+	bodySet := false
+	document := &mockObject{
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "createElement" {
+				panic(fmt.Sprintf("expected call to createElement, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if args[0].(string) != "body" {
+				panic(`args[0].(string) != "body"`)
+			}
+			return body
+		},
+		get: map[string]jsObject{
+			"readyState": &mockObject{stringValue: "complete"},
+		},
+		set: func(key string, value interface{}) {
+			if key != "body" {
+				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+			}
+			if value != body {
+				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+			}
+			bodySet = true
+		},
+	}
+	global = &mockObject{
+		get: map[string]jsObject{
+			"document": document,
+		},
+	}
+
+	render := Tag("body")
+	var renderCalled, restoreCalled int
+	comp := &componentFunc{
+		render: func() *HTML {
+			renderCalled++
+			return render
+		},
+		restore: func(prev Component) (skip bool) {
+			if prev != nil {
+				panic("prev != nil")
+			}
+			restoreCalled++
+			return
+		},
+	}
+	RenderBody(comp)
+	if !bodySet {
+		t.Fatal("!bodySet")
+	}
+	if renderCalled != 1 {
+		t.Fatal("renderCalled != 1")
+	}
+	if restoreCalled != 1 {
+		t.Fatal("restoreCalled != 1")
+	}
+	if comp.Context().prevRender != render {
+		t.Fatal("comp.Context().prevRender != render")
+	}
+
+	// Perform a re-render.
+	global = nil // Expecting no JS calls past here
+	newRender := Tag("body")
+	comp.render = func() *HTML {
+		renderCalled++
+		return newRender
+	}
+	comp.restore = func(prev Component) (skip bool) {
+		if prev != comp {
+			// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
+			//panic("prev != comp")
+		}
+		restoreCalled++
+		return
+	}
+	Rerender(comp)
+	if renderCalled != 2 {
+		t.Fatal("renderCalled != 2")
+	}
+	if restoreCalled != 2 {
+		t.Fatal("restoreCalled != 2")
+	}
+	if comp.Context().prevRender != newRender {
+		t.Fatal("comp.Context().prevRender != newRender")
+	}
+}
+
+// TestRerender_change tests the behavior of Rerender when there is a
+// previous render which is different from the new render.
+func TestRerender_change(t *testing.T) {
+	cases := []struct {
+		name      string
+		newRender *HTML
+	}{
+		{
+			name:      "new_child",
+			newRender: Tag("body", Tag("div")),
+		},
+		// TODO(slimsag): bug! nil produces <noscript> and we incorrectly try
+		// to replace <body> with it! We should panic & warn the user.
+		//{
+		//	name:      "nil",
+		//	newRender: nil,
+		//},
+	}
+	for _, tst := range cases {
+		t.Run(tst.name, func(t *testing.T) {
+			// Perform the initial render of the component.
+			var bodyAppendChild jsObject
+			body := &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					switch name {
+					case "appendChild":
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						bodyAppendChild = args[0].(jsObject)
+						return nil
+					default:
+						panic(fmt.Sprintf("unexpected call to %q", name))
+					}
+				},
+			}
+			bodySet := false
+			document := &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "createElement" {
+						panic(fmt.Sprintf("expected call to createElement, not %q", name))
+					}
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					if args[0].(string) != "body" {
+						panic(`args[0].(string) != "body"`)
+					}
+					return body
+				},
+				get: map[string]jsObject{
+					"readyState": &mockObject{stringValue: "complete"},
+				},
+				set: func(key string, value interface{}) {
+					if key != "body" {
+						panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+					}
+					if value != body {
+						panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+					}
+					bodySet = true
+				},
+			}
+			global = &mockObject{
+				get: map[string]jsObject{
+					"document": document,
+				},
+			}
+
+			render := Tag("body")
+			var renderCalled, restoreCalled int
+			comp := &componentFunc{
+				render: func() *HTML {
+					renderCalled++
+					return render
+				},
+				restore: func(prev Component) (skip bool) {
+					if prev != nil {
+						panic("prev != nil")
+					}
+					restoreCalled++
+					return
+				},
+			}
+			RenderBody(comp)
+			if !bodySet {
+				t.Fatal("!bodySet")
+			}
+			if renderCalled != 1 {
+				t.Fatal("renderCalled != 1")
+			}
+			if restoreCalled != 1 {
+				t.Fatal("restoreCalled != 1")
+			}
+			if comp.Context().prevRender != render {
+				t.Fatal("comp.Context().prevRender != render")
+			}
+
+			// Perform a re-render.
+			body = &mockObject{}
+			newNode := &mockObject{}
+			document = &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					switch name {
+					case "createElement":
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						switch args[0].(string) {
+						case "body":
+							return body
+						case "div", "noscript":
+							return newNode
+						default:
+							panic("unexpected createElement call")
+						}
+					default:
+						panic(fmt.Sprintf("unexpected call to %q", name))
+					}
+				},
+			}
+			global = &mockObject{
+				get: map[string]jsObject{
+					"document": document,
+				},
+			}
+			comp.render = func() *HTML {
+				renderCalled++
+				return tst.newRender
+			}
+			comp.restore = func(prev Component) (skip bool) {
+				if prev != comp {
+					// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
+					//panic("prev != comp")
+				}
+				restoreCalled++
+				return
+			}
+			Rerender(comp)
+			if renderCalled != 2 {
+				t.Fatal("renderCalled != 2")
+			}
+			if restoreCalled != 2 {
+				t.Fatal("restoreCalled != 2")
+			}
+			if comp.Context().prevRender != tst.newRender {
+				t.Fatal("comp.Context().prevRender != tst.newRender")
+			}
+			if bodyAppendChild != newNode {
+				t.Fatal("bodyAppendChild != newNode")
+			}
+		})
+	}
+}
 
 // TestRenderBody_ExpectsBody tests that RenderBody panics when something other
 // than a "body" tag is rendered by the component.
