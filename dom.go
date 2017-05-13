@@ -185,7 +185,12 @@ func (h *HTML) Key() string {
 }
 
 // Node provides access to the underlying JS object
-func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
+func (h *HTML) Node() *js.Object {
+	if h.node == nil {
+		return nil
+	}
+	return h.node.(wrappedObject).j
+}
 
 // newNode returns a new element node or panics on invalid HTML.
 func (h *HTML) newNode() jsObject {
