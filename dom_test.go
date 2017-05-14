@@ -15,7 +15,7 @@ var _ = func() bool {
 // TODO(slimsag): TestUnmounter; Unmounter.Unmount
 // TODO(slimsag): TestComponentOrHTML
 // TODO(slimsag): TestRestorer; Restorer.Restore
-// TODO(slimsag): TestHTML; HTML.Restore
+// TODO(slimsag): TestHTML; HTML.Restore; HTML.Node
 
 func TestTag(t *testing.T) {
 	markupCalled := false
