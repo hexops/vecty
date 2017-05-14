@@ -356,6 +356,11 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 			render:    Tag("div"),
 			wantPanic: "vecty: RenderBody expected Component.Render to return a body tag, found \"div\"",
 		},
+		{
+			name:      "nil",
+			render:    nil,
+			wantPanic: "vecty: RenderBody expected Component.Render to return a body tag, found \"noscript\"",
+		},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
