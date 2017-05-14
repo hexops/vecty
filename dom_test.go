@@ -78,7 +78,7 @@ func TestRerender_nil(t *testing.T) {
 //
 // TODO(slimsag): Document in Rerender how this behaves (it should be no-op?).
 func TestRerender_no_prevRender(t *testing.T) {
-	t.Skip("BUG")
+	t.Skip("BUG") // TODO(slimsag)
 	Rerender(&componentFunc{
 		render: func() *HTML {
 			panic("expected no Render call") // TODO(slimsag): bug!
@@ -381,7 +381,7 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 // TestRenderBody_Restore_Skip tests that RenderBody panics when the
 // component's Restore method returns skip == true.
 func TestRenderBody_Restore_Skip(t *testing.T) {
-	t.Skip("BUG")
+	t.Skip("BUG") // TODO(slimsag)
 	body := &mockObject{}
 	bodySet := false
 	document := &mockObject{
