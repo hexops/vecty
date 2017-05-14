@@ -10,8 +10,72 @@ var _ = func() bool {
 	return true
 }()
 
-// TODO(slimsag): TestCore; Core.Context
-// TODO(slimsag): TestComponent; Component.Render; Component.Context
+type testCore struct{ Core }
+
+func (testCore) Render() *HTML { return Tag("p") }
+
+type testCorePtr struct{ *Core }
+
+func (testCorePtr) Render() *HTML { return Tag("p") }
+
+func TestCore(t *testing.T) {
+	// Test that a standard *MyComponent with embedded Core works as we expect.
+	t.Run("comp_ptr_and_core", func(t *testing.T) {
+		v1 := Tag("v1")
+		valid := Component(&testCore{})
+		valid.Context().prevRender = v1
+		if valid.Context().prevRender != v1 {
+			t.Fatal("valid.Context().prevRender != v1")
+		}
+	})
+
+	// Test that a non-pointer MyComponent with embedded Core does not satisfy
+	// the Component interface:
+	//
+	//  testCore does not implement Component (Context method has pointer receiver)
+	//
+	t.Run("comp_and_core", func(t *testing.T) {
+		isComponent := func(x interface{}) bool {
+			_, ok := x.(Component)
+			return ok
+		}
+		if isComponent(testCore{}) {
+			t.Fatal("expected !isComponent(testCompCore{})")
+		}
+	})
+
+	// Test what happens when a user accidently embeds *Core instead of Core in
+	// their component.
+	t.Run("comp_ptr_and_core_ptr", func(t *testing.T) {
+		v1 := Tag("v1")
+		invalid := Component(&testCorePtr{})
+		got := recoverStr(func() {
+			invalid.Context().prevRender = v1
+		})
+		// TODO(slimsag): This would happen in user-facing code too. We should
+		// create a helper for when we access a component's context, which
+		// would panic with a more helpful message.
+		want := "runtime error: invalid memory address or nil pointer dereference"
+		if got != want {
+			t.Fatalf("got panic %q want %q", got, want)
+		}
+	})
+	t.Run("comp_and_core_ptr", func(t *testing.T) {
+		v1 := Tag("v1")
+		invalid := Component(testCorePtr{})
+		got := recoverStr(func() {
+			invalid.Context().prevRender = v1
+		})
+		// TODO(slimsag): This would happen in user-facing code too. We should
+		// create a helper for when we access a component's context, which
+		// would panic with a more helpful message.
+		want := "runtime error: invalid memory address or nil pointer dereference"
+		if got != want {
+			t.Fatalf("got panic %q want %q", got, want)
+		}
+	})
+}
+
 // TODO(slimsag): TestUnmounter; Unmounter.Unmount
 // TODO(slimsag): TestComponentOrHTML
 // TODO(slimsag): TestRestorer; Restorer.Restore
@@ -652,6 +716,15 @@ func TestAddStylesheet(t *testing.T) {
 	if linkSet["href"] != url {
 		t.Fatal(`linkSet["href"] != url`)
 	}
+}
+
+// recoverStr runs f and returns the recovered panic as a string.
+func recoverStr(f func()) (s string) {
+	defer func() {
+		s = fmt.Sprint(recover())
+	}()
+	f()
+	return
 }
 
 type componentFunc struct {
