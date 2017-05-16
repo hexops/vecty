@@ -6,11 +6,13 @@ import (
 	"reflect"
 
 	"github.com/gopherjs/gopherjs/js"
+	raf "github.com/oskca/gopherjs-raf"
 )
 
 var (
 	errMissingParent = errors.New("missing parent node")
 	errEmptyElement  = errors.New("empty element or node")
+	batch            = &batchRenderer{dedup: make(map[Component]int)}
 )
 
 // Core implements the private context method of the Component interface, and
@@ -545,6 +547,38 @@ func (h *HTML) render(prev *HTML) *HTML {
 	return h.mutate(prev)
 }
 
+// batchRenderer maintains a queue of components with pending updates
+type batchRenderer struct {
+	Working bool
+
+	dedup   map[Component]int
+	pending []Component
+}
+
+// add and de-duplicate a component to the update queue
+func (b *batchRenderer) add(c Component) {
+	if idx, ok := b.dedup[c]; ok {
+		// delete previous entry
+		b.pending = append(b.pending[:idx], b.pending[idx+1:]...)
+	}
+
+	b.pending = append(b.pending, c)
+	b.dedup[c] = len(b.pending) - 1
+}
+
+// updates returns the current pending update queue, and zeros it
+func (b *batchRenderer) updates() []Component {
+	// drain pending updates
+	var pending []Component
+	pending, b.dedup, b.pending = append(pending, b.pending...), make(map[Component]int), nil
+	return pending
+}
+
+// len returns the size of the currently pending update queue
+func (b *batchRenderer) len() int {
+	return len(b.pending)
+}
+
 // shouldUpdate component?
 func shouldUpdate(c Component) bool {
 	// Always render new components
@@ -604,20 +638,46 @@ func Rerender(c Component) {
 		// Skip Rerender for Components that have been removed
 		return
 	}
-	prevRender := c.context().prevRender
-	nextRender := renderComponentOrHTML(c, prevRender)
-	if prevRender != nil && nextRender.new {
-		if err := nextRender.replace(prevRender); err != nil {
-			panic(err)
-		}
+	batch.add(c)
+	if !batch.Working {
+		raf.RequestAnimationFrame(rerenderBatch)
 	}
-	e := &eventMountUnmount{next: c, prev: c}
-	e.trigger()
+}
+
+// rerenderBatch renders any outstanding batched renders
+func rerenderBatch(elapsed float64) {
+	batch.Working = true
+	defer func() {
+		batch.Working = false
+	}()
+	updates := batch.updates()
+	for _, c := range updates {
+		// Skip render for components removed since last batch
+		if c.context().removed {
+			continue
+		}
+		prevRender := c.context().prevRender
+		nextRender := renderComponentOrHTML(c, prevRender)
+		if prevRender != nil && nextRender.new {
+			if err := nextRender.replace(prevRender); err != nil {
+				panic(err)
+			}
+		}
+		e := &eventMountUnmount{next: c, prev: c}
+		e.trigger()
+	}
+	if batch.len() > 0 {
+		raf.RequestAnimationFrame(rerenderBatch)
+	}
 }
 
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
+	batch.Working = true
+	defer func() {
+		batch.Working = false
+	}()
 	render := renderComponentOrHTML(body, nil)
 	if render.tag != "body" {
 		panic(fmt.Sprintf("vecty: RenderBody expected Component.Render to return a body tag, found %q", render.tag))
