@@ -20,6 +20,7 @@ type Core struct {
 	prevInstance Component
 	mounted      bool
 	unmounted    bool
+	removed      bool
 }
 
 // context implements the Component interface.
@@ -482,6 +483,10 @@ func (h *HTML) mutate(prev *HTML) *HTML {
 			if err := h.replaceChild(nextChild, prevChild); err != nil {
 				panic(err)
 			}
+			// Tag Component as removed if we replaced one
+			if c, ok := prevChild.(Component); ok {
+				c.context().removed = true
+			}
 		}
 
 		h.lifecycleEvents = append(h.lifecycleEvents, &eventMountUnmount{next: nextChild, prev: prevChild})
@@ -560,6 +565,8 @@ func renderComponent(c Component, prev ComponentOrHTML) Component {
 		return c
 	}
 
+	// Reset removed flag when rendering as a child
+	c.context().removed = false
 	// Render component HTML
 	render := renderComponentOrHTML(c.Render(), prev)
 	// Store current instance after render, in case render updates state
@@ -593,6 +600,10 @@ func renderComponentOrHTML(next, prev ComponentOrHTML) *HTML {
 // Rerender causes the body of the given component (i.e. the HTML returned by
 // the Component's Render method) to be re-rendered.
 func Rerender(c Component) {
+	if c.context().removed {
+		// Skip Rerender for Components that have been removed
+		return
+	}
 	prevRender := c.context().prevRender
 	nextRender := renderComponentOrHTML(c, prevRender)
 	if prevRender != nil && nextRender.new {
