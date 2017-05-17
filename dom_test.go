@@ -712,7 +712,7 @@ func TestRerender_nil(t *testing.T) {
 		}()
 		Rerender(nil)
 	}()
-	expected := "runtime error: invalid memory address or nil pointer dereference" // TODO(slimsag): error message bug
+	expected := "vecty: Rerender illegally called with a nil Component argument"
 	if gotPanic != expected {
 		t.Fatalf("got panic %q expected %q", gotPanic, expected)
 	}

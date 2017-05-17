@@ -301,6 +301,9 @@ func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
 //
 // If the component has not been rendered before, Rerender panics.
 func Rerender(c Component) {
+	if c == nil {
+		panic("vecty: Rerender illegally called with a nil Component argument")
+	}
 	prevRender := c.Context().prevRender
 	if prevRender == nil {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
