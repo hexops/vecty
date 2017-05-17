@@ -298,16 +298,19 @@ func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
 
 // Rerender causes the body of the given component (i.e. the HTML returned by
 // the Component's Render method) to be re-rendered and subsequently restored.
+//
+// If the component has not been rendered before, Rerender panics.
 func Rerender(c Component) {
 	prevRender := c.Context().prevRender
+	if prevRender == nil {
+		panic("vecty: Rerender invoked on Component that has never been rendered")
+	}
 	nextRender := doRender(c)
 	var prevComponent Component // TODO
 	if doRestore(prevComponent, c, prevRender, nextRender) {
 		return
 	}
-	if prevRender != nil {
-		replaceNode(nextRender.node, prevRender.node)
-	}
+	replaceNode(nextRender.node, prevRender.node)
 }
 
 func doRender(c ComponentOrHTML) *HTML {

@@ -723,18 +723,21 @@ func TestRerender_nil(t *testing.T) {
 
 // TestRerender_no_prevRender tests the behavior of Rerender when there is no
 // previous render.
-//
-// TODO(slimsag): Document in Rerender how this behaves (it should be no-op?).
 func TestRerender_no_prevRender(t *testing.T) {
-	t.Skip("BUG") // TODO(slimsag)
-	Rerender(&componentFunc{
-		render: func() *HTML {
-			panic("expected no Render call") // TODO(slimsag): bug!
-		},
-		restore: func(prev Component) (skip bool) {
-			panic("expected no Restore call") // TODO(slimsag): bug!
-		},
+	got := recoverStr(func() {
+		Rerender(&componentFunc{
+			render: func() *HTML {
+				panic("expected no Render call")
+			},
+			restore: func(prev Component) (skip bool) {
+				panic("expected no Restore call")
+			},
+		})
 	})
+	want := "vecty: Rerender invoked on Component that has never been rendered"
+	if got != want {
+		t.Fatalf("got panic %q expected %q", got, want)
+	}
 }
 
 // TestRerender_identical tests the behavior of Rerender when there is a
