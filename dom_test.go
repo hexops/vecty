@@ -183,6 +183,39 @@ func TestHTML_Restore_nil(t *testing.T) {
 			t.Fatalf("createdElement %q want %q", createdElement, want)
 		}
 	})
+	t.Run("create_element_ns", func(t *testing.T) {
+		strong := &mockObject{}
+		createdNamespace := ""
+		createdElement := ""
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "createElementNS" {
+					panic(fmt.Sprintf("expected call to createElementNS, not %q", name))
+				}
+				if len(args) != 2 {
+					panic("len(args) != 2")
+				}
+				createdNamespace = args[0].(string)
+				createdElement = args[1].(string)
+				return strong
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		wantTag := "strong"
+		wantNamespace := "foobar"
+		h := Tag(wantTag, Namespace(wantNamespace))
+		h.Restore(nil)
+		if createdElement != wantTag {
+			t.Fatalf("createdElement %q want tag %q", createdElement, wantTag)
+		}
+		if createdNamespace != wantNamespace {
+			t.Fatalf("createdNamespace %q want namespace %q", createdElement, wantNamespace)
+		}
+	})
 	t.Run("create_text_node", func(t *testing.T) {
 		textNode := &mockObject{}
 		createdTextNode := ""

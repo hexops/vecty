@@ -114,8 +114,7 @@ func Property(key string, value interface{}) Markup {
 	})
 }
 
-// Attribute returns Markup which applies the given HTML attribute to an HTML
-// element.
+// Attribute returns Markup which applies the given attribute to an element.
 //
 // In most situations, you should use Property function, or the prop subpackage
 // (which is type-safe) instead. There are only a few attributes (aria-*, role,
@@ -190,5 +189,15 @@ func If(cond bool, markup ...MarkupOrComponentOrHTML) MarkupOrComponentOrHTML {
 func UnsafeHTML(html string) Markup {
 	return markupFunc(func(h *HTML) {
 		h.innerHTML = html
+	})
+}
+
+// Namespace is Markup which sets the namespace URI to associate with the
+// created element. This is primarily used when working with, e.g., SVG.
+//
+// See https://developer.mozilla.org/en-US/docs/Web/API/Document/createElementNS#Valid Namespace URIs
+func Namespace(uri string) Markup {
+	return markupFunc(func(h *HTML) {
+		h.namespace = uri
 	})
 }
