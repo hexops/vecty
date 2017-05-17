@@ -214,7 +214,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 			h.restoreText(prev)
 			return
 		}
-		if h.tag != "" && prev.tag != "" && h.tag == prev.tag {
+		if h.tag != "" && prev.tag != "" && h.tag == prev.tag && h.namespace == prev.namespace {
 			h.restoreHTML(prev)
 			return
 		}
