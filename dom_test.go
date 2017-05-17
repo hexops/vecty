@@ -699,9 +699,6 @@ func TestText(t *testing.T) {
 	}
 }
 
-// TODO(slimsag): Rerender docs say "re-rendered and subsequently restored"
-// which is not right (Restore happens before Render).
-
 // TestRerender_nil tests that Rerender panics when the component argument is
 // nil.
 func TestRerender_nil(t *testing.T) {

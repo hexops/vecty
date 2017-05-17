@@ -297,7 +297,7 @@ func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
 }
 
 // Rerender causes the body of the given component (i.e. the HTML returned by
-// the Component's Render method) to be re-rendered and subsequently restored.
+// the Component's Render method) to be re-rendered.
 //
 // If the component has not been rendered before, Rerender panics.
 func Rerender(c Component) {
