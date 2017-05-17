@@ -174,6 +174,14 @@ func If(cond bool, markup ...MarkupOrComponentOrHTML) MarkupOrComponentOrHTML {
 	return nil
 }
 
+// Key returns Markup which uniquely identifies the element amongst it's
+// siblings.
+func Key(key string) Markup {
+	return markupFunc(func(h *HTML) {
+		h.key = key
+	})
+}
+
 // UnsafeHTML is Markup which unsafely sets the inner HTML of an HTML element.
 //
 // It is entirely up to the caller to ensure the input HTML is properly

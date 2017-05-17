@@ -11,6 +11,7 @@ import (
 	"github.com/gopherjs/vecty/prop"
 )
 
+// FilterButton component
 type FilterButton struct {
 	vecty.Core
 
@@ -24,6 +25,7 @@ func (b *FilterButton) onClick(event *vecty.Event) {
 	})
 }
 
+// Render implements vecty.Component
 func (b *FilterButton) Render() *vecty.HTML {
 	return elem.ListItem(
 		elem.Anchor(
