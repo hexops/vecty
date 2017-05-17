@@ -812,10 +812,9 @@ func TestRerender_identical(t *testing.T) {
 		return newRender
 	}
 	comp.restore = func(prev Component) (skip bool) {
-		// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
-		//if prev != comp {
-		//	panic("prev != comp")
-		//}
+		if prev != comp {
+			panic("prev != comp")
+		}
 		restoreCalled++
 		return
 	}
@@ -962,10 +961,9 @@ func TestRerender_change(t *testing.T) {
 				return tst.newRender
 			}
 			comp.restore = func(prev Component) (skip bool) {
-				// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
-				//if prev != comp {
-				//	panic("prev != comp")
-				//}
+				if prev != comp {
+					panic("prev != comp")
+				}
 				restoreCalled++
 				return
 			}
@@ -978,6 +976,9 @@ func TestRerender_change(t *testing.T) {
 			}
 			if comp.Context().prevRender != tst.newRender {
 				t.Fatal("comp.Context().prevRender != tst.newRender")
+			}
+			if comp.Context().prevComponent != comp {
+				t.Fatal("comp.Context().prevComponent != comp")
 			}
 			if bodyAppendChild != newNode {
 				t.Fatal("bodyAppendChild != newNode")

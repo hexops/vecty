@@ -9,7 +9,8 @@ import (
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
-	prevRender *HTML
+	prevComponent Component
+	prevRender    *HTML
 }
 
 // Context implements the Component interface.
@@ -309,8 +310,7 @@ func Rerender(c Component) {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
 	nextRender := doRender(c)
-	var prevComponent Component // TODO
-	if doRestore(prevComponent, c, prevRender, nextRender) {
+	if doRestore(c.Context().prevComponent, c, prevRender, nextRender) {
 		return
 	}
 	replaceNode(nextRender.node, prevRender.node)
@@ -323,6 +323,7 @@ func doRender(c ComponentOrHTML) *HTML {
 	comp := c.(Component)
 	r := renderHandleNil(comp)
 	comp.Context().prevRender = r
+	comp.Context().prevComponent = comp
 	return r
 }
 
