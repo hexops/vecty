@@ -210,7 +210,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	}
 
 	if prev, ok := old.(*HTML); ok && prev != nil {
-		if h.text != "" && prev.text != "" {
+		if h.tag == "" && prev.tag == "" {
 			h.restoreText(prev)
 			return
 		}
@@ -223,7 +223,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 	if h.tag != "" && h.text != "" {
 		panic("vecty: only one of HTML.tag or HTML.text may be set")
 	}
-	if h.text != "" && h.innerHTML != "" {
+	if h.tag == "" && h.innerHTML != "" {
 		panic("vecty: only HTML may have UnsafeHTML attribute")
 	}
 	switch {
