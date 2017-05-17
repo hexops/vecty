@@ -81,7 +81,6 @@ func TestCore(t *testing.T) {
 }
 
 // TODO(slimsag): TestUnmounter; Unmounter.Unmount
-// TODO(slimsag): TestHTML_Restore for restoreText and restoreHTML paths
 
 func TestHTML_Node(t *testing.T) {
 	x := &js.Object{}
@@ -89,6 +88,49 @@ func TestHTML_Node(t *testing.T) {
 	if h.Node() != x {
 		t.Fatal("h.Node() != x")
 	}
+}
+
+// TestHTML_Restore_std tests that (*HTML).Restore against an old HTML instance
+// works as expected (i.e. that it updates nodes correctly).
+func TestHTML_Restore_std(t *testing.T) {
+	t.Run("text_identical", func(t *testing.T) {
+		h := Text("foobar")
+		hNode := &mockObject{}
+		h.node = hNode
+		prev := Text("foobar")
+		prevNode := &mockObject{}
+		prev.node = prevNode
+		h.Restore(prev)
+		if h.node != prevNode {
+			t.Fatal("h.node != prevNode")
+		}
+	})
+	t.Run("text_diff", func(t *testing.T) {
+		want := "bar"
+		h := Text(want)
+		hNode := &mockObject{}
+		h.node = hNode
+		prev := Text("foo")
+		setNodeValue := ""
+		prevNode := &mockObject{
+			set: func(key string, value interface{}) {
+				if key != "nodeValue" {
+					panic(`key != "nodeValue"`)
+				}
+				setNodeValue = value.(string)
+			},
+		}
+		prev.node = prevNode
+		h.Restore(prev)
+		if h.node != prevNode {
+			t.Fatal("h.node != prevNode")
+		}
+		if setNodeValue != want {
+			t.Fatalf("got %q want %q", setNodeValue, want)
+		}
+	})
+
+	// TODO(slimsag): test the restoreHTML code path
 }
 
 // TestHTML_Restore_nil tests that (*HTML).Restore(nil) works as expected (i.e.
