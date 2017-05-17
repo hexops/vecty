@@ -2,7 +2,11 @@ package vecty
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 	"testing"
+
+	"github.com/gopherjs/gopherjs/js"
 )
 
 var _ = func() bool {
@@ -77,9 +81,509 @@ func TestCore(t *testing.T) {
 }
 
 // TODO(slimsag): TestUnmounter; Unmounter.Unmount
-// TODO(slimsag): TestComponentOrHTML
-// TODO(slimsag): TestRestorer; Restorer.Restore
-// TODO(slimsag): TestHTML; HTML.Restore; HTML.Node
+// TODO(slimsag): TestHTML_Restore for restoreText and restoreHTML paths
+
+func TestHTML_Node(t *testing.T) {
+	x := &js.Object{}
+	h := &HTML{node: wrapObject(x)}
+	if h.Node() != x {
+		t.Fatal("h.Node() != x")
+	}
+}
+
+// TestHTML_Restore_nil tests that (*HTML).Restore(nil) works as expected (i.e.
+// that it creates nodes correctly).
+func TestHTML_Restore_nil(t *testing.T) {
+	t.Run("one_of_tag_or_text", func(t *testing.T) {
+		got := recoverStr(func() {
+			h := &HTML{text: "hello", tag: "div"}
+			h.Restore(nil)
+		})
+		want := "vecty: only one of HTML.tag or HTML.text may be set"
+		if got != want {
+			t.Fatalf("got panic %q want %q", got, want)
+		}
+	})
+	t.Run("unsafe_text", func(t *testing.T) {
+		got := recoverStr(func() {
+			h := &HTML{text: "hello", innerHTML: "foobar"}
+			h.Restore(nil)
+		})
+		want := "vecty: only HTML may have UnsafeHTML attribute"
+		if got != want {
+			t.Fatalf("got panic %q want %q", got, want)
+		}
+	})
+	t.Run("create_element", func(t *testing.T) {
+		strong := &mockObject{}
+		createdElement := ""
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "createElement" {
+					panic(fmt.Sprintf("expected call to createElement, not %q", name))
+				}
+				if len(args) != 1 {
+					panic("len(args) != 1")
+				}
+				createdElement = args[0].(string)
+				return strong
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		want := "strong"
+		h := Tag(want)
+		h.Restore(nil)
+		if createdElement != want {
+			t.Fatalf("createdElement %q want %q", createdElement, want)
+		}
+	})
+	t.Run("create_text_node", func(t *testing.T) {
+		textNode := &mockObject{}
+		createdTextNode := ""
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "createTextNode" {
+					panic(fmt.Sprintf("expected call to createTextNode, not %q", name))
+				}
+				if len(args) != 1 {
+					panic("len(args) != 1")
+				}
+				createdTextNode = args[0].(string)
+				return textNode
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		want := "hello"
+		h := &HTML{text: want}
+		h.Restore(nil)
+		if createdTextNode != want {
+			t.Fatalf("createdTextNode %q want %q", createdTextNode, want)
+		}
+	})
+	t.Run("inner_html", func(t *testing.T) {
+		setInnerHTML := ""
+		div := &mockObject{
+			set: func(key string, value interface{}) {
+				if key != "innerHTML" {
+					panic(fmt.Sprintf(`expected document.set "innerHTML", not %q`, key))
+				}
+				setInnerHTML = value.(string)
+			},
+		}
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "createElement" {
+					panic(fmt.Sprintf("expected call to createElement, not %q", name))
+				}
+				if len(args) != 1 {
+					panic("len(args) != 1")
+				}
+				if args[0].(string) != "div" {
+					panic(`args[0].(string) != "div"`)
+				}
+				return div
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		want := "<p>hello</p>"
+		h := Tag("div", UnsafeHTML(want))
+		h.Restore(nil)
+		if setInnerHTML != want {
+			t.Fatalf("setInnerHTML %q want %q", setInnerHTML, want)
+		}
+	})
+	t.Run("properties", func(t *testing.T) {
+		set := map[string]interface{}{}
+		div := &mockObject{
+			set: func(key string, value interface{}) {
+				set[key] = value
+			},
+		}
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "createElement" {
+					panic(fmt.Sprintf("expected call to createElement, not %q", name))
+				}
+				if len(args) != 1 {
+					panic("len(args) != 1")
+				}
+				if args[0].(string) != "div" {
+					panic(`args[0].(string) != "div"`)
+				}
+				return div
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		h := Tag("div", Property("a", 1), Property("b", "2foobar"))
+		h.Restore(nil)
+		got := sortedMapString(set)
+		want := "a:1 b:2foobar"
+		if got != want {
+			t.Fatalf("got %q want %q", got, want)
+		}
+	})
+	t.Run("attributes", func(t *testing.T) {
+		set := map[string]interface{}{}
+		div := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "setAttribute" {
+					panic(fmt.Sprintf("expected call to setAttribute, not %q", name))
+				}
+				if len(args) != 2 {
+					panic("len(args) != 2")
+				}
+				set[args[0].(string)] = args[1]
+				return nil
+			},
+		}
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "createElement" {
+					panic(fmt.Sprintf("expected call to createElement, not %q", name))
+				}
+				if len(args) != 1 {
+					panic("len(args) != 1")
+				}
+				if args[0].(string) != "div" {
+					panic(`args[0].(string) != "div"`)
+				}
+				return div
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		h := Tag("div", Attribute("a", 1), Attribute("b", "2foobar"))
+		h.Restore(nil)
+		got := sortedMapString(set)
+		want := "a:1 b:2foobar"
+		if got != want {
+			t.Fatalf("got %q want %q", got, want)
+		}
+	})
+	t.Run("dataset", func(t *testing.T) {
+		set := map[string]interface{}{}
+		dataset := &mockObject{
+			set: func(key string, value interface{}) {
+				set[key] = value
+			},
+		}
+		div := &mockObject{
+			get: map[string]jsObject{
+				"dataset": dataset,
+			},
+		}
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "createElement" {
+					panic(fmt.Sprintf("expected call to createElement, not %q", name))
+				}
+				if len(args) != 1 {
+					panic("len(args) != 1")
+				}
+				if args[0].(string) != "div" {
+					panic(`args[0].(string) != "div"`)
+				}
+				return div
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		h := Tag("div", Data("a", "1"), Data("b", "2foobar"))
+		h.Restore(nil)
+		got := sortedMapString(set)
+		want := "a:1 b:2foobar"
+		if got != want {
+			t.Fatalf("got %q want %q", got, want)
+		}
+	})
+	t.Run("style", func(t *testing.T) {
+		set := map[string]interface{}{}
+		style := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "setProperty" {
+					panic(fmt.Sprintf("expected call to setProperty, not %q", name))
+				}
+				if len(args) != 2 {
+					panic("len(args) != 2")
+				}
+				set[args[0].(string)] = args[1]
+				return nil
+			},
+		}
+		div := &mockObject{
+			get: map[string]jsObject{
+				"style": style,
+			},
+		}
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				if name != "createElement" {
+					panic(fmt.Sprintf("expected call to createElement, not %q", name))
+				}
+				if len(args) != 1 {
+					panic("len(args) != 1")
+				}
+				if args[0].(string) != "div" {
+					panic(`args[0].(string) != "div"`)
+				}
+				return div
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		h := Tag("div", Style("a", "1"), Style("b", "2foobar"))
+		h.Restore(nil)
+		got := sortedMapString(set)
+		want := "a:1 b:2foobar"
+		if got != want {
+			t.Fatalf("got %q want %q", got, want)
+		}
+	})
+	t.Run("add_event_listener", func(t *testing.T) {
+		addedListeners := map[string]func(*js.Object){}
+		div := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				switch name {
+				case "addEventListener":
+					if len(args) != 2 {
+						panic("len(args) != 2")
+					}
+					addedListeners[args[0].(string)] = args[1].(func(*js.Object))
+					return nil
+				default:
+					panic(fmt.Sprintf("unexpected call to %q", name))
+				}
+			},
+		}
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				switch name {
+				case "createElement":
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					if args[0].(string) != "div" {
+						panic(`args[0].(string) != "div"`)
+					}
+					return div
+				default:
+					panic(fmt.Sprintf("unexpected call to %q", name))
+				}
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		e0 := &EventListener{Name: "click"}
+		e1 := &EventListener{Name: "keydown"}
+		h := Tag("div", e0, e1)
+		h.Restore(nil)
+		if e0.wrapper == nil {
+			t.Fatal("e0.wrapper == nil")
+		}
+		if e1.wrapper == nil {
+			t.Fatal("e1.wrapper == nil")
+		}
+		if gotE0 := addedListeners["click"]; gotE0 == nil {
+			t.Fatal("gotE0 == nil")
+		}
+		if gotE1 := addedListeners["keydown"]; gotE1 == nil {
+			t.Fatal("gotE1 == nil")
+		}
+	})
+	t.Run("children", func(t *testing.T) {
+		var (
+			divs    []jsObject
+			appends = map[jsObject]jsObject{}
+		)
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				switch name {
+				case "createElement":
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					if args[0].(string) != "div" {
+						panic(`args[0].(string) != "div"`)
+					}
+					div := &mockObject{}
+					divs = append(divs, div)
+					div.call = func(name string, args ...interface{}) jsObject {
+						switch name {
+						case "appendChild":
+							if len(args) != 1 {
+								panic("len(args) != 1")
+							}
+							appends[div] = args[0].(jsObject)
+							return nil
+						default:
+							panic(fmt.Sprintf("unexpected call to %q", name))
+						}
+					}
+					return div
+				default:
+					panic(fmt.Sprintf("unexpected call to %q", name))
+				}
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		var (
+			compRenderCalls, compRestoreCalls int
+			compRestore                       Component
+		)
+		compRender := Tag("div")
+		comp := &componentFunc{
+			render: func() *HTML {
+				compRenderCalls++
+				return compRender
+			},
+			restore: func(prev Component) (skip bool) {
+				compRestoreCalls++
+				compRestore = prev
+				return
+			},
+		}
+		h := Tag("div", Tag("div", comp))
+		h.Restore(nil)
+		if len(divs) != 3 {
+			t.Fatal("len(divs) != 3")
+		}
+		if compRenderCalls != 1 {
+			t.Fatal("compRenderCalls != 1")
+		}
+		if compRestoreCalls != 1 {
+			t.Fatal("compRestoreCalls != 1")
+		}
+		if compRestore != nil {
+			t.Fatal("compRestore != nil")
+		}
+		if comp.Context().prevRender != compRender {
+			t.Fatal("comp.Context().prevRender != compRender")
+		}
+		root := divs[0]
+		child := divs[1]
+		child2 := divs[2]
+		if appends[root] != child {
+			t.Fatal("appends[root] != child")
+		}
+		if appends[child] != child2 {
+			t.Fatal("appends[root] != child2")
+		}
+	})
+	t.Run("children_render_nil", func(t *testing.T) {
+		var (
+			nodes   []jsObject
+			appends = map[jsObject]jsObject{}
+		)
+		document := &mockObject{
+			call: func(name string, args ...interface{}) jsObject {
+				switch name {
+				case "createElement":
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					if n := args[0].(string); n != "div" && n != "noscript" {
+						panic(`n != "div" && n != "noscript"`)
+					}
+					n := &mockObject{}
+					nodes = append(nodes, n)
+					n.call = func(name string, args ...interface{}) jsObject {
+						switch name {
+						case "appendChild":
+							if len(args) != 1 {
+								panic("len(args) != 1")
+							}
+							appends[n] = args[0].(jsObject)
+							return nil
+						default:
+							panic(fmt.Sprintf("unexpected call to %q", name))
+						}
+					}
+					return n
+				default:
+					panic(fmt.Sprintf("unexpected call to %q", name))
+				}
+			},
+		}
+		global = &mockObject{
+			get: map[string]jsObject{
+				"document": document,
+			},
+		}
+		var (
+			compRenderCalls, compRestoreCalls int
+			compRestore                       Component
+		)
+		comp := &componentFunc{
+			render: func() *HTML {
+				compRenderCalls++
+				return nil
+			},
+			restore: func(prev Component) (skip bool) {
+				compRestoreCalls++
+				compRestore = prev
+				return
+			},
+		}
+		h := Tag("div", Tag("div", comp))
+		h.Restore(nil)
+		if len(nodes) != 3 {
+			t.Fatal("len(nodes) != 3")
+		}
+		if compRenderCalls != 1 {
+			t.Fatal("compRenderCalls != 1")
+		}
+		if compRestoreCalls != 1 {
+			t.Fatal("compRestoreCalls != 1")
+		}
+		if compRestore != nil {
+			t.Fatal("compRestore != nil")
+		}
+		if comp.Context().prevRender == nil {
+			t.Fatal("comp.Context().prevRender == nil")
+		}
+		root := nodes[0]
+		child := nodes[1]
+		child2 := nodes[2]
+		if appends[root] != child {
+			t.Fatal("appends[root] != child")
+		}
+		if appends[child] != child2 {
+			t.Fatal("appends[root] != child2")
+		}
+	})
+}
 
 func TestTag(t *testing.T) {
 	markupCalled := false
@@ -716,6 +1220,16 @@ func TestAddStylesheet(t *testing.T) {
 	if linkSet["href"] != url {
 		t.Fatal(`linkSet["href"] != url`)
 	}
+}
+
+// sortedMapString returns the map converted to a string, but sorted.
+func sortedMapString(m map[string]interface{}) string {
+	var strs []string
+	for k, v := range m {
+		strs = append(strs, fmt.Sprintf("%v:%v", k, v))
+	}
+	sort.Strings(strs)
+	return strings.Join(strs, " ")
 }
 
 // recoverStr runs f and returns the recovered panic as a string.
