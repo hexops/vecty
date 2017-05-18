@@ -374,7 +374,10 @@ func AddStylesheet(url string) {
 	global.Get("document").Get("head").Call("appendChild", link)
 }
 
-var global jsObject = wrapObject(js.Global)
+var (
+	global    = wrapObject(js.Global)
+	undefined = wrappedObject{js.Undefined}
+)
 
 type jsObject interface {
 	Set(key string, value interface{})
@@ -389,7 +392,7 @@ func wrapObject(j *js.Object) jsObject {
 		return nil
 	}
 	if j == js.Undefined {
-		panic("TODO")
+		return undefined
 	}
 	return wrappedObject{j}
 }
