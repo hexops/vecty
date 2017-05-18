@@ -778,6 +778,7 @@ func TestRerender_identical(t *testing.T) {
 	render := Tag("body")
 	var renderCalled, restoreCalled int
 	comp := &componentFunc{
+		id: "original",
 		render: func() *HTML {
 			renderCalled++
 			return render
@@ -803,17 +804,27 @@ func TestRerender_identical(t *testing.T) {
 	if comp.Context().prevRender != render {
 		t.Fatal("comp.Context().prevRender != render")
 	}
+	if comp.Context().prevComponent.(*componentFunc).id != "original" {
+		t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
+	}
 
 	// Perform a re-render.
 	global = nil // Expecting no JS calls past here
 	newRender := Tag("body")
+	comp.id = "modified"
 	comp.render = func() *HTML {
 		renderCalled++
 		return newRender
 	}
 	comp.restore = func(prev Component) (skip bool) {
-		if prev != comp {
-			panic("prev != comp")
+		if comp.id != "modified" {
+			panic(`comp.id != "modified"`)
+		}
+		if comp.Context().prevComponent.(*componentFunc).id != "original" {
+			panic(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
+		}
+		if prev.(*componentFunc).id != "original" {
+			panic(`prev.(*componentFunc).id != "original"`)
 		}
 		restoreCalled++
 		return
@@ -827,6 +838,9 @@ func TestRerender_identical(t *testing.T) {
 	}
 	if comp.Context().prevRender != newRender {
 		t.Fatal("comp.Context().prevRender != newRender")
+	}
+	if comp.Context().prevComponent.(*componentFunc).id != "modified" {
+		t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
 	}
 }
 
@@ -902,6 +916,7 @@ func TestRerender_change(t *testing.T) {
 			render := Tag("body")
 			var renderCalled, restoreCalled int
 			comp := &componentFunc{
+				id: "original",
 				render: func() *HTML {
 					renderCalled++
 					return render
@@ -926,6 +941,9 @@ func TestRerender_change(t *testing.T) {
 			}
 			if comp.Context().prevRender != render {
 				t.Fatal("comp.Context().prevRender != render")
+			}
+			if comp.Context().prevComponent.(*componentFunc).id != "original" {
+				t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
 			}
 
 			// Perform a re-render.
@@ -956,13 +974,20 @@ func TestRerender_change(t *testing.T) {
 					"document": document,
 				},
 			}
+			comp.id = "modified"
 			comp.render = func() *HTML {
 				renderCalled++
 				return tst.newRender
 			}
 			comp.restore = func(prev Component) (skip bool) {
-				if prev != comp {
-					panic("prev != comp")
+				if comp.id != "modified" {
+					panic(`comp.id != "modified"`)
+				}
+				if comp.Context().prevComponent.(*componentFunc).id != "original" {
+					panic(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
+				}
+				if prev.(*componentFunc).id != "original" {
+					panic(`prev.(*componentFunc).id != "original"`)
 				}
 				restoreCalled++
 				return
@@ -977,8 +1002,8 @@ func TestRerender_change(t *testing.T) {
 			if comp.Context().prevRender != tst.newRender {
 				t.Fatal("comp.Context().prevRender != tst.newRender")
 			}
-			if comp.Context().prevComponent != comp {
-				t.Fatal("comp.Context().prevComponent != comp")
+			if comp.Context().prevComponent.(*componentFunc).id != "modified" {
+				t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
 			}
 			if bodyAppendChild != newNode {
 				t.Fatal("bodyAppendChild != newNode")
@@ -1322,6 +1347,7 @@ func recoverStr(f func()) (s string) {
 
 type componentFunc struct {
 	Core
+	id      string
 	render  func() *HTML
 	restore func(prev Component) (skip bool)
 }

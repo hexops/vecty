@@ -2,6 +2,7 @@ package vecty
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -40,6 +41,15 @@ type Component interface {
 	// Context returns the components context, which is used internally by
 	// Vecty in order to store the previous component render for diffing.
 	Context() *Core
+}
+
+// Copier is an optional interface that a Component can implement in order to
+// copy itself. Vecty must internally copy components, and it does so by either
+// invoking the Copy method of the Component or, if the component does not
+// implement the Copier interface, a shallow copy is performed.
+type Copier interface {
+	// Copy returns a copy of the component.
+	Copy() Component
 }
 
 // Unmounter is an optional interface that a Component can implement in order
@@ -316,15 +326,39 @@ func Rerender(c Component) {
 	replaceNode(nextRender.node, prevRender.node)
 }
 
+// doCopy makes a copy of the given component.
+func doCopy(c Component) Component {
+	if c == nil {
+		panic("vecty: cannot copy nil Component")
+	}
+
+	// If the Component implements the Copier interface, then use that to
+	// perform the copy.
+	if copier, ok := c.(Copier); ok {
+		cpy := copier.Copy()
+		if cpy == c {
+			panic("vecty: Component.Copy returned an identical *MyComponent pointer")
+		}
+		return cpy
+	}
+
+	// Component does not implement the Copier interface, so perform a shallow
+	// copy.
+	v := reflect.ValueOf(c)
+	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
+		panic(fmt.Sprintf("vecty: Component must be pointer to struct, found %T", c))
+	}
+	cpy := reflect.New(v.Elem().Type())
+	cpy.Elem().Set(v.Elem())
+	return cpy.Interface().(Component)
+}
+
 func doRender(c ComponentOrHTML) *HTML {
 	if h, isHTML := c.(*HTML); isHTML {
 		return h
 	}
 	comp := c.(Component)
-	r := renderHandleNil(comp)
-	comp.Context().prevRender = r
-	comp.Context().prevComponent = comp
-	return r
+	return renderHandleNil(comp)
 }
 
 func renderHandleNil(c Component) *HTML {
@@ -342,8 +376,15 @@ func doRestore(prev, next ComponentOrHTML, prevRender, nextRender *HTML) (skip b
 		if prev != nil {
 			p = prev.(Component)
 		}
+		if c, ok := next.(Component); ok && c == p {
+			panic("vecty: internal error (Restore called with identical prev component)")
+		}
 		if r.Restore(p) {
 			return true
+		}
+		if c, ok := next.(Component); ok {
+			c.Context().prevRender = nextRender
+			c.Context().prevComponent = doCopy(c)
 		}
 	}
 	nextRender.Restore(prevRender)
