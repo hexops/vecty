@@ -83,7 +83,12 @@ func TestCore(t *testing.T) {
 // TODO(slimsag): TestUnmounter; Unmounter.Unmount
 
 func TestHTML_Node(t *testing.T) {
-	x := &js.Object{}
+	// Create a non-nil *js.Object. For 'gopherjs test', &js.Object{} == nil
+	// because it is special-cased; but for 'go test' js.Global == nil.
+	x := js.Global // used for 'gopherjs test'
+	if x == nil {
+		x = &js.Object{} // used for 'go test'
+	}
 	h := &HTML{node: wrapObject(x)}
 	if h.Node() != x {
 		t.Fatal("h.Node() != x")
@@ -807,10 +812,10 @@ func TestRerender_identical(t *testing.T) {
 		return newRender
 	}
 	comp.restore = func(prev Component) (skip bool) {
-		if prev != comp {
-			// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
-			//panic("prev != comp")
-		}
+		// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
+		//if prev != comp {
+		//	panic("prev != comp")
+		//}
 		restoreCalled++
 		return
 	}
@@ -957,10 +962,10 @@ func TestRerender_change(t *testing.T) {
 				return tst.newRender
 			}
 			comp.restore = func(prev Component) (skip bool) {
-				if prev != comp {
-					// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
-					//panic("prev != comp")
-				}
+				// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
+				//if prev != comp {
+				//	panic("prev != comp")
+				//}
 				restoreCalled++
 				return
 			}
@@ -1031,7 +1036,6 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 func TestRenderBody_Restore_Skip(t *testing.T) {
 	t.Skip("BUG") // TODO(slimsag)
 	body := &mockObject{}
-	bodySet := false
 	document := &mockObject{
 		call: func(name string, args ...interface{}) jsObject {
 			if name != "createElement" {
@@ -1055,7 +1059,6 @@ func TestRenderBody_Restore_Skip(t *testing.T) {
 			if value != body {
 				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
 			}
-			bodySet = true
 		},
 	}
 	global = &mockObject{

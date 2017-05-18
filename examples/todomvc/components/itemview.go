@@ -11,6 +11,8 @@ import (
 	"github.com/gopherjs/vecty/style"
 )
 
+// ItemView is a vecty.Component which represents a single item in the TODO
+// list.
 type ItemView struct {
 	vecty.Core
 
@@ -21,6 +23,7 @@ type ItemView struct {
 	input     *vecty.HTML
 }
 
+// Restore implements the vecty.Restorer interface.
 func (p *ItemView) Restore(prev vecty.Component) bool {
 	if old, ok := prev.(*ItemView); ok {
 		p.editing = old.editing
@@ -63,6 +66,7 @@ func (p *ItemView) onStopEdit(event *vecty.Event) {
 	})
 }
 
+// Render implements the vecty.Component interface.
 func (p *ItemView) Render() *vecty.HTML {
 	p.input = elem.Input(
 		prop.Class("edit"),
