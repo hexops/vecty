@@ -2,8 +2,6 @@
 
 package vecty
 
-var isTest bool
-
 func init() {
 	if isTest {
 		return

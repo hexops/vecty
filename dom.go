@@ -428,3 +428,5 @@ func (w wrappedObject) String() string {
 func (w wrappedObject) Bool() bool {
 	return w.j.Bool()
 }
+
+var isTest bool

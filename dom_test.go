@@ -83,7 +83,12 @@ func TestCore(t *testing.T) {
 // TODO(slimsag): TestUnmounter; Unmounter.Unmount
 
 func TestHTML_Node(t *testing.T) {
-	x := &js.Object{}
+	// Create a non-nil *js.Object. For 'gopherjs test', &js.Object{} == nil
+	// because it is special-cased; but for 'go test' js.Global == nil.
+	x := js.Global // used for 'gopherjs test'
+	if x == nil {
+		x = &js.Object{} // used for 'go test'
+	}
 	h := &HTML{node: wrapObject(x)}
 	if h.Node() != x {
 		t.Fatal("h.Node() != x")
