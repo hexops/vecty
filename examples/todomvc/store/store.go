@@ -8,19 +8,26 @@ import (
 )
 
 var (
-	Items     []*model.Item
-	Filter    model.FilterState = model.All
-	Listeners                   = storeutil.NewListenerRegistry()
+	// Items represents all of the TODO items in the store.
+	Items []*model.Item
+
+	// Filter represents the active viewing filter for items.
+	Filter = model.All
+
+	// Listeners is the listeners that will be invoked when the store changes.
+	Listeners = storeutil.NewListenerRegistry()
 )
 
 func init() {
 	dispatcher.Register(onAction)
 }
 
+// ActiveItemCount returns the current number of items that are not completed.
 func ActiveItemCount() int {
 	return count(false)
 }
 
+// CompletedItemCount returns the current number of items that are completed.
 func CompletedItemCount() int {
 	return count(true)
 }

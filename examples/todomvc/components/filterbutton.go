@@ -11,6 +11,8 @@ import (
 	"github.com/gopherjs/vecty/prop"
 )
 
+// FilterButton is a vecty.Component which allows the user to select a filter
+// state.
 type FilterButton struct {
 	vecty.Core
 
@@ -24,6 +26,7 @@ func (b *FilterButton) onClick(event *vecty.Event) {
 	})
 }
 
+// Render implements the vecty.Component interface.
 func (b *FilterButton) Render() *vecty.HTML {
 	return elem.ListItem(
 		elem.Anchor(

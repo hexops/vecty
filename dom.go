@@ -86,6 +86,7 @@ type HTML struct {
 	children                        []ComponentOrHTML
 }
 
+// Node returns the underlying JavaScript Element or TextNode.
 func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 
 func (h *HTML) restoreText(prev *HTML) {
@@ -300,7 +301,7 @@ func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
 func Rerender(c Component) {
 	prevRender := c.Context().prevRender
 	nextRender := doRender(c)
-	var prevComponent Component = nil // TODO
+	var prevComponent Component // TODO
 	if doRestore(prevComponent, c, prevRender, nextRender) {
 		return
 	}

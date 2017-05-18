@@ -14,6 +14,7 @@ import (
 	"github.com/gopherjs/vecty/style"
 )
 
+// PageView is a vecty.Component which represents the entire page.
 type PageView struct {
 	vecty.Core
 
@@ -21,6 +22,7 @@ type PageView struct {
 	newItemTitle string
 }
 
+// Restore implements the vecty.Restorer interface.
 func (p *PageView) Restore(prev vecty.Component) bool {
 	if old, ok := prev.(*PageView); ok {
 		p.newItemTitle = old.newItemTitle
@@ -51,6 +53,7 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 	})
 }
 
+// Render implements the vecty.Component interface.
 func (p *PageView) Render() *vecty.HTML {
 	return elem.Body(
 		elem.Section(
