@@ -1,5 +1,8 @@
 sudo: false
 language: go
+cache:
+  directories:
+  - $HOME/gopath
 go:
   - 1.8.x
 install:
