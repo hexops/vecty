@@ -1038,6 +1038,24 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
+			document := &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					switch name {
+					case "createElement", "createTextNode":
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						return &mockObject{}
+					default:
+						panic(fmt.Sprintf("unexpected call to %q", name))
+					}
+				},
+			}
+			global = &mockObject{
+				get: map[string]jsObject{
+					"document": document,
+				},
+			}
 			var gotPanic string
 			func() {
 				defer func() {
@@ -1060,7 +1078,6 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 // TestRenderBody_Restore_Skip tests that RenderBody panics when the
 // component's Restore method returns skip == true.
 func TestRenderBody_Restore_Skip(t *testing.T) {
-	t.Skip("BUG") // TODO(slimsag)
 	body := &mockObject{}
 	document := &mockObject{
 		call: func(name string, args ...interface{}) jsObject {
@@ -1092,14 +1109,20 @@ func TestRenderBody_Restore_Skip(t *testing.T) {
 			"document": document,
 		},
 	}
-	RenderBody(&componentFunc{
-		render: func() *HTML {
-			return Tag("body")
-		},
-		restore: func(prev Component) (skip bool) {
-			return true
-		},
+	got := recoverStr(func() {
+		RenderBody(&componentFunc{
+			render: func() *HTML {
+				return Tag("body")
+			},
+			restore: func(prev Component) (skip bool) {
+				return true
+			},
+		})
 	})
+	want := "vecty: RenderBody Component.Restore returned skip == true"
+	if got != want {
+		t.Fatalf("got panic %q want %q", got, want)
+	}
 }
 
 // TestRenderBody_Standard_loaded tests that RenderBody properly handles the

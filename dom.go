@@ -172,23 +172,26 @@ func (h *HTML) restoreHTML(prev *HTML) {
 
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
-		nextChildRender := doRender(nextChild)
 		if i >= len(prev.children) {
-			if doRestore(nil, nextChild, nil, nextChildRender) {
+			nextChildRender, skip := doRenderHTML(nextChild, nil)
+			if skip {
 				continue
 			}
 			h.node.Call("appendChild", nextChildRender.node)
 			continue
 		}
+
 		prevChild := prev.children[i]
 		prevChildRender, ok := prevChild.(*HTML)
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
+
+		nextChildRender, skip := doRenderHTML(nextChild, prevChildRender)
 		if nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
 		}
-		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
+		if skip {
 			continue
 		}
 		replaceNode(nextChildRender.node, prevChildRender.node)
@@ -267,15 +270,9 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		h.node.Call("addEventListener", l.Name, l.wrapper)
 	}
 	for _, nextChild := range h.children {
-		nextChildRender, isHTML := nextChild.(*HTML)
-		if !isHTML {
-			nextChildComp := nextChild.(Component)
-			nextChildRender = renderHandleNil(nextChildComp)
-			nextChildComp.Context().prevRender = nextChildRender
-		}
-
-		if doRestore(nil, nextChild, nil, nextChildRender) {
-			continue
+		nextChildRender, skip := doRenderHTML(nextChild, nil)
+		if skip {
+			continue // TODO(slimsag): Probably indicates a user-code bug, same as the RenderBody panic.
 		}
 		h.node.Call("appendChild", nextChildRender.node)
 	}
@@ -319,8 +316,8 @@ func Rerender(c Component) {
 	if prevRender == nil {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
-	nextRender := doRender(c)
-	if doRestore(c.Context().prevComponent, c, prevRender, nextRender) {
+	nextRender, skip := doRender(c)
+	if skip {
 		return
 	}
 	replaceNode(nextRender.node, prevRender.node)
@@ -353,53 +350,64 @@ func doCopy(c Component) Component {
 	return cpy.Interface().(Component)
 }
 
-func doRender(c ComponentOrHTML) *HTML {
-	if h, isHTML := c.(*HTML); isHTML {
-		return h
+// doRenderHTML renders the ComponentOrHTML. In the case of *HTML, its Restore
+// method is invoked with the specified prevRender and c.(*HTML) is returned.
+//
+// In the case of a Component, doRender(c.(Component)) is returned.
+func doRenderHTML(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
+	switch v := c.(type) {
+	case *HTML:
+		v.Restore(prevRender)
+		return v, false
+	case Component:
+		return doRender(v)
+	default:
+		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", c))
 	}
-	comp := c.(Component)
-	return renderHandleNil(comp)
 }
 
-func renderHandleNil(c Component) *HTML {
-	r := c.Render()
-	if r == nil {
-		// nil renders are translated into noscript tags.
-		r = Tag("noscript")
-	}
-	return r
-}
-
-func doRestore(prev, next ComponentOrHTML, prevRender, nextRender *HTML) (skip bool) {
-	if r, ok := next.(Restorer); ok {
-		var p Component
-		if prev != nil {
-			p = prev.(Component)
-		}
-		if c, ok := next.(Component); ok && c == p {
+// doRender handles rendering the given Component into *HTML. If skip == true
+// is returned, the Component's Restore method has signaled the component does
+// not need to be rendered and h == nil is returned.
+func doRender(comp Component) (h *HTML, skip bool) {
+	// Before rendering, consult the Component's Restore method to see if we
+	// should skip rendering or not.
+	if r, ok := comp.(Restorer); ok {
+		prev := comp.Context().prevComponent
+		if comp == prev {
 			panic("vecty: internal error (Restore called with identical prev component)")
 		}
-		if r.Restore(p) {
-			return true
-		}
-		if c, ok := next.(Component); ok {
-			c.Context().prevRender = nextRender
-			c.Context().prevComponent = doCopy(c)
+		if skip := r.Restore(prev); skip {
+			return nil, true
 		}
 	}
-	nextRender.Restore(prevRender)
-	return false
+
+	// Render the component into HTML, handling nil renders.
+	nextRender := comp.Render()
+	if nextRender == nil {
+		// nil renders are translated into noscript tags.
+		nextRender = Tag("noscript")
+	}
+
+	// Restore the actual rendered HTML.
+	nextRender.Restore(comp.Context().prevRender)
+
+	// Update the context to consider this render.
+	comp.Context().prevRender = nextRender
+	comp.Context().prevComponent = doCopy(comp)
+	return nextRender, false
 }
 
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
-	nextRender := doRender(body)
+	nextRender, skip := doRender(body)
+	if skip {
+		panic("vecty: RenderBody Component.Restore returned skip == true")
+	}
 	if nextRender.tag != "body" {
 		panic(fmt.Sprintf("vecty: RenderBody expected Component.Render to return a body tag, found %q", nextRender.tag))
 	}
-	doRestore(nil, body, nil, nextRender)
-	// TODO: doRestore skip == true here probably implies a user code bug
 	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {
 		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
