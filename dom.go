@@ -161,8 +161,8 @@ func (h *HTML) restoreHTML(prev *HTML) {
 
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
-		nextChildRender := doRender(nextChild)
 		if i >= len(prev.children) {
+			nextChildRender := doRender(nextChild)
 			if doRestore(nil, nextChild, nil, nextChildRender) {
 				continue
 			}
@@ -174,6 +174,11 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
+		if c, isComponent := nextChild.(Component); isComponent && prevChild == nextChild {
+			Rerender(c)
+			continue
+		}
+		nextChildRender := doRender(nextChild)
 		if nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
 		}
