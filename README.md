@@ -14,6 +14,17 @@ Features
 -	XSS protection: unsafe HTML must be explicitly denoted as such.
 -	Reusability: share components by making Go packages that others can import!
 
+Examples
+========
+
+Run examples with the gopherjs development server
+
+```
+gopherjs serve
+```
+
+Then navigate to `http://localhost:8080/github.com/gopherjs/vecty/examples`. 
+
 Goals
 =====
 
