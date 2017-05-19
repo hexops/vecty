@@ -8,6 +8,7 @@ install:
   - go get -u github.com/gopherjs/gopherjs
   - go get -u github.com/golang/lint/golint
   - go get -u honnef.co/go/tools/cmd/megacheck
+  - go get -u github.com/haya14busa/goverage
 before_script:
   - export NODE_PATH="/usr/local/lib/node_modules"
 script:
@@ -25,3 +26,7 @@ script:
   # Test with Go compiler and GopherJS compiler.
   - go test -v -race ./...
   - gopherjs test -v $(go list ./...)
+
+  # Generate and upload coverage to codecov.io
+  - goverage -covermode=atomic -coverprofile=coverage.out $(go list ./... | grep -v -e vecty/elem -e vecty/event -e vecty/examples -e vecty/prop -e vecty/style)
+  - include_cov=coverage.out bash <(curl -s https://codecov.io/bash)
