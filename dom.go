@@ -10,8 +10,8 @@ import (
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
-	prevComponent Component
-	prevRender    *HTML
+	prevComponent, prevRenderComponent Component
+	prevRender                         *HTML
 }
 
 // Context implements the Component interface.
@@ -70,19 +70,34 @@ type Unmounter interface {
 type ComponentOrHTML interface{}
 
 // Restorer is an optional interface that Component's can implement in order to
-// restore state during component reconciliation and also to short-circuit
-// the reconciliation of a Component's body.
+// restore state during component reconciliation.
 type Restorer interface {
 	// Restore is called when the component should restore itself against a
-	// previous instance of a component. The previous component may be nil or
-	// of a different type than this Restorer itself, thus a type assertion
-	// should be used.
+	// previous instance of a component.
 	//
-	// If skip = true is returned, restoration of this component's body is
-	// skipped. That is, the component is not rerendered. If the component can
-	// prove when Restore is called that the HTML rendered by Component.Render
-	// would not change, true should be returned.
-	Restore(prev Component) (skip bool)
+	// The previous component may be nil or of a different type than this
+	// Restorer itself, thus a type assertion should be used no action taken
+	// if the type does not match.
+	Restore(prev Component)
+}
+
+// RenderSkipper is an optional interface that Component's can implement in
+// order to short-circuit the reconciliation of a Component's rendered body.
+//
+// This is purely an optimization, and does not need to be implemented by
+// Components for correctness. Without implementing this interface, only the
+// difference between renders will be applied to the browser DOM. This
+// interface allows components to bypass calculating the difference altogether
+// and quickly state "nothing has changed, do not re-render".
+type RenderSkipper interface {
+	// SkipRender is called with a copy of the Component made the last time its
+	// Render method was invoked. If it returns true, rendering of the
+	// component will be skipped.
+	//
+	// The previous component may be of a different type than this
+	// RenderSkipper itself, thus a type assertion should be used no action
+	// taken if the type does not match.
+	SkipRender(prev Component) bool
 }
 
 // HTML represents some form of HTML: an element with a specific tag, or some
@@ -367,18 +382,28 @@ func doRenderHTML(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
 }
 
 // doRender handles rendering the given Component into *HTML. If skip == true
-// is returned, the Component's Restore method has signaled the component does
+// is returned, the Component's SkipRender method has signaled the component does
 // not need to be rendered and h == nil is returned.
 func doRender(comp Component) (h *HTML, skip bool) {
-	// Before rendering, consult the Component's Restore method to see if we
+	// Before rendering, consult the Component's SkipRender method to see if we
 	// should skip rendering or not.
-	if r, ok := comp.(Restorer); ok {
-		prev := comp.Context().prevComponent
-		if comp == prev {
-			panic("vecty: internal error (Restore called with identical prev component)")
+	if rs, ok := comp.(RenderSkipper); ok {
+		prev := comp.Context().prevRenderComponent
+		if prev != nil {
+			if comp == prev {
+				panic("vecty: internal error (Restore called with identical prev component)")
+			}
+			if rs.SkipRender(prev) {
+				return nil, true
+			}
 		}
-		if skip := r.Restore(prev); skip {
-			return nil, true
+	}
+
+	// Now that we know we are rendering the component, restore friendly
+	// relations between the component and the previous component.
+	if comp != comp.Context().prevComponent {
+		if r, ok := comp.(Restorer); ok {
+			r.Restore(comp.Context().prevComponent)
 		}
 	}
 
@@ -394,7 +419,8 @@ func doRender(comp Component) (h *HTML, skip bool) {
 
 	// Update the context to consider this render.
 	comp.Context().prevRender = nextRender
-	comp.Context().prevComponent = doCopy(comp)
+	comp.Context().prevComponent = comp
+	comp.Context().prevRenderComponent = doCopy(comp)
 	return nextRender, false
 }
 
@@ -403,7 +429,7 @@ func doRender(comp Component) (h *HTML, skip bool) {
 func RenderBody(body Component) {
 	nextRender, skip := doRender(body)
 	if skip {
-		panic("vecty: RenderBody Component.Restore returned skip == true")
+		panic("vecty: RenderBody Component.SkipRender returned true")
 	}
 	if nextRender.tag != "body" {
 		panic(fmt.Sprintf("vecty: RenderBody expected Component.Render to return a body tag, found %q", nextRender.tag))
