@@ -385,6 +385,14 @@ func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
 // true is returned, the Component's SkipRender method has signaled the
 // component does not need to be rendered and h == nil is returned.
 func renderComponent(comp Component) (h *HTML, skip bool) {
+	// Now that we know we are rendering the component, restore friendly
+	// relations between the component and the previous component.
+	if comp != comp.Context().prevComponent {
+		if r, ok := comp.(Restorer); ok {
+			r.Restore(comp.Context().prevComponent)
+		}
+	}
+
 	// Before rendering, consult the Component's SkipRender method to see if we
 	// should skip rendering or not.
 	if rs, ok := comp.(RenderSkipper); ok {
@@ -396,14 +404,6 @@ func renderComponent(comp Component) (h *HTML, skip bool) {
 			if rs.SkipRender(prev) {
 				return nil, true
 			}
-		}
-	}
-
-	// Now that we know we are rendering the component, restore friendly
-	// relations between the component and the previous component.
-	if comp != comp.Context().prevComponent {
-		if r, ok := comp.(Restorer); ok {
-			r.Restore(comp.Context().prevComponent)
 		}
 	}
 
