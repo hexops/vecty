@@ -391,7 +391,7 @@ func renderComponent(comp Component) (h *HTML, skip bool) {
 		prev := comp.Context().prevRenderComponent
 		if prev != nil {
 			if comp == prev {
-				panic("vecty: internal error (Restore called with identical prev component)")
+				panic("vecty: internal error (SkipRender called with identical prev component)")
 			}
 			if rs.SkipRender(prev) {
 				return nil, true
