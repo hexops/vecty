@@ -188,7 +188,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
 		if i >= len(prev.children) {
-			nextChildRender, skip := doRenderHTML(nextChild, nil)
+			nextChildRender, skip := render(nextChild, nil)
 			if skip {
 				continue
 			}
@@ -202,7 +202,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
 
-		nextChildRender, skip := doRenderHTML(nextChild, prevChildRender)
+		nextChildRender, skip := render(nextChild, prevChildRender)
 		if nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
 		}
@@ -285,7 +285,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		h.node.Call("addEventListener", l.Name, l.wrapper)
 	}
 	for _, nextChild := range h.children {
-		nextChildRender, skip := doRenderHTML(nextChild, nil)
+		nextChildRender, skip := render(nextChild, nil)
 		if skip {
 			continue // TODO(slimsag): Probably indicates a user-code bug, same as the RenderBody panic.
 		}
@@ -331,7 +331,7 @@ func Rerender(c Component) {
 	if prevRender == nil {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
-	nextRender, skip := doRender(c)
+	nextRender, skip := renderComponent(c)
 	if skip {
 		return
 	}
@@ -365,26 +365,26 @@ func doCopy(c Component) Component {
 	return cpy.Interface().(Component)
 }
 
-// doRenderHTML renders the ComponentOrHTML. In the case of *HTML, its Restore
-// method is invoked with the specified prevRender and c.(*HTML) is returned.
+// render the ComponentOrHTML. In the case of *HTML, its Restore method is
+// invoked with the specified prevRender and c.(*HTML) is returned.
 //
-// In the case of a Component, doRender(c.(Component)) is returned.
-func doRenderHTML(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
+// In the case of a Component, renderComponent(c.(Component)) is returned.
+func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
 	switch v := c.(type) {
 	case *HTML:
 		v.Restore(prevRender)
 		return v, false
 	case Component:
-		return doRender(v)
+		return renderComponent(v)
 	default:
 		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", c))
 	}
 }
 
-// doRender handles rendering the given Component into *HTML. If skip == true
-// is returned, the Component's SkipRender method has signaled the component does
-// not need to be rendered and h == nil is returned.
-func doRender(comp Component) (h *HTML, skip bool) {
+// renderComponent handles rendering the given Component into *HTML. If skip ==
+// true is returned, the Component's SkipRender method has signaled the
+// component does not need to be rendered and h == nil is returned.
+func renderComponent(comp Component) (h *HTML, skip bool) {
 	// Before rendering, consult the Component's SkipRender method to see if we
 	// should skip rendering or not.
 	if rs, ok := comp.(RenderSkipper); ok {
@@ -427,7 +427,7 @@ func doRender(comp Component) (h *HTML, skip bool) {
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
-	nextRender, skip := doRender(body)
+	nextRender, skip := renderComponent(body)
 	if skip {
 		panic("vecty: RenderBody Component.SkipRender returned true")
 	}
