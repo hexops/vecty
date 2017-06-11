@@ -24,12 +24,11 @@ type ItemView struct {
 }
 
 // Restore implements the vecty.Restorer interface.
-func (p *ItemView) Restore(prev vecty.Component) bool {
+func (p *ItemView) Restore(prev vecty.Component) {
 	if old, ok := prev.(*ItemView); ok {
 		p.editing = old.editing
 		p.editTitle = old.editTitle
 	}
-	return false
 }
 
 func (p *ItemView) onDestroy(event *vecty.Event) {

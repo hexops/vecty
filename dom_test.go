@@ -544,14 +544,14 @@ func TestHTML_Restore_nil(t *testing.T) {
 		)
 		compRender := Tag("div")
 		comp := &componentFunc{
+			id: "foobar",
 			render: func() *HTML {
 				compRenderCalls++
 				return compRender
 			},
-			restore: func(prev Component) (skip bool) {
+			restore: func(prev Component) {
 				compRestoreCalls++
 				compRestore = prev
-				return
 			},
 		}
 		h := Tag("div", Tag("div", comp))
@@ -567,6 +567,12 @@ func TestHTML_Restore_nil(t *testing.T) {
 		}
 		if compRestore != nil {
 			t.Fatal("compRestore != nil")
+		}
+		if comp.Context().prevComponent != comp {
+			t.Fatal("comp.Context().prevComponent != comp")
+		}
+		if comp.Context().prevRenderComponent.(*componentFunc).id != comp.id {
+			t.Fatal("comp.Context().prevRenderComponent.(*componentFunc).id != comp.id")
 		}
 		if comp.Context().prevRender != compRender {
 			t.Fatal("comp.Context().prevRender != compRender")
@@ -626,14 +632,14 @@ func TestHTML_Restore_nil(t *testing.T) {
 			compRestore                       Component
 		)
 		comp := &componentFunc{
+			id: "foobar",
 			render: func() *HTML {
 				compRenderCalls++
 				return nil
 			},
-			restore: func(prev Component) (skip bool) {
+			restore: func(prev Component) {
 				compRestoreCalls++
 				compRestore = prev
-				return
 			},
 		}
 		h := Tag("div", Tag("div", comp))
@@ -649,6 +655,12 @@ func TestHTML_Restore_nil(t *testing.T) {
 		}
 		if compRestore != nil {
 			t.Fatal("compRestore != nil")
+		}
+		if comp.Context().prevComponent != comp {
+			t.Fatal("comp.Context().prevComponent != comp")
+		}
+		if comp.Context().prevRenderComponent.(*componentFunc).id != comp.id {
+			t.Fatal("comp.Context().prevRenderComponent.(*componentFunc).id != comp.id")
 		}
 		if comp.Context().prevRender == nil {
 			t.Fatal("comp.Context().prevRender == nil")
@@ -699,9 +711,6 @@ func TestText(t *testing.T) {
 	}
 }
 
-// TODO(slimsag): Rerender docs say "re-rendered and subsequently restored"
-// which is not right (Restore happens before Render).
-
 // TestRerender_nil tests that Rerender panics when the component argument is
 // nil.
 func TestRerender_nil(t *testing.T) {
@@ -715,7 +724,7 @@ func TestRerender_nil(t *testing.T) {
 		}()
 		Rerender(nil)
 	}()
-	expected := "runtime error: invalid memory address or nil pointer dereference" // TODO(slimsag): error message bug
+	expected := "vecty: Rerender illegally called with a nil Component argument"
 	if gotPanic != expected {
 		t.Fatalf("got panic %q expected %q", gotPanic, expected)
 	}
@@ -723,18 +732,24 @@ func TestRerender_nil(t *testing.T) {
 
 // TestRerender_no_prevRender tests the behavior of Rerender when there is no
 // previous render.
-//
-// TODO(slimsag): Document in Rerender how this behaves (it should be no-op?).
 func TestRerender_no_prevRender(t *testing.T) {
-	t.Skip("BUG") // TODO(slimsag)
-	Rerender(&componentFunc{
-		render: func() *HTML {
-			panic("expected no Render call") // TODO(slimsag): bug!
-		},
-		restore: func(prev Component) (skip bool) {
-			panic("expected no Restore call") // TODO(slimsag): bug!
-		},
+	got := recoverStr(func() {
+		Rerender(&componentFunc{
+			render: func() *HTML {
+				panic("expected no Render call")
+			},
+			restore: func(prev Component) {
+				panic("expected no Restore call")
+			},
+			skipRender: func(prev Component) bool {
+				panic("expected no SkipRender call")
+			},
+		})
 	})
+	want := "vecty: Rerender invoked on Component that has never been rendered"
+	if got != want {
+		t.Fatalf("got panic %q expected %q", got, want)
+	}
 }
 
 // TestRerender_identical tests the behavior of Rerender when there is a
@@ -776,18 +791,18 @@ func TestRerender_identical(t *testing.T) {
 	}
 
 	render := Tag("body")
-	var renderCalled, restoreCalled int
+	var renderCalled, restoreCalled, skipRenderCalled int
 	comp := &componentFunc{
+		id: "original",
 		render: func() *HTML {
 			renderCalled++
 			return render
 		},
-		restore: func(prev Component) (skip bool) {
+		restore: func(prev Component) {
 			if prev != nil {
 				panic("prev != nil")
 			}
 			restoreCalled++
-			return
 		},
 	}
 	RenderBody(comp)
@@ -803,31 +818,56 @@ func TestRerender_identical(t *testing.T) {
 	if comp.Context().prevRender != render {
 		t.Fatal("comp.Context().prevRender != render")
 	}
+	if comp.Context().prevComponent.(*componentFunc).id != "original" {
+		t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
+	}
+	if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
+		t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
+	}
 
 	// Perform a re-render.
 	global = nil // Expecting no JS calls past here
 	newRender := Tag("body")
+	comp.id = "modified"
 	comp.render = func() *HTML {
 		renderCalled++
 		return newRender
 	}
-	comp.restore = func(prev Component) (skip bool) {
-		// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
-		//if prev != comp {
-		//	panic("prev != comp")
-		//}
-		restoreCalled++
-		return
+	comp.restore = nil
+	comp.skipRender = func(prev Component) bool {
+		if comp.id != "modified" {
+			panic(`comp.id != "modified"`)
+		}
+		if comp.Context().prevComponent.(*componentFunc).id != "modified" {
+			panic(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
+		}
+		if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
+			panic(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
+		}
+		if prev.(*componentFunc).id != "original" {
+			panic(`prev.(*componentFunc).id != "original"`)
+		}
+		skipRenderCalled++
+		return false
 	}
 	Rerender(comp)
 	if renderCalled != 2 {
 		t.Fatal("renderCalled != 2")
 	}
-	if restoreCalled != 2 {
-		t.Fatal("restoreCalled != 2")
+	if restoreCalled != 1 {
+		t.Fatal("restoreCalled != 1")
+	}
+	if skipRenderCalled != 1 {
+		t.Fatal("skipRenderCalled != 1")
 	}
 	if comp.Context().prevRender != newRender {
 		t.Fatal("comp.Context().prevRender != newRender")
+	}
+	if comp.Context().prevComponent.(*componentFunc).id != "modified" {
+		t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
+	}
+	if comp.Context().prevRenderComponent.(*componentFunc).id != "modified" {
+		t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "modified"`)
 	}
 }
 
@@ -901,18 +941,18 @@ func TestRerender_change(t *testing.T) {
 			}
 
 			render := Tag("body")
-			var renderCalled, restoreCalled int
+			var renderCalled, restoreCalled, skipRenderCalled int
 			comp := &componentFunc{
+				id: "original",
 				render: func() *HTML {
 					renderCalled++
 					return render
 				},
-				restore: func(prev Component) (skip bool) {
+				restore: func(prev Component) {
 					if prev != nil {
 						panic("prev != nil")
 					}
 					restoreCalled++
-					return
 				},
 			}
 			RenderBody(comp)
@@ -927,6 +967,9 @@ func TestRerender_change(t *testing.T) {
 			}
 			if comp.Context().prevRender != render {
 				t.Fatal("comp.Context().prevRender != render")
+			}
+			if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
+				t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
 			}
 
 			// Perform a re-render.
@@ -957,27 +1000,46 @@ func TestRerender_change(t *testing.T) {
 					"document": document,
 				},
 			}
+			comp.id = "modified"
 			comp.render = func() *HTML {
 				renderCalled++
 				return tst.newRender
 			}
-			comp.restore = func(prev Component) (skip bool) {
-				// TODO(slimsag): https://github.com/gopherjs/vecty/issues/106
-				//if prev != comp {
-				//	panic("prev != comp")
-				//}
-				restoreCalled++
-				return
+			comp.restore = nil
+			comp.skipRender = func(prev Component) bool {
+				if comp.id != "modified" {
+					panic(`comp.id != "modified"`)
+				}
+				if comp.Context().prevComponent.(*componentFunc).id != "modified" {
+					panic(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
+				}
+				if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
+					panic(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
+				}
+				if prev.(*componentFunc).id != "original" {
+					panic(`prev.(*componentFunc).id != "original"`)
+				}
+				skipRenderCalled++
+				return false
 			}
 			Rerender(comp)
 			if renderCalled != 2 {
 				t.Fatal("renderCalled != 2")
 			}
-			if restoreCalled != 2 {
-				t.Fatal("restoreCalled != 2")
+			if restoreCalled != 1 {
+				t.Fatal("restoreCalled != 1")
+			}
+			if skipRenderCalled != 1 {
+				t.Fatal("skipRenderCalled != 1")
 			}
 			if comp.Context().prevRender != tst.newRender {
 				t.Fatal("comp.Context().prevRender != tst.newRender")
+			}
+			if comp.Context().prevComponent.(*componentFunc).id != "modified" {
+				t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
+			}
+			if comp.Context().prevRenderComponent.(*componentFunc).id != "modified" {
+				t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "modified"`)
 			}
 			if bodyAppendChild != newNode {
 				t.Fatal("bodyAppendChild != newNode")
@@ -1012,6 +1074,24 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
+			document := &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					switch name {
+					case "createElement", "createTextNode":
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						return &mockObject{}
+					default:
+						panic(fmt.Sprintf("unexpected call to %q", name))
+					}
+				},
+			}
+			global = &mockObject{
+				get: map[string]jsObject{
+					"document": document,
+				},
+			}
 			var gotPanic string
 			func() {
 				defer func() {
@@ -1020,9 +1100,13 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 						gotPanic = fmt.Sprint(r)
 					}
 				}()
-				RenderBody(&componentFunc{render: func() *HTML {
-					return c.render
-				}})
+				RenderBody(&componentFunc{
+					render: func() *HTML {
+						return c.render
+					},
+					restore:    func(prev Component) {},
+					skipRender: func(prev Component) bool { return false },
+				})
 			}()
 			if c.wantPanic != gotPanic {
 				t.Fatalf("want panic %q got panic %q", c.wantPanic, gotPanic)
@@ -1034,7 +1118,6 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 // TestRenderBody_Restore_Skip tests that RenderBody panics when the
 // component's Restore method returns skip == true.
 func TestRenderBody_Restore_Skip(t *testing.T) {
-	t.Skip("BUG") // TODO(slimsag)
 	body := &mockObject{}
 	document := &mockObject{
 		call: func(name string, args ...interface{}) jsObject {
@@ -1066,14 +1149,87 @@ func TestRenderBody_Restore_Skip(t *testing.T) {
 			"document": document,
 		},
 	}
-	RenderBody(&componentFunc{
+	comp := &componentFunc{
 		render: func() *HTML {
 			return Tag("body")
 		},
-		restore: func(prev Component) (skip bool) {
+		skipRender: func(prev Component) bool {
 			return true
 		},
+		restore: func(prev Component) {
+		},
+	}
+	fakePrevRender := *comp
+	comp.Context().prevRenderComponent = &fakePrevRender
+	got := recoverStr(func() {
+		RenderBody(comp)
 	})
+	want := "vecty: RenderBody Component.SkipRender returned true"
+	if got != want {
+		t.Fatalf("got panic %q want %q", got, want)
+	}
+}
+
+// TestRenderBody_Restore_Before_SkipRender tests that RenderBody calls the
+// component's Restore method before calling its SkipRender.
+func TestRenderBody_Restore_Before_SkipRender(t *testing.T) {
+	body := &mockObject{}
+	document := &mockObject{
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "createElement" {
+				panic(fmt.Sprintf("expected call to createElement, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if args[0].(string) != "body" {
+				panic(`args[0].(string) != "body"`)
+			}
+			return body
+		},
+		get: map[string]jsObject{
+			"readyState": &mockObject{stringValue: "complete"},
+		},
+		set: func(key string, value interface{}) {
+			if key != "body" {
+				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+			}
+			if value != body {
+				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+			}
+		},
+	}
+	global = &mockObject{
+		get: map[string]jsObject{
+			"document": document,
+		},
+	}
+
+	didRestore := false
+	want := "test: SkipRender called after Restore"
+	comp := &componentFunc{
+		render: func() *HTML {
+			return Tag("body")
+		},
+		skipRender: func(prev Component) bool {
+			if didRestore {
+				// Short-circuit if call order is correct.
+				panic(want)
+			}
+			return true
+		},
+		restore: func(prev Component) {
+			didRestore = true
+		},
+	}
+	fakePrevRender := *comp
+	comp.Context().prevRenderComponent = &fakePrevRender
+	got := recoverStr(func() {
+		RenderBody(comp)
+	})
+	if got != want {
+		t.Fatalf("got panic %q want %q", got, want)
+	}
 }
 
 // TestRenderBody_Standard_loaded tests that RenderBody properly handles the
@@ -1113,17 +1269,16 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 			"document": document,
 		},
 	}
-	restoreCalled := false
+	var restoreCalled bool
 	RenderBody(&componentFunc{
 		render: func() *HTML {
 			return Tag("body")
 		},
-		restore: func(prev Component) (skip bool) {
+		restore: func(prev Component) {
 			if prev != nil {
 				t.Fatal("prev != nil")
 			}
 			restoreCalled = true
-			return false
 		},
 	})
 	if !restoreCalled {
@@ -1183,17 +1338,16 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 			"document": document,
 		},
 	}
-	restoreCalled := false
+	var restoreCalled bool
 	RenderBody(&componentFunc{
 		render: func() *HTML {
 			return Tag("body")
 		},
-		restore: func(prev Component) (skip bool) {
+		restore: func(prev Component) {
 			if prev != nil {
 				t.Fatal("prev != nil")
 			}
 			restoreCalled = true
-			return false
 		},
 	})
 	if !restoreCalled {
@@ -1321,17 +1475,15 @@ func recoverStr(f func()) (s string) {
 
 type componentFunc struct {
 	Core
-	render  func() *HTML
-	restore func(prev Component) (skip bool)
+	id         string
+	render     func() *HTML
+	restore    func(prev Component)
+	skipRender func(prev Component) bool
 }
 
-func (c *componentFunc) Render() *HTML { return c.render() }
-func (c *componentFunc) Restore(prev Component) (skip bool) {
-	if c.restore != nil {
-		return c.restore(prev)
-	}
-	return
-}
+func (c *componentFunc) Render() *HTML                  { return c.render() }
+func (c *componentFunc) Restore(prev Component)         { c.restore(prev) }
+func (c *componentFunc) SkipRender(prev Component) bool { return c.skipRender(prev) }
 
 type mockObject struct {
 	set         func(key string, value interface{})

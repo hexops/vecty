@@ -2,6 +2,7 @@ package vecty
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -9,7 +10,8 @@ import (
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
-	prevRender *HTML
+	prevComponent, prevRenderComponent Component
+	prevRender                         *HTML
 }
 
 // Context implements the Component interface.
@@ -41,6 +43,15 @@ type Component interface {
 	Context() *Core
 }
 
+// Copier is an optional interface that a Component can implement in order to
+// copy itself. Vecty must internally copy components, and it does so by either
+// invoking the Copy method of the Component or, if the component does not
+// implement the Copier interface, a shallow copy is performed.
+type Copier interface {
+	// Copy returns a copy of the component.
+	Copy() Component
+}
+
 // Unmounter is an optional interface that a Component can implement in order
 // to receive component unmount events.
 type Unmounter interface {
@@ -59,19 +70,34 @@ type Unmounter interface {
 type ComponentOrHTML interface{}
 
 // Restorer is an optional interface that Component's can implement in order to
-// restore state during component reconciliation and also to short-circuit
-// the reconciliation of a Component's body.
+// restore state during component reconciliation.
 type Restorer interface {
 	// Restore is called when the component should restore itself against a
-	// previous instance of a component. The previous component may be nil or
-	// of a different type than this Restorer itself, thus a type assertion
-	// should be used.
+	// previous instance of a component.
 	//
-	// If skip = true is returned, restoration of this component's body is
-	// skipped. That is, the component is not rerendered. If the component can
-	// prove when Restore is called that the HTML rendered by Component.Render
-	// would not change, true should be returned.
-	Restore(prev Component) (skip bool)
+	// The previous component may be nil or of a different type than this
+	// Restorer itself, thus a type assertion should be used no action taken
+	// if the type does not match.
+	Restore(prev Component)
+}
+
+// RenderSkipper is an optional interface that Component's can implement in
+// order to short-circuit the reconciliation of a Component's rendered body.
+//
+// This is purely an optimization, and does not need to be implemented by
+// Components for correctness. Without implementing this interface, only the
+// difference between renders will be applied to the browser DOM. This
+// interface allows components to bypass calculating the difference altogether
+// and quickly state "nothing has changed, do not re-render".
+type RenderSkipper interface {
+	// SkipRender is called with a copy of the Component made the last time its
+	// Render method was invoked. If it returns true, rendering of the
+	// component will be skipped.
+	//
+	// The previous component may be of a different type than this
+	// RenderSkipper itself, thus a type assertion should be used no action
+	// taken if the type does not match.
+	SkipRender(prev Component) bool
 }
 
 // HTML represents some form of HTML: an element with a specific tag, or some
@@ -161,23 +187,26 @@ func (h *HTML) restoreHTML(prev *HTML) {
 
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
-		nextChildRender := doRender(nextChild)
 		if i >= len(prev.children) {
-			if doRestore(nil, nextChild, nil, nextChildRender) {
+			nextChildRender, skip := render(nextChild, nil)
+			if skip {
 				continue
 			}
 			h.node.Call("appendChild", nextChildRender.node)
 			continue
 		}
+
 		prevChild := prev.children[i]
 		prevChildRender, ok := prevChild.(*HTML)
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
+
+		nextChildRender, skip := render(nextChild, prevChildRender)
 		if nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
 		}
-		if doRestore(prevChild, nextChild, prevChildRender, nextChildRender) {
+		if skip {
 			continue
 		}
 		replaceNode(nextChildRender.node, prevChildRender.node)
@@ -256,15 +285,9 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		h.node.Call("addEventListener", l.Name, l.wrapper)
 	}
 	for _, nextChild := range h.children {
-		nextChildRender, isHTML := nextChild.(*HTML)
-		if !isHTML {
-			nextChildComp := nextChild.(Component)
-			nextChildRender = renderHandleNil(nextChildComp)
-			nextChildComp.Context().prevRender = nextChildRender
-		}
-
-		if doRestore(nil, nextChild, nil, nextChildRender) {
-			continue
+		nextChildRender, skip := render(nextChild, nil)
+		if skip {
+			continue // TODO(slimsag): Probably indicates a user-code bug, same as the RenderBody panic.
 		}
 		h.node.Call("appendChild", nextChildRender.node)
 	}
@@ -297,61 +320,120 @@ func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
 }
 
 // Rerender causes the body of the given component (i.e. the HTML returned by
-// the Component's Render method) to be re-rendered and subsequently restored.
+// the Component's Render method) to be re-rendered.
+//
+// If the component has not been rendered before, Rerender panics.
 func Rerender(c Component) {
+	if c == nil {
+		panic("vecty: Rerender illegally called with a nil Component argument")
+	}
 	prevRender := c.Context().prevRender
-	nextRender := doRender(c)
-	var prevComponent Component // TODO
-	if doRestore(prevComponent, c, prevRender, nextRender) {
+	if prevRender == nil {
+		panic("vecty: Rerender invoked on Component that has never been rendered")
+	}
+	nextRender, skip := renderComponent(c)
+	if skip {
 		return
 	}
-	if prevRender != nil {
-		replaceNode(nextRender.node, prevRender.node)
+	replaceNode(nextRender.node, prevRender.node)
+}
+
+// doCopy makes a copy of the given component.
+func doCopy(c Component) Component {
+	if c == nil {
+		panic("vecty: cannot copy nil Component")
+	}
+
+	// If the Component implements the Copier interface, then use that to
+	// perform the copy.
+	if copier, ok := c.(Copier); ok {
+		cpy := copier.Copy()
+		if cpy == c {
+			panic("vecty: Component.Copy returned an identical *MyComponent pointer")
+		}
+		return cpy
+	}
+
+	// Component does not implement the Copier interface, so perform a shallow
+	// copy.
+	v := reflect.ValueOf(c)
+	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
+		panic(fmt.Sprintf("vecty: Component must be pointer to struct, found %T", c))
+	}
+	cpy := reflect.New(v.Elem().Type())
+	cpy.Elem().Set(v.Elem())
+	return cpy.Interface().(Component)
+}
+
+// render the ComponentOrHTML. In the case of *HTML, its Restore method is
+// invoked with the specified prevRender and c.(*HTML) is returned.
+//
+// In the case of a Component, renderComponent(c.(Component)) is returned.
+func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
+	switch v := c.(type) {
+	case *HTML:
+		v.Restore(prevRender)
+		return v, false
+	case Component:
+		return renderComponent(v)
+	default:
+		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", c))
 	}
 }
 
-func doRender(c ComponentOrHTML) *HTML {
-	if h, isHTML := c.(*HTML); isHTML {
-		return h
+// renderComponent handles rendering the given Component into *HTML. If skip ==
+// true is returned, the Component's SkipRender method has signaled the
+// component does not need to be rendered and h == nil is returned.
+func renderComponent(comp Component) (h *HTML, skip bool) {
+	// Now that we know we are rendering the component, restore friendly
+	// relations between the component and the previous component.
+	if comp != comp.Context().prevComponent {
+		if r, ok := comp.(Restorer); ok {
+			r.Restore(comp.Context().prevComponent)
+		}
 	}
-	comp := c.(Component)
-	r := renderHandleNil(comp)
-	comp.Context().prevRender = r
-	return r
-}
 
-func renderHandleNil(c Component) *HTML {
-	r := c.Render()
-	if r == nil {
-		// nil renders are translated into noscript tags.
-		r = Tag("noscript")
-	}
-	return r
-}
-
-func doRestore(prev, next ComponentOrHTML, prevRender, nextRender *HTML) (skip bool) {
-	if r, ok := next.(Restorer); ok {
-		var p Component
+	// Before rendering, consult the Component's SkipRender method to see if we
+	// should skip rendering or not.
+	if rs, ok := comp.(RenderSkipper); ok {
+		prev := comp.Context().prevRenderComponent
 		if prev != nil {
-			p = prev.(Component)
-		}
-		if r.Restore(p) {
-			return true
+			if comp == prev {
+				panic("vecty: internal error (SkipRender called with identical prev component)")
+			}
+			if rs.SkipRender(prev) {
+				return nil, true
+			}
 		}
 	}
-	nextRender.Restore(prevRender)
-	return false
+
+	// Render the component into HTML, handling nil renders.
+	nextRender := comp.Render()
+	if nextRender == nil {
+		// nil renders are translated into noscript tags.
+		nextRender = Tag("noscript")
+	}
+
+	// Restore the actual rendered HTML.
+	nextRender.Restore(comp.Context().prevRender)
+
+	// Update the context to consider this render.
+	comp.Context().prevRender = nextRender
+	comp.Context().prevComponent = comp
+	comp.Context().prevRenderComponent = doCopy(comp)
+	return nextRender, false
 }
 
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
-	nextRender := doRender(body)
+	nextRender, skip := renderComponent(body)
+	if skip {
+		panic("vecty: RenderBody Component.SkipRender returned true")
+	}
 	if nextRender.tag != "body" {
 		panic(fmt.Sprintf("vecty: RenderBody expected Component.Render to return a body tag, found %q", nextRender.tag))
 	}
-	doRestore(nil, body, nil, nextRender)
-	// TODO: doRestore skip == true here probably implies a user code bug
 	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {
 		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
