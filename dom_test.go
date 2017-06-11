@@ -1156,6 +1156,8 @@ func TestRenderBody_Restore_Skip(t *testing.T) {
 		skipRender: func(prev Component) bool {
 			return true
 		},
+		restore: func(prev Component) {
+		},
 	}
 	fakePrevRender := *comp
 	comp.Context().prevRenderComponent = &fakePrevRender
@@ -1163,6 +1165,68 @@ func TestRenderBody_Restore_Skip(t *testing.T) {
 		RenderBody(comp)
 	})
 	want := "vecty: RenderBody Component.SkipRender returned true"
+	if got != want {
+		t.Fatalf("got panic %q want %q", got, want)
+	}
+}
+
+// TestRenderBody_Restore_Before_SkipRender tests that RenderBody calls the
+// component's Restore method before calling its SkipRender.
+func TestRenderBody_Restore_Before_SkipRender(t *testing.T) {
+	body := &mockObject{}
+	document := &mockObject{
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "createElement" {
+				panic(fmt.Sprintf("expected call to createElement, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if args[0].(string) != "body" {
+				panic(`args[0].(string) != "body"`)
+			}
+			return body
+		},
+		get: map[string]jsObject{
+			"readyState": &mockObject{stringValue: "complete"},
+		},
+		set: func(key string, value interface{}) {
+			if key != "body" {
+				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+			}
+			if value != body {
+				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+			}
+		},
+	}
+	global = &mockObject{
+		get: map[string]jsObject{
+			"document": document,
+		},
+	}
+
+	didRestore := false
+	want := "test: SkipRender called after Restore"
+	comp := &componentFunc{
+		render: func() *HTML {
+			return Tag("body")
+		},
+		skipRender: func(prev Component) bool {
+			if didRestore {
+				// Short-circuit if call order is correct.
+				panic(want)
+			}
+			return true
+		},
+		restore: func(prev Component) {
+			didRestore = true
+		},
+	}
+	fakePrevRender := *comp
+	comp.Context().prevRenderComponent = &fakePrevRender
+	got := recoverStr(func() {
+		RenderBody(comp)
+	})
 	if got != want {
 		t.Fatalf("got panic %q want %q", got, want)
 	}
