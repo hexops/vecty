@@ -225,7 +225,7 @@ func (h *HTML) restoreHTML(prev *HTML) {
 }
 
 // Restore implements the Restorer interface.
-func (h *HTML) Restore(old ComponentOrHTML) {
+func (h *HTML) Restore(prev *HTML) {
 	for _, l := range h.eventListeners {
 		l := l
 		l.wrapper = func(jsEvent *js.Object) {
@@ -239,7 +239,7 @@ func (h *HTML) Restore(old ComponentOrHTML) {
 		}
 	}
 
-	if prev, ok := old.(*HTML); ok && prev != nil {
+	if prev != nil {
 		if h.tag == "" && prev.tag == "" {
 			h.restoreText(prev)
 			return
