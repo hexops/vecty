@@ -115,6 +115,21 @@ type HTML struct {
 // Node returns the underlying JavaScript Element or TextNode.
 func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 
+func (h *HTML) createNode() {
+	switch {
+	case h.tag != "" && h.text != "":
+		panic("vecty: only one of HTML.tag or HTML.text may be set")
+	case h.tag == "" && h.innerHTML != "":
+		panic("vecty: only HTML may have UnsafeHTML attribute")
+	case h.tag != "" && h.namespace == "":
+		h.node = global.Get("document").Call("createElement", h.tag)
+	case h.tag != "" && h.namespace != "":
+		h.node = global.Get("document").Call("createElementNS", h.namespace, h.tag)
+	default:
+		h.node = global.Get("document").Call("createTextNode", h.text)
+	}
+}
+
 func (h *HTML) restoreText(prev *HTML) {
 	h.node = prev.node
 
@@ -250,20 +265,8 @@ func (h *HTML) Restore(prev *HTML) {
 		}
 	}
 
-	if h.tag != "" && h.text != "" {
-		panic("vecty: only one of HTML.tag or HTML.text may be set")
-	}
-	if h.tag == "" && h.innerHTML != "" {
-		panic("vecty: only HTML may have UnsafeHTML attribute")
-	}
-	switch {
-	case h.tag != "" && h.namespace == "":
-		h.node = global.Get("document").Call("createElement", h.tag)
-	case h.tag != "" && h.namespace != "":
-		h.node = global.Get("document").Call("createElementNS", h.namespace, h.tag)
-	default:
-		h.node = global.Get("document").Call("createTextNode", h.text)
-	}
+	h.createNode()
+
 	if h.innerHTML != "" {
 		h.node.Set("innerHTML", h.innerHTML)
 	}
