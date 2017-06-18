@@ -130,7 +130,7 @@ func (h *HTML) createNode() {
 	}
 }
 
-func (h *HTML) restoreText(prev *HTML) {
+func (h *HTML) reconcileText(prev *HTML) {
 	h.node = prev.node
 
 	// Text modifications.
@@ -139,8 +139,37 @@ func (h *HTML) restoreText(prev *HTML) {
 	}
 }
 
-func (h *HTML) restoreHTML(prev *HTML) {
-	h.node = prev.node
+func (h *HTML) reconcile(prev *HTML) {
+	// Check for compatible tag and mutate previous instance on match, otherwise start fresh
+	switch {
+	case prev != nil && h.tag == "" && prev.tag == "":
+		// Compatible text node
+		h.reconcileText(prev)
+		return
+	case prev != nil && h.tag != "" && prev.tag != "" && h.tag == prev.tag && h.namespace == prev.namespace:
+		// Compatible element node
+		h.node = prev.node
+	default:
+		// Incompatible node, start fresh
+		if prev == nil {
+			prev = &HTML{}
+		}
+		h.createNode()
+	}
+
+	// Wrap event listeners
+	for _, l := range h.eventListeners {
+		l := l
+		l.wrapper = func(jsEvent *js.Object) {
+			if l.callPreventDefault {
+				jsEvent.Call("preventDefault")
+			}
+			if l.callStopPropagation {
+				jsEvent.Call("stopPropagation")
+			}
+			l.Listener(&Event{Object: jsEvent, Target: jsEvent.Get("target")})
+		}
+	}
 
 	// Properties
 	for name, value := range h.properties {
@@ -172,6 +201,19 @@ func (h *HTML) restoreHTML(prev *HTML) {
 	for name := range prev.attributes {
 		if _, ok := h.attributes[name]; !ok {
 			h.node.Call("removeAttribute", name)
+		}
+	}
+
+	// Dataset
+	dataset := h.node.Get("dataset")
+	for name, value := range h.dataset {
+		if value != prev.dataset[name] {
+			dataset.Set(name, value)
+		}
+	}
+	for name := range prev.dataset {
+		if _, ok := h.dataset[name]; !ok {
+			dataset.Set(name, nil)
 		}
 	}
 
@@ -236,63 +278,6 @@ func (h *HTML) restoreHTML(prev *HTML) {
 		if u, ok := prevChild.(Unmounter); ok {
 			u.Unmount()
 		}
-	}
-}
-
-// Restore implements the Restorer interface.
-func (h *HTML) Restore(prev *HTML) {
-	for _, l := range h.eventListeners {
-		l := l
-		l.wrapper = func(jsEvent *js.Object) {
-			if l.callPreventDefault {
-				jsEvent.Call("preventDefault")
-			}
-			if l.callStopPropagation {
-				jsEvent.Call("stopPropagation")
-			}
-			l.Listener(&Event{Object: jsEvent, Target: jsEvent.Get("target")})
-		}
-	}
-
-	if prev != nil {
-		if h.tag == "" && prev.tag == "" {
-			h.restoreText(prev)
-			return
-		}
-		if h.tag != "" && prev.tag != "" && h.tag == prev.tag && h.namespace == prev.namespace {
-			h.restoreHTML(prev)
-			return
-		}
-	}
-
-	h.createNode()
-
-	if h.innerHTML != "" {
-		h.node.Set("innerHTML", h.innerHTML)
-	}
-	for name, value := range h.properties {
-		h.node.Set(name, value)
-	}
-	for name, value := range h.attributes {
-		h.node.Call("setAttribute", name, value)
-	}
-	dataset := h.node.Get("dataset")
-	for name, value := range h.dataset {
-		dataset.Set(name, value)
-	}
-	style := h.node.Get("style")
-	for name, value := range h.styles {
-		style.Call("setProperty", name, value)
-	}
-	for _, l := range h.eventListeners {
-		h.node.Call("addEventListener", l.Name, l.wrapper)
-	}
-	for _, nextChild := range h.children {
-		nextChildRender, skip := render(nextChild, nil)
-		if skip {
-			continue // TODO(slimsag): Probably indicates a user-code bug, same as the RenderBody panic.
-		}
-		h.node.Call("appendChild", nextChildRender.node)
 	}
 }
 
@@ -375,7 +360,7 @@ func doCopy(c Component) Component {
 func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
 	switch v := c.(type) {
 	case *HTML:
-		v.Restore(prevRender)
+		v.reconcile(prevRender)
 		return v, false
 	case Component:
 		return renderComponent(v)
@@ -418,7 +403,7 @@ func renderComponent(comp Component) (h *HTML, skip bool) {
 	}
 
 	// Restore the actual rendered HTML.
-	nextRender.Restore(comp.Context().prevRender)
+	nextRender.reconcile(comp.Context().prevRender)
 
 	// Update the context to consider this render.
 	comp.Context().prevRender = nextRender

@@ -95,9 +95,9 @@ func TestHTML_Node(t *testing.T) {
 	}
 }
 
-// TestHTML_Restore_std tests that (*HTML).Restore against an old HTML instance
+// TestHTML_reconcile_std tests that (*HTML).reconcile against an old HTML instance
 // works as expected (i.e. that it updates nodes correctly).
-func TestHTML_Restore_std(t *testing.T) {
+func TestHTML_reconcile_std(t *testing.T) {
 	t.Run("text_identical", func(t *testing.T) {
 		h := Text("foobar")
 		hNode := &mockObject{}
@@ -105,7 +105,7 @@ func TestHTML_Restore_std(t *testing.T) {
 		prev := Text("foobar")
 		prevNode := &mockObject{}
 		prev.node = prevNode
-		h.Restore(prev)
+		h.reconcile(prev)
 		if h.node != prevNode {
 			t.Fatal("h.node != prevNode")
 		}
@@ -126,7 +126,7 @@ func TestHTML_Restore_std(t *testing.T) {
 			},
 		}
 		prev.node = prevNode
-		h.Restore(prev)
+		h.reconcile(prev)
 		if h.node != prevNode {
 			t.Fatal("h.node != prevNode")
 		}
@@ -138,13 +138,13 @@ func TestHTML_Restore_std(t *testing.T) {
 	// TODO(slimsag): test the restoreHTML code path
 }
 
-// TestHTML_Restore_nil tests that (*HTML).Restore(nil) works as expected (i.e.
+// TestHTML_reconcile_nil tests that (*HTML).reconcile(nil) works as expected (i.e.
 // that it creates nodes correctly).
-func TestHTML_Restore_nil(t *testing.T) {
+func TestHTML_reconcile_nil(t *testing.T) {
 	t.Run("one_of_tag_or_text", func(t *testing.T) {
 		got := recoverStr(func() {
 			h := &HTML{text: "hello", tag: "div"}
-			h.Restore(nil)
+			h.reconcile(nil)
 		})
 		want := "vecty: only one of HTML.tag or HTML.text may be set"
 		if got != want {
@@ -154,7 +154,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 	t.Run("unsafe_text", func(t *testing.T) {
 		got := recoverStr(func() {
 			h := &HTML{text: "hello", innerHTML: "foobar"}
-			h.Restore(nil)
+			h.reconcile(nil)
 		})
 		want := "vecty: only HTML may have UnsafeHTML attribute"
 		if got != want {
@@ -183,7 +183,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 		}
 		want := "strong"
 		h := Tag(want)
-		h.Restore(nil)
+		h.reconcile(nil)
 		if createdElement != want {
 			t.Fatalf("createdElement %q want %q", createdElement, want)
 		}
@@ -213,7 +213,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 		wantTag := "strong"
 		wantNamespace := "foobar"
 		h := Tag(wantTag, Namespace(wantNamespace))
-		h.Restore(nil)
+		h.reconcile(nil)
 		if createdElement != wantTag {
 			t.Fatalf("createdElement %q want tag %q", createdElement, wantTag)
 		}
@@ -243,7 +243,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 		}
 		want := "hello"
 		h := &HTML{text: want}
-		h.Restore(nil)
+		h.reconcile(nil)
 		if createdTextNode != want {
 			t.Fatalf("createdTextNode %q want %q", createdTextNode, want)
 		}
@@ -279,7 +279,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 		}
 		want := "<p>hello</p>"
 		h := Tag("div", UnsafeHTML(want))
-		h.Restore(nil)
+		h.reconcile(nil)
 		if setInnerHTML != want {
 			t.Fatalf("setInnerHTML %q want %q", setInnerHTML, want)
 		}
@@ -311,7 +311,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 			},
 		}
 		h := Tag("div", Property("a", 1), Property("b", "2foobar"))
-		h.Restore(nil)
+		h.reconcile(nil)
 		got := sortedMapString(set)
 		want := "a:1 b:2foobar"
 		if got != want {
@@ -352,7 +352,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 			},
 		}
 		h := Tag("div", Attribute("a", 1), Attribute("b", "2foobar"))
-		h.Restore(nil)
+		h.reconcile(nil)
 		got := sortedMapString(set)
 		want := "a:1 b:2foobar"
 		if got != want {
@@ -391,7 +391,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 			},
 		}
 		h := Tag("div", Data("a", "1"), Data("b", "2foobar"))
-		h.Restore(nil)
+		h.reconcile(nil)
 		got := sortedMapString(set)
 		want := "a:1 b:2foobar"
 		if got != want {
@@ -437,7 +437,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 			},
 		}
 		h := Tag("div", Style("a", "1"), Style("b", "2foobar"))
-		h.Restore(nil)
+		h.reconcile(nil)
 		got := sortedMapString(set)
 		want := "a:1 b:2foobar"
 		if got != want {
@@ -484,7 +484,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 		e0 := &EventListener{Name: "click"}
 		e1 := &EventListener{Name: "keydown"}
 		h := Tag("div", e0, e1)
-		h.Restore(nil)
+		h.reconcile(nil)
 		if e0.wrapper == nil {
 			t.Fatal("e0.wrapper == nil")
 		}
@@ -555,7 +555,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 			},
 		}
 		h := Tag("div", Tag("div", comp))
-		h.Restore(nil)
+		h.reconcile(nil)
 		if len(divs) != 3 {
 			t.Fatal("len(divs) != 3")
 		}
@@ -643,7 +643,7 @@ func TestHTML_Restore_nil(t *testing.T) {
 			},
 		}
 		h := Tag("div", Tag("div", comp))
-		h.Restore(nil)
+		h.reconcile(nil)
 		if len(nodes) != 3 {
 			t.Fatal("len(nodes) != 3")
 		}
