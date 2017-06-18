@@ -110,12 +110,14 @@ type HTML struct {
 	properties, attributes          map[string]interface{}
 	eventListeners                  []*EventListener
 	children                        []ComponentOrHTML
+	new                             bool
 }
 
 // Node returns the underlying JavaScript Element or TextNode.
 func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 
 func (h *HTML) createNode() {
+	h.new = true
 	switch {
 	case h.tag != "" && h.text != "":
 		panic("vecty: only one of HTML.tag or HTML.text may be set")
@@ -155,6 +157,9 @@ func (h *HTML) reconcile(prev *HTML) {
 			prev = &HTML{}
 		}
 		h.createNode()
+		defer func() {
+			h.new = false
+		}()
 	}
 
 	// Wrap event listeners
@@ -186,9 +191,11 @@ func (h *HTML) reconcile(prev *HTML) {
 			h.node.Set(name, value)
 		}
 	}
-	for name := range prev.properties {
-		if _, ok := h.properties[name]; !ok {
-			h.node.Set(name, nil)
+	if !h.new {
+		for name := range prev.properties {
+			if _, ok := h.properties[name]; !ok {
+				h.node.Set(name, nil)
+			}
 		}
 	}
 
@@ -198,9 +205,11 @@ func (h *HTML) reconcile(prev *HTML) {
 			h.node.Call("setAttribute", name, value)
 		}
 	}
-	for name := range prev.attributes {
-		if _, ok := h.attributes[name]; !ok {
-			h.node.Call("removeAttribute", name)
+	if !h.new {
+		for name := range prev.attributes {
+			if _, ok := h.attributes[name]; !ok {
+				h.node.Call("removeAttribute", name)
+			}
 		}
 	}
 
@@ -211,9 +220,11 @@ func (h *HTML) reconcile(prev *HTML) {
 			dataset.Set(name, value)
 		}
 	}
-	for name := range prev.dataset {
-		if _, ok := h.dataset[name]; !ok {
-			dataset.Set(name, nil)
+	if !h.new {
+		for name := range prev.dataset {
+			if _, ok := h.dataset[name]; !ok {
+				dataset.Set(name, nil)
+			}
 		}
 	}
 
@@ -225,14 +236,18 @@ func (h *HTML) reconcile(prev *HTML) {
 			style.Call("setProperty", name, value)
 		}
 	}
-	for name := range prev.styles {
-		if _, ok := h.styles[name]; !ok {
-			style.Call("removeProperty", name)
+	if !h.new {
+		for name := range prev.styles {
+			if _, ok := h.styles[name]; !ok {
+				style.Call("removeProperty", name)
+			}
 		}
 	}
 
-	for _, l := range prev.eventListeners {
-		h.node.Call("removeEventListener", l.Name, l.wrapper)
+	if !h.new {
+		for _, l := range prev.eventListeners {
+			h.node.Call("removeEventListener", l.Name, l.wrapper)
+		}
 	}
 	for _, l := range h.eventListeners {
 		h.node.Call("addEventListener", l.Name, l.wrapper)
