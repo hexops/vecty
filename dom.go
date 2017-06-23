@@ -194,7 +194,7 @@ func (h *HTML) reconcile(prev *HTML) {
 	if !h.new {
 		for name := range prev.properties {
 			if _, ok := h.properties[name]; !ok {
-				h.node.Set(name, nil)
+				h.node.Delete(name)
 			}
 		}
 	}
@@ -223,7 +223,7 @@ func (h *HTML) reconcile(prev *HTML) {
 	if !h.new {
 		for name := range prev.dataset {
 			if _, ok := h.dataset[name]; !ok {
-				dataset.Set(name, nil)
+				dataset.Delete(name)
 			}
 		}
 	}
@@ -468,6 +468,7 @@ var (
 type jsObject interface {
 	Set(key string, value interface{})
 	Get(key string) jsObject
+	Delete(key string)
 	Call(name string, args ...interface{}) jsObject
 	String() string
 	Bool() bool
@@ -496,6 +497,10 @@ func (w wrappedObject) Set(key string, value interface{}) {
 
 func (w wrappedObject) Get(key string) jsObject {
 	return wrapObject(w.j.Get(key))
+}
+
+func (w wrappedObject) Delete(key string) {
+	w.j.Delete(key)
 }
 
 func (w wrappedObject) Call(name string, args ...interface{}) jsObject {
