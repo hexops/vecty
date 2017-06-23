@@ -154,7 +154,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 				initHTML:     Tag("div", Property("a", 1), Property("b", "2foobar")),
 				initResult:   "a:1 b:2foobar",
 				targetHTML:   Tag("div", Property("a", 3)),
-				targetResult: "a:3 b:<nil>",
+				targetResult: "a:3",
 			},
 		}
 		for _, tst := range cases {
@@ -163,6 +163,9 @@ func TestHTML_reconcile_std(t *testing.T) {
 				div := &mockObject{
 					set: func(key string, value interface{}) {
 						set[key] = value
+					},
+					delete: func(key string) {
+						delete(set, key)
 					},
 				}
 				document := &mockObject{
@@ -294,7 +297,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 				initHTML:     Tag("div", Data("a", "1"), Data("b", "2foobar")),
 				initResult:   "a:1 b:2foobar",
 				targetHTML:   Tag("div", Data("a", "3")),
-				targetResult: "a:3 b:<nil>",
+				targetResult: "a:3",
 			},
 		}
 		for _, tst := range cases {
@@ -303,6 +306,9 @@ func TestHTML_reconcile_std(t *testing.T) {
 				dataset := &mockObject{
 					set: func(key string, value interface{}) {
 						set[key] = value
+					},
+					delete: func(key string) {
+						delete(set, key)
 					},
 				}
 				div := &mockObject{
@@ -1870,6 +1876,7 @@ func (c *componentFunc) SkipRender(prev Component) bool { return c.skipRender(pr
 type mockObject struct {
 	set         func(key string, value interface{})
 	get         map[string]jsObject
+	delete      func(key string)
 	call        func(name string, args ...interface{}) jsObject
 	stringValue string
 	boolValue   bool
@@ -1877,6 +1884,7 @@ type mockObject struct {
 
 func (w *mockObject) Set(key string, value interface{})              { w.set(key, value) }
 func (w *mockObject) Get(key string) jsObject                        { return w.get[key] }
+func (w *mockObject) Delete(key string)                              { w.delete(key) }
 func (w *mockObject) Call(name string, args ...interface{}) jsObject { return w.call(name, args...) }
 func (w *mockObject) String() string                                 { return w.stringValue }
 func (w *mockObject) Bool() bool                                     { return w.boolValue }
