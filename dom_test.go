@@ -134,8 +134,390 @@ func TestHTML_reconcile_std(t *testing.T) {
 			t.Fatalf("got %q want %q", setNodeValue, want)
 		}
 	})
+	t.Run("properties", func(t *testing.T) {
+		cases := []struct {
+			name         string
+			initHTML     *HTML
+			initResult   string
+			targetHTML   *HTML
+			targetResult string
+		}{
+			{
+				name:         "diff",
+				initHTML:     Tag("div", Property("a", 1), Property("b", "2foobar")),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("div", Property("a", 3), Property("b", "4foobar")),
+				targetResult: "a:3 b:4foobar",
+			},
+			{
+				name:         "remove",
+				initHTML:     Tag("div", Property("a", 1), Property("b", "2foobar")),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("div", Property("a", 3)),
+				targetResult: "a:3 b:<nil>",
+			},
+		}
+		for _, tst := range cases {
+			t.Run(tst.name, func(t *testing.T) {
+				set := map[string]interface{}{}
+				div := &mockObject{
+					set: func(key string, value interface{}) {
+						set[key] = value
+					},
+				}
+				document := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						if name != "createElement" {
+							panic(fmt.Sprintf("expected call to createElement, not %q", name))
+						}
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						if args[0].(string) != "div" {
+							panic(`args[0].(string) != "div"`)
+						}
+						return div
+					},
+				}
+				global = &mockObject{
+					get: map[string]jsObject{
+						"document": document,
+					},
+				}
+				tst.initHTML.reconcile(nil)
+				got := sortedMapString(set)
+				if got != tst.initResult {
+					t.Fatalf("got %q want %q", got, tst.initResult)
+				}
+				tst.targetHTML.reconcile(tst.initHTML)
+				got = sortedMapString(set)
+				if got != tst.targetResult {
+					t.Fatalf("got %q want %q", got, tst.targetResult)
+				}
+			})
+		}
+	})
+	t.Run("attributes", func(t *testing.T) {
+		cases := []struct {
+			name         string
+			initHTML     *HTML
+			initResult   string
+			targetHTML   *HTML
+			targetResult string
+		}{
+			{
+				name:         "diff",
+				initHTML:     Tag("div", Attribute("a", 1), Attribute("b", "2foobar")),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("div", Attribute("a", 3), Attribute("b", "4foobar")),
+				targetResult: "a:3 b:4foobar",
+			},
+			{
+				name:         "remove",
+				initHTML:     Tag("div", Attribute("a", 1), Attribute("b", "2foobar")),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("div", Attribute("a", 3)),
+				targetResult: "a:3",
+			},
+		}
+		for _, tst := range cases {
+			t.Run(tst.name, func(t *testing.T) {
+				set := map[string]interface{}{}
+				div := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						switch name {
+						case "setAttribute":
+							if len(args) != 2 {
+								panic("setAttribute: len(args) != 2")
+							}
+							set[args[0].(string)] = args[1]
+						case "removeAttribute":
+							if len(args) != 1 {
+								panic("removeAttribute: len(args) != 1")
+							}
+							delete(set, args[0].(string))
+						default:
+							panic(fmt.Sprintf("expected call to [setAttribute, removeAttribute], not %q", name))
+						}
+						return nil
+					},
+				}
+				document := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						if name != "createElement" {
+							panic(fmt.Sprintf("expected call to createElement, not %q", name))
+						}
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						if args[0].(string) != "div" {
+							panic(`args[0].(string) != "div"`)
+						}
+						return div
+					},
+				}
+				global = &mockObject{
+					get: map[string]jsObject{
+						"document": document,
+					},
+				}
+				tst.initHTML.reconcile(nil)
+				got := sortedMapString(set)
+				if got != tst.initResult {
+					t.Fatalf("got %q want %q", got, tst.initResult)
+				}
+				tst.targetHTML.reconcile(tst.initHTML)
+				got = sortedMapString(set)
+				if got != tst.targetResult {
+					t.Fatalf("got %q want %q", got, tst.targetResult)
+				}
+			})
+		}
+	})
+	t.Run("dataset", func(t *testing.T) {
+		cases := []struct {
+			name         string
+			initHTML     *HTML
+			initResult   string
+			targetHTML   *HTML
+			targetResult string
+		}{
+			{
+				name:         "diff",
+				initHTML:     Tag("div", Data("a", "1"), Data("b", "2foobar")),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("div", Data("a", "3"), Data("b", "4foobar")),
+				targetResult: "a:3 b:4foobar",
+			},
+			{
+				name:         "remove",
+				initHTML:     Tag("div", Data("a", "1"), Data("b", "2foobar")),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("div", Data("a", "3")),
+				targetResult: "a:3 b:<nil>",
+			},
+		}
+		for _, tst := range cases {
+			t.Run(tst.name, func(t *testing.T) {
+				set := map[string]interface{}{}
+				dataset := &mockObject{
+					set: func(key string, value interface{}) {
+						set[key] = value
+					},
+				}
+				div := &mockObject{
+					get: map[string]jsObject{
+						"dataset": dataset,
+					},
+				}
+				document := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						if name != "createElement" {
+							panic(fmt.Sprintf("expected call to createElement, not %q", name))
+						}
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						if args[0].(string) != "div" {
+							panic(`args[0].(string) != "div"`)
+						}
+						return div
+					},
+				}
+				global = &mockObject{
+					get: map[string]jsObject{
+						"document": document,
+					},
+				}
+				tst.initHTML.reconcile(nil)
+				got := sortedMapString(set)
+				if got != tst.initResult {
+					t.Fatalf("got %q want %q", got, tst.initResult)
+				}
+				tst.targetHTML.reconcile(tst.initHTML)
+				got = sortedMapString(set)
+				if got != tst.targetResult {
+					t.Fatalf("got %q want %q", got, tst.targetResult)
+				}
+			})
+		}
+	})
+	t.Run("style", func(t *testing.T) {
+		cases := []struct {
+			name         string
+			initHTML     *HTML
+			initResult   string
+			targetHTML   *HTML
+			targetResult string
+		}{
+			{
+				name:         "diff",
+				initHTML:     Tag("div", Style("a", "1"), Style("b", "2foobar")),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("div", Style("a", "3"), Style("b", "4foobar")),
+				targetResult: "a:3 b:4foobar",
+			},
+			{
+				name:         "remove",
+				initHTML:     Tag("div", Style("a", "1"), Style("b", "2foobar")),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("div", Style("a", "3")),
+				targetResult: "a:3",
+			},
+		}
+		for _, tst := range cases {
+			t.Run(tst.name, func(t *testing.T) {
+				set := map[string]interface{}{}
+				style := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						switch name {
+						case "setProperty":
+							if len(args) != 2 {
+								panic("setProperty: len(args) != 2")
+							}
+							set[args[0].(string)] = args[1]
+						case "removeProperty":
+							if len(args) != 1 {
+								panic("removeProperty: len(args) != 1")
+							}
+							delete(set, args[0].(string))
+						default:
+							panic(fmt.Sprintf("expected call to [setProperty, removeProperty], not %q", name))
+						}
+						return nil
+					},
+				}
+				div := &mockObject{
+					get: map[string]jsObject{
+						"style": style,
+					},
+				}
+				document := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						if name != "createElement" {
+							panic(fmt.Sprintf("expected call to createElement, not %q", name))
+						}
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						if args[0].(string) != "div" {
+							panic(`args[0].(string) != "div"`)
+						}
+						return div
+					},
+				}
+				global = &mockObject{
+					get: map[string]jsObject{
+						"document": document,
+					},
+				}
+				tst.initHTML.reconcile(nil)
+				got := sortedMapString(set)
+				if got != tst.initResult {
+					t.Fatalf("got %q want %q", got, tst.initResult)
+				}
+				tst.targetHTML.reconcile(tst.initHTML)
+				got = sortedMapString(set)
+				if got != tst.targetResult {
+					t.Fatalf("got %q want %q", got, tst.targetResult)
+				}
+			})
+		}
+	})
+	t.Run("event_listener", func(t *testing.T) {
+		// TODO(pdf): Mock listener functions for equality testing
+		cases := []struct {
+			name                 string
+			initEventListeners   []MarkupOrComponentOrHTML
+			targetEventListeners []MarkupOrComponentOrHTML
+		}{
+			{
+				name: "diff",
+				initEventListeners: []MarkupOrComponentOrHTML{
+					&EventListener{Name: "click"},
+					&EventListener{Name: "keydown"},
+				},
+				targetEventListeners: []MarkupOrComponentOrHTML{
+					&EventListener{Name: "click"},
+				},
+			},
+		}
+		for _, tst := range cases {
+			t.Run(tst.name, func(t *testing.T) {
+				addedListeners := map[string]func(*js.Object){}
+				div := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						switch name {
+						case "addEventListener":
+							if len(args) != 2 {
+								panic("addEventListener: len(args) != 2")
+							}
+							addedListeners[args[0].(string)] = args[1].(func(*js.Object))
+						case "removeEventListener":
+							if len(args) != 2 {
+								panic("removeEventListener: len(args) != 2")
+							}
+							delete(addedListeners, args[0].(string))
+						default:
+							panic(fmt.Sprintf("unexpected call to %q", name))
+						}
+						return nil
+					},
+				}
+				document := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						switch name {
+						case "createElement":
+							if len(args) != 1 {
+								panic("len(args) != 1")
+							}
+							if args[0].(string) != "div" {
+								panic(`args[0].(string) != "div"`)
+							}
+							return div
+						default:
+							panic(fmt.Sprintf("unexpected call to %q", name))
+						}
+					},
+				}
+				global = &mockObject{
+					get: map[string]jsObject{
+						"document": document,
+					},
+				}
+				prev := Tag("div", tst.initEventListeners...)
+				prev.reconcile(nil)
+				for i, m := range tst.initEventListeners {
+					listener := m.(*EventListener)
+					if listener.wrapper == nil {
+						t.Fatalf("listener %d wrapper == nil: %+v", i, listener)
+					}
+					if _, ok := addedListeners[listener.Name]; !ok {
+						t.Fatalf("listener %d for %q not found: %+v", i, listener.Name, listener)
+					}
+				}
+				if len(tst.initEventListeners) != len(addedListeners) {
+					t.Fatalf("listener count mismatch: %d != %d", len(tst.initEventListeners), len(addedListeners))
+				}
+				h := Tag("div", tst.targetEventListeners...)
+				h.reconcile(prev)
+				for i, m := range tst.targetEventListeners {
+					listener := m.(*EventListener)
+					if listener.wrapper == nil {
+						t.Fatalf("listener %d wrapper == nil: %+v", i, listener)
+					}
+					if _, ok := addedListeners[listener.Name]; !ok {
+						t.Fatalf("listener %d for %q not found: %+v", i, listener.Name, listener)
+					}
+				}
+				if len(tst.targetEventListeners) != len(addedListeners) {
+					t.Fatalf("listener count mismatch: %d != %d", len(tst.targetEventListeners), len(addedListeners))
+				}
+			})
+		}
+	})
 
-	// TODO(slimsag): test the restoreHTML code path
+	// TODO(pdf): test (*HTML).reconcile child mutations, and value/checked properties
 }
 
 // TestHTML_reconcile_nil tests that (*HTML).reconcile(nil) works as expected (i.e.
