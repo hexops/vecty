@@ -259,7 +259,8 @@ func (h *HTML) reconcile(prev *HTML) {
 
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
-		if i >= len(prev.children) {
+		// TODO(pdf): Add tests for h.new usage
+		if i >= len(prev.children) || h.new {
 			nextChildRender, skip := render(nextChild, nil)
 			if skip {
 				continue
