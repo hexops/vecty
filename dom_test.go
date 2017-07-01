@@ -524,6 +524,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 	})
 
 	// TODO(pdf): test (*HTML).reconcile child mutations, and value/checked properties
+	// TODO(pdf): test multi-pass reconcile of persistent component pointer children, ref: https://github.com/gopherjs/vecty/pull/124
 }
 
 // TestHTML_reconcile_nil tests that (*HTML).reconcile(nil) works as expected (i.e.

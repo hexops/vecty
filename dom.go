@@ -335,7 +335,7 @@ func Rerender(c Component) {
 	if prevRender == nil {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
-	nextRender, skip := renderComponent(c)
+	nextRender, skip := renderComponent(c, prevRender)
 	if skip {
 		return
 	}
@@ -379,7 +379,7 @@ func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
 		v.reconcile(prevRender)
 		return v, false
 	case Component:
-		return renderComponent(v)
+		return renderComponent(v, prevRender)
 	default:
 		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", c))
 	}
@@ -388,7 +388,7 @@ func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
 // renderComponent handles rendering the given Component into *HTML. If skip ==
 // true is returned, the Component's SkipRender method has signaled the
 // component does not need to be rendered and h == nil is returned.
-func renderComponent(comp Component) (h *HTML, skip bool) {
+func renderComponent(comp Component, prevRender *HTML) (h *HTML, skip bool) {
 	// Now that we know we are rendering the component, restore friendly
 	// relations between the component and the previous component.
 	if comp != comp.Context().prevComponent {
@@ -419,7 +419,7 @@ func renderComponent(comp Component) (h *HTML, skip bool) {
 	}
 
 	// Restore the actual rendered HTML.
-	nextRender.reconcile(comp.Context().prevRender)
+	nextRender.reconcile(prevRender)
 
 	// Update the context to consider this render.
 	comp.Context().prevRender = nextRender
@@ -431,7 +431,7 @@ func renderComponent(comp Component) (h *HTML, skip bool) {
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
-	nextRender, skip := renderComponent(body)
+	nextRender, skip := renderComponent(body, nil)
 	if skip {
 		panic("vecty: RenderBody Component.SkipRender returned true")
 	}
