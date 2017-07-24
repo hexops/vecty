@@ -18,7 +18,7 @@ script:
   # Consult Go fmt, vet, lint, megacheck tools.
   - diff -u <(echo -n) <(gofmt -d -s .)
   - go tool vet .
-  - golint -set_exit_status . ./examples/...
+  - golint -set_exit_status . ./example/...
   - golint ./elem/... event/... prop/... storeutil/... # TODO(slimsag): address these linter errors
   - megacheck ./...
   - megacheck -tags=js ./...
@@ -28,5 +28,5 @@ script:
   - gopherjs test -v $(go list ./...)
 
   # Generate and upload coverage to codecov.io
-  - goverage -covermode=atomic -coverprofile=coverage.out $(go list ./... | grep -v -e vecty/elem -e vecty/event -e vecty/examples -e vecty/prop -e vecty/style)
+  - goverage -covermode=atomic -coverprofile=coverage.out $(go list ./... | grep -v -e vecty/elem -e vecty/event -e vecty/example -e vecty/prop -e vecty/style)
   - include_cov=coverage.out bash <(curl -s https://codecov.io/bash)
