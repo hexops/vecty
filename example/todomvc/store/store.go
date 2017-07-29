@@ -1,9 +1,9 @@
 package store
 
 import (
-	"github.com/gopherjs/vecty/examples/todomvc/actions"
-	"github.com/gopherjs/vecty/examples/todomvc/dispatcher"
-	"github.com/gopherjs/vecty/examples/todomvc/store/model"
+	"github.com/gopherjs/vecty/example/todomvc/actions"
+	"github.com/gopherjs/vecty/example/todomvc/dispatcher"
+	"github.com/gopherjs/vecty/example/todomvc/store/model"
 	"github.com/gopherjs/vecty/storeutil"
 )
 

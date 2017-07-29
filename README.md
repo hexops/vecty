@@ -43,4 +43,4 @@ Community
 Changelog
 =========
 
-See the [docs/CHANGELOG.md](docs/CHANGELOG.md) file.
+See the [doc/CHANGELOG.md](doc/CHANGELOG.md) file.

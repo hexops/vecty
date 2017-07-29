@@ -1,6 +1,6 @@
 package actions
 
-import "github.com/gopherjs/vecty/examples/todomvc/store/model"
+import "github.com/gopherjs/vecty/example/todomvc/store/model"
 
 // ReplaceItems is an action that replaces all items with the specified ones.
 type ReplaceItems struct {
