@@ -69,18 +69,6 @@ type Unmounter interface {
 // value is expected to panic.
 type ComponentOrHTML interface{}
 
-// Restorer is an optional interface that Component's can implement in order to
-// restore state during component reconciliation.
-type Restorer interface {
-	// Restore is called when the component should restore itself against a
-	// previous instance of a component.
-	//
-	// The previous component may be nil or of a different type than this
-	// Restorer itself, thus a type assertion should be used no action taken
-	// if the type does not match.
-	Restore(prev Component)
-}
-
 // RenderSkipper is an optional interface that Component's can implement in
 // order to short-circuit the reconciliation of a Component's rendered body.
 //
@@ -369,7 +357,7 @@ func doCopy(c Component) Component {
 	return cpy.Interface().(Component)
 }
 
-// render the ComponentOrHTML. In the case of *HTML, its Restore method is
+// render the ComponentOrHTML. In the case of *HTML, its reconcile method is
 // invoked with the specified prevRender and c.(*HTML) is returned.
 //
 // In the case of a Component, renderComponent(c.(Component)) is returned.
@@ -389,14 +377,6 @@ func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
 // true is returned, the Component's SkipRender method has signaled the
 // component does not need to be rendered and h == nil is returned.
 func renderComponent(comp Component, prevRender *HTML) (h *HTML, skip bool) {
-	// Now that we know we are rendering the component, restore friendly
-	// relations between the component and the previous component.
-	if comp != comp.Context().prevComponent {
-		if r, ok := comp.(Restorer); ok {
-			r.Restore(comp.Context().prevComponent)
-		}
-	}
-
 	// Before rendering, consult the Component's SkipRender method to see if we
 	// should skip rendering or not.
 	if rs, ok := comp.(RenderSkipper); ok {
@@ -418,7 +398,7 @@ func renderComponent(comp Component, prevRender *HTML) (h *HTML, skip bool) {
 		nextRender = Tag("noscript")
 	}
 
-	// Restore the actual rendered HTML.
+	// Reconcile the actual rendered HTML.
 	nextRender.reconcile(prevRender)
 
 	// Update the context to consider this render.
