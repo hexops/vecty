@@ -10,8 +10,8 @@ import (
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
-	prevComponent, prevRenderComponent Component
-	prevRender                         *HTML
+	prevRenderComponent Component
+	prevRender          *HTML
 }
 
 // Context implements the Component interface.
@@ -403,7 +403,6 @@ func renderComponent(comp Component, prevRender *HTML) (h *HTML, skip bool) {
 
 	// Update the context to consider this render.
 	comp.Context().prevRender = nextRender
-	comp.Context().prevComponent = comp
 	comp.Context().prevRenderComponent = doCopy(comp)
 	return nextRender, false
 }
