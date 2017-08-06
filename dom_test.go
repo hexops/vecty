@@ -946,11 +946,8 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		if compRenderCalls != 1 {
 			t.Fatal("compRenderCalls != 1")
 		}
-		if comp.Context().prevComponent != comp {
-			t.Fatal("comp.Context().prevComponent != comp")
-		}
-		if comp.Context().prevRenderComponent.(*componentFunc).id != comp.id {
-			t.Fatal("comp.Context().prevRenderComponent.(*componentFunc).id != comp.id")
+		if comp.Context().prevComponent.(*componentFunc).id != comp.id {
+			t.Fatal("comp.Context().prevComponent.(*componentFunc).id != comp.id")
 		}
 		if comp.Context().prevRender != compRender {
 			t.Fatal("comp.Context().prevRender != compRender")
@@ -1023,11 +1020,8 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		if compRenderCalls != 1 {
 			t.Fatal("compRenderCalls != 1")
 		}
-		if comp.Context().prevComponent != comp {
-			t.Fatal("comp.Context().prevComponent != comp")
-		}
-		if comp.Context().prevRenderComponent.(*componentFunc).id != comp.id {
-			t.Fatal("comp.Context().prevRenderComponent.(*componentFunc).id != comp.id")
+		if comp.Context().prevComponent.(*componentFunc).id != comp.id {
+			t.Fatal("comp.Context().prevComponent.(*componentFunc).id != comp.id")
 		}
 		if comp.Context().prevRender == nil {
 			t.Fatal("comp.Context().prevRender == nil")
@@ -1176,9 +1170,6 @@ func TestRerender_identical(t *testing.T) {
 	if comp.Context().prevComponent.(*componentFunc).id != "original" {
 		t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
 	}
-	if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
-		t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
-	}
 
 	// Perform a re-render.
 	global = nil // Expecting no JS calls past here
@@ -1192,11 +1183,8 @@ func TestRerender_identical(t *testing.T) {
 		if comp.id != "modified" {
 			panic(`comp.id != "modified"`)
 		}
-		if comp.Context().prevComponent.(*componentFunc).id != "modified" {
-			panic(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
-		}
-		if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
-			panic(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
+		if comp.Context().prevComponent.(*componentFunc).id != "original" {
+			panic(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
 		}
 		if prev.(*componentFunc).id != "original" {
 			panic(`prev.(*componentFunc).id != "original"`)
@@ -1216,9 +1204,6 @@ func TestRerender_identical(t *testing.T) {
 	}
 	if comp.Context().prevComponent.(*componentFunc).id != "modified" {
 		t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
-	}
-	if comp.Context().prevRenderComponent.(*componentFunc).id != "modified" {
-		t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "modified"`)
 	}
 }
 
@@ -1310,8 +1295,8 @@ func TestRerender_change(t *testing.T) {
 			if comp.Context().prevRender != render {
 				t.Fatal("comp.Context().prevRender != render")
 			}
-			if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
-				t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
+			if comp.Context().prevComponent.(*componentFunc).id != "original" {
+				t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
 			}
 
 			// Perform a re-render.
@@ -1351,11 +1336,8 @@ func TestRerender_change(t *testing.T) {
 				if comp.id != "modified" {
 					panic(`comp.id != "modified"`)
 				}
-				if comp.Context().prevComponent.(*componentFunc).id != "modified" {
-					panic(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
-				}
-				if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
-					panic(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
+				if comp.Context().prevComponent.(*componentFunc).id != "original" {
+					panic(`comp.Context().prevComponent.(*componentFunc).id != "original"`)
 				}
 				if prev.(*componentFunc).id != "original" {
 					panic(`prev.(*componentFunc).id != "original"`)
@@ -1375,9 +1357,6 @@ func TestRerender_change(t *testing.T) {
 			}
 			if comp.Context().prevComponent.(*componentFunc).id != "modified" {
 				t.Fatal(`comp.Context().prevComponent.(*componentFunc).id != "modified"`)
-			}
-			if comp.Context().prevRenderComponent.(*componentFunc).id != "modified" {
-				t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "modified"`)
 			}
 			if bodyAppendChild != newNode {
 				t.Fatal("bodyAppendChild != newNode")
@@ -1495,7 +1474,7 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 		},
 	}
 	fakePrevRender := *comp
-	comp.Context().prevRenderComponent = &fakePrevRender
+	comp.Context().prevComponent = &fakePrevRender
 	got := recoverStr(func() {
 		RenderBody(comp)
 	})
