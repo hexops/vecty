@@ -10,8 +10,8 @@ import (
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
-	prevRenderComponent Component
-	prevRender          *HTML
+	prevComponent, prevRenderComponent Component
+	prevRender                         *HTML
 }
 
 // Context implements the Component interface.
@@ -245,11 +245,12 @@ func (h *HTML) reconcile(prev *HTML) {
 		h.node.Set("innerHTML", h.innerHTML)
 	}
 
+updatingChildren:
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
 		// TODO(pdf): Add tests for h.new usage
 		if i >= len(prev.children) || h.new {
-			nextChildRender, skip := render(nextChild, nil)
+			nextChildRender, skip := render(nextChild, nil, nil)
 			if skip {
 				continue
 			}
@@ -263,12 +264,9 @@ func (h *HTML) reconcile(prev *HTML) {
 			prevChildRender = prevChild.(Component).Context().prevRender
 		}
 
-		nextChildRender, skip := render(nextChild, prevChildRender)
-		if nextChildRender == prevChildRender {
-			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
-		}
+		nextChildRender, skip := render(nextChild, prevChild, prevChildRender)
 		if skip {
-			continue
+			continue updatingChildren
 		}
 		replaceNode(nextChildRender.node, prevChildRender.node)
 	}
@@ -323,7 +321,7 @@ func Rerender(c Component) {
 	if prevRender == nil {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
-	nextRender, skip := renderComponent(c, prevRender)
+	nextRender, skip := renderComponent(c, c.Context(), prevRender)
 	if skip {
 		return
 	}
@@ -357,31 +355,88 @@ func doCopy(c Component) Component {
 	return cpy.Interface().(Component)
 }
 
-// render renders the ComponentOrHTML. In the case of *HTML, its reconcile
-// method is invoked with the specified prevRender and c.(*HTML) is returned.
+// render handles rendering the next child into HTML. If skip is returned,
+// the component's SkipRender method has signaled to skip rendering.
 //
-// In the case of a Component, renderComponent(c.(Component), prevRender) is
-// returned.
-func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
-	switch v := c.(type) {
+// In specific, render handles six cases:
+//
+// 1. nextChild == *HTML && prevChild == *HTML
+// 2. nextChild == *HTML && prevChild == Component
+// 3. nextChild == *HTML && prevChild == nil
+// 4. nextChild == Component && prevChild == Component
+// 5. nextChild == Component && prevChild == *HTML
+// 6. nextChild == Component && prevChild == nil
+//
+func render(nextChild, prevChild ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
+	switch next := nextChild.(type) {
 	case *HTML:
-		v.reconcile(prevRender)
-		return v, false
+		// Cases 1, 2 and 3 above. Reconcile against the prevRender.
+		next.reconcile(prevRender)
+		return next, false
 	case Component:
-		return renderComponent(v, prevRender)
+		// Cases 4, 5 and 6 above. Delegate to renderComponent.
+		var ctx *Core
+		if prev, ok := prevChild.(Component); ok {
+			// Case 4. nextChild == Component && prevChild == Component
+			//
+			// The previous child has the context, so use that.
+			ctx = prev.Context()
+		} else {
+			// Cases 5 & 6, use nextChild's context.
+			ctx = next.Context()
+		}
+		return renderComponent(next, ctx, prevRender)
 	default:
-		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", c))
+		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", nextChild))
+	}
+}
+
+// copyProps copies all struct fields from src to dst that are tagged with
+// `vecty:"prop"`.
+//
+// If src and dst are different types, copyProps is no-op.
+func copyProps(src, dst Component) {
+	s := reflect.ValueOf(src)
+	d := reflect.ValueOf(dst)
+	if s.Type() != d.Type() {
+		return
+	}
+	for i := 0; i < s.Elem().NumField(); i++ {
+		sf := s.Elem().Field(i)
+		if s.Elem().Type().Field(i).Tag.Get("vecty") == "prop" {
+			df := d.Elem().Field(i)
+			if sf.Type() != df.Type() {
+				panic("vecty: internal error (should never be possible, struct types are identical)")
+			}
+			df.Set(sf)
+		}
 	}
 }
 
 // renderComponent handles rendering the given Component into *HTML. If skip ==
 // true is returned, the Component's SkipRender method has signaled the
 // component does not need to be rendered and h == nil is returned.
-func renderComponent(comp Component, prevRender *HTML) (h *HTML, skip bool) {
+func renderComponent(nextOrPrev Component, ctx *Core, prevRender *HTML) (h *HTML, skip bool) {
+	// comp acts as the persistent component.
+	comp := nextOrPrev
+
+	// If the context is aware of a previous component instance, it is our
+	// persistent component.
+	if ctx.prevComponent != nil {
+		ctx = ctx.prevComponent.Context()
+		comp = ctx.prevComponent
+
+		// Copy `vecty:"prop"` fields from the newly rendered component
+		// (nextOrPrev) into the persistent component instance
+		// (ctx.prevComponent) so that it is aware of what properties the
+		// parent has specified during SkipRender/Render below.
+		copyProps(nextOrPrev, ctx.prevComponent)
+	}
+
 	// Before rendering, consult the Component's SkipRender method to see if we
 	// should skip rendering or not.
 	if rs, ok := comp.(RenderSkipper); ok {
-		prev := comp.Context().prevRenderComponent
+		prev := ctx.prevRenderComponent
 		if prev != nil {
 			if comp == prev {
 				panic("vecty: internal error (SkipRender called with identical prev component)")
@@ -403,15 +458,22 @@ func renderComponent(comp Component, prevRender *HTML) (h *HTML, skip bool) {
 	nextRender.reconcile(prevRender)
 
 	// Update the context to consider this render.
-	comp.Context().prevRender = nextRender
-	comp.Context().prevRenderComponent = doCopy(comp)
+	//
+	// TODO: In the event that this really is the previous component instance,
+	// e.g. if the caller of this function is Rerender, than when the parent of
+	// nextOrPrev is rerendered the context will not be up to date. This could
+	// be reproduced by having a parent and child invoke Rerender on themselves
+	// constantly.
+	nextOrPrev.Context().prevRender = nextRender
+	nextOrPrev.Context().prevComponent = comp
+	nextOrPrev.Context().prevRenderComponent = doCopy(comp)
 	return nextRender, false
 }
 
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
-	nextRender, skip := renderComponent(body, nil)
+	nextRender, skip := renderComponent(body, body.Context(), nil)
 	if skip {
 		panic("vecty: RenderBody Component.SkipRender returned true")
 	}
