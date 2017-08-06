@@ -363,10 +363,11 @@ func doCopy(c Component) Component {
 	return cpy.Interface().(Component)
 }
 
-// render the ComponentOrHTML. In the case of *HTML, its reconcile method is
-// invoked with the specified prevRender and c.(*HTML) is returned.
+// render renders the ComponentOrHTML. In the case of *HTML, its reconcile
+// method is invoked with the specified prevRender and c.(*HTML) is returned.
 //
-// In the case of a Component, renderComponent(c.(Component)) is returned.
+// In the case of a Component, renderComponent(c.(Component), prevRender) is
+// returned.
 func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
 	switch v := next.(type) {
 	case *HTML:
