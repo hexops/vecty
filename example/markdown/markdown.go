@@ -54,7 +54,7 @@ func (p *PageView) Render() *vecty.HTML {
 // HTML into a div.
 type Markdown struct {
 	vecty.Core
-	Input string
+	Input string `vecty:"prop"`
 }
 
 // Render implements the vecty.Component interface.
