@@ -18,7 +18,7 @@ import (
 type PageView struct {
 	vecty.Core
 
-	Items        []*model.Item
+	Items        []*model.Item `vecty:"prop"`
 	newItemTitle string
 }
 
