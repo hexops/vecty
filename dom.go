@@ -10,8 +10,8 @@ import (
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
-	prevComponent, prevRenderComponent Component
-	prevRender                         *HTML
+	prevRenderComponent Component
+	prevRender          *HTML
 }
 
 // Context implements the Component interface.
@@ -262,6 +262,11 @@ updatingChildren:
 		prevChildRender, ok := prevChild.(*HTML)
 		if !ok {
 			prevChildRender = prevChild.(Component).Context().prevRender
+
+			// Keep prevChild Component as our child, so that the next time we
+			// are here prevChild will be the same. We do this because
+			// prevChild is the persistent component instance.
+			h.children[i] = prevChild.(Component)
 		}
 
 		nextChildRender, skip := render(nextChild, prevChild, prevChildRender)
@@ -321,7 +326,7 @@ func Rerender(c Component) {
 	if prevRender == nil {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
-	nextRender, skip := renderComponent(c, c.Context(), prevRender)
+	nextRender, skip := renderComponent(c, nil)
 	if skip {
 		return
 	}
@@ -374,18 +379,13 @@ func render(nextChild, prevChild ComponentOrHTML, prevRender *HTML) (h *HTML, sk
 		next.reconcile(prevRender)
 		return next, false
 	case Component:
-		// Cases 4, 5 and 6 above. Delegate to renderComponent.
-		var ctx *Core
-		if prev, ok := prevChild.(Component); ok {
-			// Case 4. nextChild == Component && prevChild == Component
-			//
-			// The previous child has the context, so use that.
-			ctx = prev.Context()
-		} else {
-			// Cases 5 & 6, use nextChild's context.
-			ctx = next.Context()
-		}
-		return renderComponent(next, ctx, prevRender)
+		// Cases 4, 5, and 6 above.
+		//
+		// Case 4 calls renderComponent(prev, next).
+		//
+		// Cases 5 and 6 call renderComponent(nil, next)
+		prev, _ := prevChild.(Component)
+		return renderComponent(prev, next)
 	default:
 		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", nextChild))
 	}
@@ -416,29 +416,34 @@ func copyProps(src, dst Component) {
 // renderComponent handles rendering the given Component into *HTML. If skip ==
 // true is returned, the Component's SkipRender method has signaled the
 // component does not need to be rendered and h == nil is returned.
-func renderComponent(nextOrPrev Component, ctx *Core, prevRender *HTML) (h *HTML, skip bool) {
-	// comp acts as the persistent component.
-	comp := nextOrPrev
+func renderComponent(prev, next Component) (h *HTML, skip bool) {
+	if prev != nil && next != nil {
+		// Copy `vecty:"prop"` fields from the newly rendered component (next)
+		// into the persistent component instance (prev) so that it is aware of
+		// what properties the parent has specified during SkipRender/Render
+		// below.
+		copyProps(next, prev)
+	}
 
-	// If the context is aware of a previous component instance, it is our
-	// persistent component.
-	if ctx.prevComponent != nil {
-		ctx = ctx.prevComponent.Context()
-		comp = ctx.prevComponent
+	// If the previous component was specified, render it. Otherwise, use the
+	// next component.
+	rend := prev
+	if rend == nil {
+		rend = next
+	}
 
-		// Copy `vecty:"prop"` fields from the newly rendered component
-		// (nextOrPrev) into the persistent component instance
-		// (ctx.prevComponent) so that it is aware of what properties the
-		// parent has specified during SkipRender/Render below.
-		copyProps(nextOrPrev, ctx.prevComponent)
+	// Determine previous rendered *HTML
+	var prevRender *HTML
+	if prev != nil {
+		prevRender = prev.Context().prevRender
 	}
 
 	// Before rendering, consult the Component's SkipRender method to see if we
 	// should skip rendering or not.
-	if rs, ok := comp.(RenderSkipper); ok {
-		prev := ctx.prevRenderComponent
+	if rs, ok := rend.(RenderSkipper); ok {
+		prev := rend.Context().prevRenderComponent
 		if prev != nil {
-			if comp == prev {
+			if rend == prev {
 				panic("vecty: internal error (SkipRender called with identical prev component)")
 			}
 			if rs.SkipRender(prev) {
@@ -448,7 +453,7 @@ func renderComponent(nextOrPrev Component, ctx *Core, prevRender *HTML) (h *HTML
 	}
 
 	// Render the component into HTML, handling nil renders.
-	nextRender := comp.Render()
+	nextRender := rend.Render()
 	if nextRender == nil {
 		// nil renders are translated into noscript tags.
 		nextRender = Tag("noscript")
@@ -458,22 +463,15 @@ func renderComponent(nextOrPrev Component, ctx *Core, prevRender *HTML) (h *HTML
 	nextRender.reconcile(prevRender)
 
 	// Update the context to consider this render.
-	//
-	// TODO: In the event that this really is the previous component instance,
-	// e.g. if the caller of this function is Rerender, than when the parent of
-	// nextOrPrev is rerendered the context will not be up to date. This could
-	// be reproduced by having a parent and child invoke Rerender on themselves
-	// constantly.
-	nextOrPrev.Context().prevRender = nextRender
-	nextOrPrev.Context().prevComponent = comp
-	nextOrPrev.Context().prevRenderComponent = doCopy(comp)
+	rend.Context().prevRender = nextRender
+	rend.Context().prevRenderComponent = doCopy(rend)
 	return nextRender, false
 }
 
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
-	nextRender, skip := renderComponent(body, body.Context(), nil)
+	nextRender, skip := renderComponent(nil, body)
 	if skip {
 		panic("vecty: RenderBody Component.SkipRender returned true")
 	}
