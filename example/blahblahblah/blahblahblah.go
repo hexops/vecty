@@ -42,8 +42,8 @@ func (c *StatefulComponent) Render() *vecty.HTML {
 func (c *StatefulComponent) onClick(e *vecty.Event) {
 	c.toggle = !c.toggle
 
-	// TODO: This breaks things in strange ways. I'm not sure why.
-	//vecty.Rerender(c)
+	// @pdf note this works now :)
+	vecty.Rerender(c)
 }
 
 type MyComponent struct {
