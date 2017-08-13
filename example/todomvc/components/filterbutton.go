@@ -16,8 +16,8 @@ import (
 type FilterButton struct {
 	vecty.Core
 
-	Label  string
-	Filter model.FilterState
+	Label  string            `vecty:"prop"`
+	Filter model.FilterState `vecty:"prop"`
 }
 
 func (b *FilterButton) onClick(event *vecty.Event) {

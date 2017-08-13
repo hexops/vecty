@@ -16,8 +16,8 @@ import (
 type ItemView struct {
 	vecty.Core
 
-	Index     int
-	Item      *model.Item
+	Index     int         `vecty:"prop"`
+	Item      *model.Item `vecty:"prop"`
 	editing   bool
 	editTitle string
 	input     *vecty.HTML

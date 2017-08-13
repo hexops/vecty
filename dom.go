@@ -10,8 +10,8 @@ import (
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
-	prevComponent, prevRenderComponent Component
-	prevRender                         *HTML
+	prevComponent Component
+	prevRender    *HTML
 }
 
 // Context implements the Component interface.
@@ -68,18 +68,6 @@ type Unmounter interface {
 // If the underlying value is not one of these types, the code handling the
 // value is expected to panic.
 type ComponentOrHTML interface{}
-
-// Restorer is an optional interface that Component's can implement in order to
-// restore state during component reconciliation.
-type Restorer interface {
-	// Restore is called when the component should restore itself against a
-	// previous instance of a component.
-	//
-	// The previous component may be nil or of a different type than this
-	// Restorer itself, thus a type assertion should be used no action taken
-	// if the type does not match.
-	Restore(prev Component)
-}
 
 // RenderSkipper is an optional interface that Component's can implement in
 // order to short-circuit the reconciliation of a Component's rendered body.
@@ -270,14 +258,15 @@ func (h *HTML) reconcile(prev *HTML) {
 		}
 
 		prevChild := prev.children[i]
-		prevChildRender, ok := prevChild.(*HTML)
-		if !ok {
-			prevChildRender = prevChild.(Component).Context().prevRender
-		}
-
-		nextChildRender, skip := render(nextChild, prevChildRender)
+		prevChildRender := assertHTML(prevChild)
+		nextChildRender, skip := render(nextChild, prevChild)
 		if nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
+		}
+		if prevComponent, ok := prevChild.(Component); ok {
+			if nextComponent, ok := nextChild.(Component); ok && matchComponent(prevComponent, nextComponent) {
+				h.children[i] = prevChild
+			}
 		}
 		if skip {
 			continue
@@ -286,10 +275,7 @@ func (h *HTML) reconcile(prev *HTML) {
 	}
 	for i := len(h.children); i < len(prev.children); i++ {
 		prevChild := prev.children[i]
-		prevChildRender, ok := prevChild.(*HTML)
-		if !ok {
-			prevChildRender = prevChild.(Component).Context().prevRender
-		}
+		prevChildRender := assertHTML(prevChild)
 		removeNode(prevChildRender.node)
 		if u, ok := prevChild.(Unmounter); ok {
 			u.Unmount()
@@ -342,6 +328,25 @@ func Rerender(c Component) {
 	replaceNode(nextRender.node, prevRender.node)
 }
 
+// assertHTML returns the *HTML from a ComponentOrHTML
+func assertHTML(e ComponentOrHTML) *HTML {
+	switch v := e.(type) {
+	case nil:
+		return nil
+	case *HTML:
+		return v
+	case Component:
+		return v.Context().prevRender
+	default:
+		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", e))
+	}
+}
+
+// matchComponent returns whether first and second components are of the same type
+func matchComponent(first, second Component) bool {
+	return reflect.TypeOf(first) == reflect.TypeOf(second)
+}
+
 // doCopy makes a copy of the given component.
 func doCopy(c Component) Component {
 	if c == nil {
@@ -369,62 +374,96 @@ func doCopy(c Component) Component {
 	return cpy.Interface().(Component)
 }
 
-// render the ComponentOrHTML. In the case of *HTML, its Restore method is
-// invoked with the specified prevRender and c.(*HTML) is returned.
+// copyProps copies all struct fields from src to dst that are tagged with
+// `vecty:"prop"`.
 //
-// In the case of a Component, renderComponent(c.(Component)) is returned.
-func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
-	switch v := c.(type) {
+// If src and dst are different types, copyProps is no-op.
+func copyProps(src, dst Component) {
+	s := reflect.ValueOf(src)
+	d := reflect.ValueOf(dst)
+	if s.Type() != d.Type() {
+		return
+	}
+	for i := 0; i < s.Elem().NumField(); i++ {
+		sf := s.Elem().Field(i)
+		if s.Elem().Type().Field(i).Tag.Get("vecty") == "prop" {
+			df := d.Elem().Field(i)
+			if sf.Type() != df.Type() {
+				panic("vecty: internal error (should never be possible, struct types are identical)")
+			}
+			df.Set(sf)
+		}
+	}
+}
+
+// render handles rendering the next child into HTML. If skip is returned,
+// the component's SkipRender method has signaled to skip rendering.
+//
+// In specific, render handles six cases:
+//
+// 1. nextChild == *HTML && prevChild == *HTML
+// 2. nextChild == *HTML && prevChild == Component
+// 3. nextChild == *HTML && prevChild == nil
+// 4. nextChild == Component && prevChild == Component
+// 5. nextChild == Component && prevChild == *HTML
+// 6. nextChild == Component && prevChild == nil
+//
+func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
+	switch v := next.(type) {
 	case *HTML:
-		v.reconcile(prevRender)
+		// Cases 1, 2 and 3 above. Reconcile against the prevRender.
+		v.reconcile(assertHTML(prev))
 		return v, false
 	case Component:
-		return renderComponent(v, prevRender)
+		// Cases 4, 5, and 6 above.
+		return renderComponent(v, prev)
 	default:
-		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", c))
+		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", next))
 	}
 }
 
 // renderComponent handles rendering the given Component into *HTML. If skip ==
 // true is returned, the Component's SkipRender method has signaled the
 // component does not need to be rendered and h == nil is returned.
-func renderComponent(comp Component, prevRender *HTML) (h *HTML, skip bool) {
-	// Now that we know we are rendering the component, restore friendly
-	// relations between the component and the previous component.
-	if comp != comp.Context().prevComponent {
-		if r, ok := comp.(Restorer); ok {
-			r.Restore(comp.Context().prevComponent)
-		}
+func renderComponent(next Component, prev ComponentOrHTML) (h *HTML, skip bool) {
+	// If we had a component last render, and it's of compatible type, operate
+	// on the previous instance.
+	if prevComponent, ok := prev.(Component); ok && matchComponent(next, prevComponent) {
+		// Copy `vecty:"prop"` fields from the newly rendered component (next)
+		// into the persistent component instance (prev) so that it is aware of
+		// what properties the parent has specified during SkipRender/Render
+		// below.
+		copyProps(next, prevComponent)
+		next = prevComponent
 	}
 
 	// Before rendering, consult the Component's SkipRender method to see if we
 	// should skip rendering or not.
-	if rs, ok := comp.(RenderSkipper); ok {
-		prev := comp.Context().prevRenderComponent
-		if prev != nil {
-			if comp == prev {
+	if rs, ok := next.(RenderSkipper); ok {
+		prevComponent := next.Context().prevComponent
+		if prevComponent != nil {
+			if next == prevComponent {
 				panic("vecty: internal error (SkipRender called with identical prev component)")
 			}
-			if rs.SkipRender(prev) {
+			if rs.SkipRender(prevComponent) {
 				return nil, true
 			}
 		}
 	}
 
 	// Render the component into HTML, handling nil renders.
-	nextRender := comp.Render()
+	nextRender := next.Render()
 	if nextRender == nil {
 		// nil renders are translated into noscript tags.
 		nextRender = Tag("noscript")
 	}
 
-	// Restore the actual rendered HTML.
-	nextRender.reconcile(prevRender)
+	// Reconcile the actual rendered HTML.
+	nextRender.reconcile(assertHTML(prev))
 
 	// Update the context to consider this render.
-	comp.Context().prevRender = nextRender
-	comp.Context().prevComponent = comp
-	comp.Context().prevRenderComponent = doCopy(comp)
+	next.Context().prevRender = nextRender
+	next.Context().prevComponent = doCopy(next)
 	return nextRender, false
 }
 
