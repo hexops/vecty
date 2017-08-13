@@ -269,12 +269,7 @@ func (h *HTML) reconcile(prev *HTML) {
 			continue
 		}
 
-		prevChild := prev.children[i]
-		prevChildRender, ok := prevChild.(*HTML)
-		if !ok {
-			prevChildRender = prevChild.(Component).Context().prevRender
-		}
-
+		prevChildRender := assertHTML(prev.children[i])
 		nextChildRender, skip := render(nextChild, prevChildRender)
 		if nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
@@ -286,10 +281,7 @@ func (h *HTML) reconcile(prev *HTML) {
 	}
 	for i := len(h.children); i < len(prev.children); i++ {
 		prevChild := prev.children[i]
-		prevChildRender, ok := prevChild.(*HTML)
-		if !ok {
-			prevChildRender = prevChild.(Component).Context().prevRender
-		}
+		prevChildRender := assertHTML(prevChild)
 		removeNode(prevChildRender.node)
 		if u, ok := prevChild.(Unmounter); ok {
 			u.Unmount()
@@ -342,6 +334,20 @@ func Rerender(c Component) {
 	replaceNode(nextRender.node, prevRender.node)
 }
 
+// assertHTML returns the *HTML from a ComponentOrHTML
+func assertHTML(e ComponentOrHTML) *HTML {
+	switch v := e.(type) {
+	case nil:
+		return nil
+	case *HTML:
+		return v
+	case Component:
+		return v.Context().prevRender
+	default:
+		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", e))
+	}
+}
+
 // doCopy makes a copy of the given component.
 func doCopy(c Component) Component {
 	if c == nil {
@@ -373,15 +379,15 @@ func doCopy(c Component) Component {
 // invoked with the specified prevRender and c.(*HTML) is returned.
 //
 // In the case of a Component, renderComponent(c.(Component)) is returned.
-func render(c ComponentOrHTML, prevRender *HTML) (h *HTML, skip bool) {
-	switch v := c.(type) {
+func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
+	switch v := next.(type) {
 	case *HTML:
-		v.reconcile(prevRender)
+		v.reconcile(assertHTML(prev))
 		return v, false
 	case Component:
-		return renderComponent(v, prevRender)
+		return renderComponent(v, assertHTML(prev))
 	default:
-		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", c))
+		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", next))
 	}
 }
 
