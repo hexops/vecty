@@ -170,7 +170,19 @@ func If(cond bool, markup ...MarkupOrComponentOrHTML) MarkupOrComponentOrHTML {
 	if cond {
 		return List(markup)
 	}
-	return nil
+	var result []MarkupOrComponentOrHTML
+	for _, m := range markup {
+		if m == nil {
+			continue
+		}
+		switch m.(type) {
+		case *HTML, Component:
+			result = append(result, Tag("noscript"))
+		default:
+			return nil
+		}
+	}
+	return List(result)
 }
 
 // UnsafeHTML is Markup which unsafely sets the inner HTML of an HTML element.
