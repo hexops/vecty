@@ -264,7 +264,7 @@ func (h *HTML) reconcile(prev *HTML) {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
 		}
 		if prevComponent, ok := prevChild.(Component); ok {
-			if nextComponent, ok := nextChild.(Component); ok && matchComponent(prevComponent, nextComponent) {
+			if nextComponent, ok := nextChild.(Component); ok && sameType(prevComponent, nextComponent) {
 				h.children[i] = prevChild
 			}
 		}
@@ -342,8 +342,8 @@ func extractHTML(e ComponentOrHTML) *HTML {
 	}
 }
 
-// matchComponent returns whether first and second components are of the same type
-func matchComponent(first, second Component) bool {
+// sameType returns whether first and second components are of the same type
+func sameType(first, second Component) bool {
 	return reflect.TypeOf(first) == reflect.TypeOf(second)
 }
 
@@ -428,7 +428,7 @@ func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
 func renderComponent(next Component, prev ComponentOrHTML) (h *HTML, skip bool) {
 	// If we had a component last render, and it's of compatible type, operate
 	// on the previous instance.
-	if prevComponent, ok := prev.(Component); ok && matchComponent(next, prevComponent) {
+	if prevComponent, ok := prev.(Component); ok && sameType(next, prevComponent) {
 		// Copy `vecty:"prop"` fields from the newly rendered component (next)
 		// into the persistent component instance (prev) so that it is aware of
 		// what properties the parent has specified during SkipRender/Render
