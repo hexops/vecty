@@ -258,7 +258,7 @@ func (h *HTML) reconcile(prev *HTML) {
 		}
 
 		prevChild := prev.children[i]
-		prevChildRender := assertHTML(prevChild)
+		prevChildRender := extractHTML(prevChild)
 		nextChildRender, skip := render(nextChild, prevChild)
 		if nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
@@ -275,7 +275,7 @@ func (h *HTML) reconcile(prev *HTML) {
 	}
 	for i := len(h.children); i < len(prev.children); i++ {
 		prevChild := prev.children[i]
-		prevChildRender := assertHTML(prevChild)
+		prevChildRender := extractHTML(prevChild)
 		removeNode(prevChildRender.node)
 		if u, ok := prevChild.(Unmounter); ok {
 			u.Unmount()
@@ -328,8 +328,8 @@ func Rerender(c Component) {
 	replaceNode(nextRender.node, prevRender.node)
 }
 
-// assertHTML returns the *HTML from a ComponentOrHTML
-func assertHTML(e ComponentOrHTML) *HTML {
+// extractHTML returns the *HTML from a ComponentOrHTML.
+func extractHTML(e ComponentOrHTML) *HTML {
 	switch v := e.(type) {
 	case nil:
 		return nil
@@ -412,7 +412,7 @@ func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
 	switch v := next.(type) {
 	case *HTML:
 		// Cases 1, 2 and 3 above. Reconcile against the prevRender.
-		v.reconcile(assertHTML(prev))
+		v.reconcile(extractHTML(prev))
 		return v, false
 	case Component:
 		// Cases 4, 5, and 6 above.
@@ -459,7 +459,7 @@ func renderComponent(next Component, prev ComponentOrHTML) (h *HTML, skip bool) 
 	}
 
 	// Reconcile the actual rendered HTML.
-	nextRender.reconcile(assertHTML(prev))
+	nextRender.reconcile(extractHTML(prev))
 
 	// Update the context to consider this render.
 	next.Context().prevRender = nextRender
