@@ -263,8 +263,8 @@ func (h *HTML) reconcile(prev *HTML) {
 		if nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
 		}
-		if prevComponent, ok := prevChild.(Component); ok {
-			if nextComponent, ok := nextChild.(Component); ok && sameType(prevComponent, nextComponent) {
+		if prevChildComponent, ok := prevChild.(Component); ok {
+			if nextChildComponent, ok := nextChild.(Component); ok && sameType(prevChildComponent, nextChildComponent) {
 				h.children[i] = prevChild
 			}
 		}
