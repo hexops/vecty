@@ -34,42 +34,42 @@ const (
 	TypeWeek                    = "week"
 )
 
-func Autofocus(autofocus bool) vecty.Markup {
+func Autofocus(autofocus bool) vecty.Applyer {
 	return vecty.Property("autofocus", autofocus)
 }
 
-func Checked(checked bool) vecty.Markup {
+func Checked(checked bool) vecty.Applyer {
 	return vecty.Property("checked", checked)
 }
 
-func Class(class string) vecty.Markup {
+func Class(class string) vecty.Applyer {
 	return vecty.Property("className", class)
 }
 
-func For(id string) vecty.Markup {
+func For(id string) vecty.Applyer {
 	return vecty.Property("htmlFor", id)
 }
 
-func Href(url string) vecty.Markup {
+func Href(url string) vecty.Applyer {
 	return vecty.Property("href", url)
 }
 
-func ID(id string) vecty.Markup {
+func ID(id string) vecty.Applyer {
 	return vecty.Property("id", id)
 }
 
-func Placeholder(text string) vecty.Markup {
+func Placeholder(text string) vecty.Applyer {
 	return vecty.Property("placeholder", text)
 }
 
-func Src(url string) vecty.Markup {
+func Src(url string) vecty.Applyer {
 	return vecty.Property("src", url)
 }
 
-func Type(t InputType) vecty.Markup {
+func Type(t InputType) vecty.Applyer {
 	return vecty.Property("type", string(t))
 }
 
-func Value(v string) vecty.Markup {
+func Value(v string) vecty.Applyer {
 	return vecty.Property("value", v)
 }

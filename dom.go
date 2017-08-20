@@ -291,7 +291,7 @@ func (h *HTML) reconcile(prev *HTML) {
 // Tag returns an HTML element with the given tag name. Generally, this
 // function is not used directly but rather the elem subpackage (which is type
 // safe) is used instead.
-func Tag(tag string, m ...MarkupOrComponentOrHTML) *HTML {
+func Tag(tag string, m ...MarkupOrChild) *HTML {
 	h := &HTML{
 		tag: tag,
 	}
@@ -304,7 +304,7 @@ func Tag(tag string, m ...MarkupOrComponentOrHTML) *HTML {
 // Text returns a TextNode with the given literal text. Because the returned
 // HTML represents a TextNode, the text does not have to be escaped (arbitrary
 // user input fed into this function will always be safely rendered).
-func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
+func Text(text string, m ...MarkupOrChild) *HTML {
 	h := &HTML{
 		text: text,
 	}
