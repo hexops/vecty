@@ -34,7 +34,7 @@ func (l *EventListener) StopPropagation() *EventListener {
 	return l
 }
 
-// Apply implements the Markup interface.
+// Apply implements the Applyer interface.
 func (l *EventListener) Apply(h *HTML) {
 	h.eventListeners = append(h.eventListeners, l)
 }
@@ -45,38 +45,43 @@ type Event struct {
 	Target *js.Object
 }
 
-// MarkupOrComponentOrHTML represents one of:
+// MarkupOrChild represents one of:
 //
-//  Markup
 //  Component
 //  *HTML
+//  List
+//  nil
+//  markupList
 //
 // If the underlying value is not one of these types, the code handling the
 // value is expected to panic.
-type MarkupOrComponentOrHTML interface{}
+type MarkupOrChild interface{}
 
-func apply(m MarkupOrComponentOrHTML, h *HTML) {
+func apply(m MarkupOrChild, h *HTML) {
 	if m == nil {
 		return
 	}
 	switch m := m.(type) {
-	case Markup:
+	case markupList:
+		if m == nil {
+			return
+		}
 		m.Apply(h)
-	case Component:
-		h.children = append(h.children, m)
-	case *HTML:
+	case List:
+		m.apply(h)
+	case Component, *HTML:
 		if m == nil {
 			return
 		}
 		h.children = append(h.children, m)
 	default:
-		panic(fmt.Sprintf("vecty: invalid type %T does not match MarkupOrComponentOrHTML interface", m))
+		panic(fmt.Sprintf("vecty: invalid type %T does not match MarkupOrChild interface", m))
 	}
 }
 
-// Markup represents some type of markup (a style, property, data, etc) which
+// Applyer represents some type of markup (a style, property, data, etc) which
 // can be applied to a given HTML element or text node.
-type Markup interface {
+type Applyer interface {
 	// Apply applies the markup to the given HTML element or text node.
 	Apply(h *HTML)
 }
@@ -85,10 +90,10 @@ type markupFunc func(h *HTML)
 
 func (m markupFunc) Apply(h *HTML) { m(h) }
 
-// Style returns Markup which applies the given CSS style. Generally, this
+// Style returns Applyer which applies the given CSS style. Generally, this
 // function is not used directly but rather the style subpackage (which is type
 // safe) should be used instead.
-func Style(key, value string) Markup {
+func Style(key, value string) Applyer {
 	return markupFunc(func(h *HTML) {
 		if h.styles == nil {
 			h.styles = make(map[string]string)
@@ -97,12 +102,12 @@ func Style(key, value string) Markup {
 	})
 }
 
-// Property returns Markup which applies the given JavaScript property to an
+// Property returns Applyer which applies the given JavaScript property to an
 // HTML element or text node. Generally, this function is not used directly but
 // rather the prop and style subpackages (which are type safe) should be used instead.
 //
 // To set style, use style package or Style. Property panics if key is "style".
-func Property(key string, value interface{}) Markup {
+func Property(key string, value interface{}) Applyer {
 	if key == "style" {
 		panic(`vecty: Property called with key "style"; style package or Style should be used instead`)
 	}
@@ -114,13 +119,13 @@ func Property(key string, value interface{}) Markup {
 	})
 }
 
-// Attribute returns Markup which applies the given attribute to an element.
+// Attribute returns Applyer which applies the given attribute to an element.
 //
 // In most situations, you should use Property function, or the prop subpackage
 // (which is type-safe) instead. There are only a few attributes (aria-*, role,
 // etc) which do not have equivalent properties. Always opt for the property
 // first, before relying on an attribute.
-func Attribute(key string, value interface{}) Markup {
+func Attribute(key string, value interface{}) Applyer {
 	return markupFunc(func(h *HTML) {
 		if h.attributes == nil {
 			h.attributes = make(map[string]interface{})
@@ -129,8 +134,8 @@ func Attribute(key string, value interface{}) Markup {
 	})
 }
 
-// Data returns Markup which applies the given data attribute.
-func Data(key, value string) Markup {
+// Data returns Applyer which applies the given data attribute.
+func Data(key, value string) Applyer {
 	return markupFunc(func(h *HTML) {
 		if h.dataset == nil {
 			h.dataset = make(map[string]string)
@@ -143,7 +148,7 @@ func Data(key, value string) Markup {
 // their boolean value are true.
 type ClassMap map[string]bool
 
-// Apply implements the Markup interface.
+// Apply implements the Applyer interface.
 func (m ClassMap) Apply(h *HTML) {
 	var classes []string
 	for name, active := range m {
@@ -154,26 +159,53 @@ func (m ClassMap) Apply(h *HTML) {
 	Property("className", strings.Join(classes, " ")).Apply(h)
 }
 
+// markupList represents a list of Applyer which is individually
+// applied to an HTML element or text node.
+type markupList []Applyer
+
+// Apply implements the Applyer interface.
+func (m markupList) Apply(h *HTML) {
+	for _, a := range m {
+		if a == nil {
+			continue
+		}
+		a.Apply(h)
+	}
+}
+
+// Markup wraps a list of Applyer which is individually
+// applied to an HTML element or text node.
+func Markup(m ...Applyer) markupList {
+	return markupList(m)
+}
+
 // List represents a list of Markup, Component, or HTML which is individually
 // applied to an HTML element or text node.
-type List []MarkupOrComponentOrHTML
+type List []MarkupOrChild
 
-// Apply implements the Markup interface.
-func (l List) Apply(h *HTML) {
-	for _, m := range l {
-		apply(m, h)
+func (l List) apply(h *HTML) {
+	for _, a := range l {
+		apply(a, h)
 	}
 }
 
 // If returns nil if cond is false, otherwise it returns the given markup.
-func If(cond bool, markup ...MarkupOrComponentOrHTML) MarkupOrComponentOrHTML {
+func If(cond bool, markup ...MarkupOrChild) MarkupOrChild {
 	if cond {
 		return List(markup)
 	}
 	return nil
 }
 
-// UnsafeHTML is Markup which unsafely sets the inner HTML of an HTML element.
+// MarkupIf returns nil if cond is false, otherwise it returns the given markup.
+func MarkupIf(cond bool, markup ...Applyer) Applyer {
+	if cond {
+		return Markup(markup...)
+	}
+	return nil
+}
+
+// UnsafeHTML is Applyer which unsafely sets the inner HTML of an HTML element.
 //
 // It is entirely up to the caller to ensure the input HTML is properly
 // sanitized.
@@ -184,19 +216,19 @@ func If(cond bool, markup ...MarkupOrComponentOrHTML) MarkupOrComponentOrHTML {
 // user, for example, it would create a cross-site-scripting (XSS) exploit in
 // the application.
 //
-// The returned Markup can only be applied to HTML, not vecty.Text, or else a
+// The returned Applyer can only be applied to HTML, not vecty.Text, or else a
 // panic will occur.
-func UnsafeHTML(html string) Markup {
+func UnsafeHTML(html string) Applyer {
 	return markupFunc(func(h *HTML) {
 		h.innerHTML = html
 	})
 }
 
-// Namespace is Markup which sets the namespace URI to associate with the
+// Namespace is Applyer which sets the namespace URI to associate with the
 // created element. This is primarily used when working with, e.g., SVG.
 //
 // See https://developer.mozilla.org/en-US/docs/Web/API/Document/createElementNS#Valid Namespace URIs
-func Namespace(uri string) Markup {
+func Namespace(uri string) Applyer {
 	return markupFunc(func(h *HTML) {
 		h.namespace = uri
 	})

@@ -13,7 +13,7 @@ import "github.com/gopherjs/vecty"
 // locations within the same page, email addresses, or any other URL.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a
-func Anchor(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Anchor(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("a", markup...)
 }
 
@@ -22,7 +22,7 @@ func Anchor(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // description and nothing else.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr
-func Abbreviation(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Abbreviation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("abbr", markup...)
 }
 
@@ -30,7 +30,7 @@ func Abbreviation(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // ancestor; in the latter case, it applies to the whole document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address
-func Address(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Address(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("address", markup...)
 }
 
@@ -38,7 +38,7 @@ func Address(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // with a hypertext link. This element is used only within a <map> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area
-func Area(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Area(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("area", markup...)
 }
 
@@ -48,7 +48,7 @@ func Area(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // or newspaper article, or a blog entry.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article
-func Article(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Article(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("article", markup...)
 }
 
@@ -56,16 +56,17 @@ func Article(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // to the main content of the document (often presented as a sidebar).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside
-func Aside(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Aside(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("aside", markup...)
 }
 
 // Audio is used to embed sound content in documents. It may contain one or
 // more audio sources, represented using the src attribute or the <source>
-// element; the browser will choose the most suitable one.
+// element: the browser will choose the most suitable one. It can also be the
+// destination for streamed media, using a MediaStream.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
-func Audio(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Audio(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("audio", markup...)
 }
 
@@ -74,7 +75,7 @@ func Audio(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // rendered in boldface.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b
-func Bold(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Bold(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("b", markup...)
 }
 
@@ -82,7 +83,7 @@ func Bold(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // document. There can be only one <base> element in a document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-func Base(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Base(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("base", markup...)
 }
 
@@ -90,7 +91,7 @@ func Base(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // that might be formatted in a different direction from other text outside it.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi
-func BidirectionalIsolation(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func BidirectionalIsolation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("bdi", markup...)
 }
 
@@ -99,7 +100,7 @@ func BidirectionalIsolation(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML
 // characters to be ignored in favor of the specified directionality.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo
-func BidirectionalOverride(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func BidirectionalOverride(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("bdo", markup...)
 }
 
@@ -110,7 +111,7 @@ func BidirectionalOverride(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML 
 // of the source can be given using the <cite> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote
-func BlockQuote(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func BlockQuote(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("blockquote", markup...)
 }
 
@@ -118,7 +119,7 @@ func BlockQuote(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // <body> element in a document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body
-func Body(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Body(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("body", markup...)
 }
 
@@ -126,14 +127,14 @@ func Body(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // writing a poem or an address, where the division of lines is significant.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br
-func Break(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Break(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("br", markup...)
 }
 
 // Button represents a clickable button.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button
-func Button(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Button(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("button", markup...)
 }
 
@@ -141,7 +142,7 @@ func Button(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // and animations.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas
-func Canvas(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Canvas(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("canvas", markup...)
 }
 
@@ -150,7 +151,7 @@ func Canvas(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // relative to the table.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption
-func Caption(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Caption(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("caption", markup...)
 }
 
@@ -159,7 +160,7 @@ func Caption(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // according to the conventions used for the addition of citation metadata.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite
-func Citation(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Citation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("cite", markup...)
 }
 
@@ -167,7 +168,7 @@ func Citation(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // the browser's default monospace font.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code
-func Code(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Code(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("code", markup...)
 }
 
@@ -176,22 +177,22 @@ func Code(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col
-func Column(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Column(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("col", markup...)
 }
 
 // ColumnGroup defines a group of columns within a table.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup
-func ColumnGroup(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func ColumnGroup(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("colgroup", markup...)
 }
 
 // Data links a given content with a machine-readable translation. If the
-// content is time- or date-related, the <time> must be used.
+// content is time- or date-related, the <time> element must be used.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data
-func Data(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Data(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("data", markup...)
 }
 
@@ -199,7 +200,7 @@ func Data(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // available for other controls.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist
-func DataList(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func DataList(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("datalist", markup...)
 }
 
@@ -207,7 +208,7 @@ func DataList(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // (<dl>).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd
-func Description(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Description(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dd", markup...)
 }
 
@@ -216,7 +217,7 @@ func Description(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // strike-through text.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
-func DeletedText(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func DeletedText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("del", markup...)
 }
 
@@ -224,14 +225,14 @@ func DeletedText(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // additional information.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
-func Details(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Details(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("details", markup...)
 }
 
 // Definition represents the defining instance of a term.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
-func Definition(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Definition(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dfn", markup...)
 }
 
@@ -239,7 +240,7 @@ func Definition(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // inspector or window.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
-func Dialog(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Dialog(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dialog", markup...)
 }
 
@@ -249,16 +250,16 @@ func Dialog(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // different language (using the lang attribute), and so on.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div
-func Div(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Div(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("div", markup...)
 }
 
-// DescriptionList encloses a list of groups of terms and descriptions. Common
-// uses for this element are to implement a glossary or to display metadata (a
-// list of key-value pairs).
+// DescriptionList represents a description list. The element encloses a list
+// of groups of terms and descriptions. Common uses for this element are to
+// implement a glossary or to display metadata (a list of key-value pairs).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl
-func DescriptionList(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func DescriptionList(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dl", markup...)
 }
 
@@ -268,7 +269,7 @@ func DescriptionList(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // that are all defined by the immediate next <dd> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt
-func DefinitionTerm(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func DefinitionTerm(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dt", markup...)
 }
 
@@ -276,7 +277,7 @@ func DefinitionTerm(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // nested, with each level of nesting indicating a greater degree of emphasis.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
-func Emphasis(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Emphasis(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("em", markup...)
 }
 
@@ -284,7 +285,7 @@ func Emphasis(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // interactive content (in other words, a plug-in).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed
-func Embed(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Embed(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("embed", markup...)
 }
 
@@ -292,7 +293,7 @@ func Embed(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // within a web form.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset
-func FieldSet(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func FieldSet(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("fieldset", markup...)
 }
 
@@ -301,7 +302,7 @@ func FieldSet(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // which is its immediate ancestor.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption
-func FigureCaption(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func FigureCaption(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("figcaption", markup...)
 }
 
@@ -309,7 +310,7 @@ func FigureCaption(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // (<figcaption>), and is typically referenced as a single unit.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure
-func Figure(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Figure(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("figure", markup...)
 }
 
@@ -318,7 +319,7 @@ func Figure(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // the section, copyright data or links to related documents.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer
-func Footer(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Footer(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("footer", markup...)
 }
 
@@ -326,7 +327,7 @@ func Footer(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // submit information to a web server.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form
-func Form(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Form(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("form", markup...)
 }
 
@@ -334,7 +335,7 @@ func Form(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Heading1(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading1(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h1", markup...)
 }
 
@@ -342,7 +343,7 @@ func Heading1(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Heading2(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading2(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h2", markup...)
 }
 
@@ -350,7 +351,7 @@ func Heading2(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Heading3(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading3(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h3", markup...)
 }
 
@@ -358,7 +359,7 @@ func Heading3(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Heading4(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading4(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h4", markup...)
 }
 
@@ -366,7 +367,7 @@ func Heading4(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Heading5(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading5(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h5", markup...)
 }
 
@@ -374,7 +375,7 @@ func Heading5(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // is the highest section level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-func Heading6(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Heading6(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h6", markup...)
 }
 
@@ -383,7 +384,7 @@ func Heading6(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // form, and so on.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header
-func Header(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Header(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("header", markup...)
 }
 
@@ -391,7 +392,7 @@ func Header(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // It groups a set of <h1>–<h6> elements.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup
-func HeadingsGroup(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func HeadingsGroup(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("hgroup", markup...)
 }
 
@@ -402,7 +403,7 @@ func HeadingsGroup(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // defined in semantic terms, rather than presentational terms.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr
-func HorizontalRule(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func HorizontalRule(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("hr", markup...)
 }
 
@@ -411,44 +412,43 @@ func HorizontalRule(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // fictional character thoughts. It is typically displayed in italic type.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i
-func Italic(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Italic(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("i", markup...)
 }
 
-// The HTML Inline Frame Element <iframe> represents a nested browsing context,
-// effectively embedding another HTML page into the current page. In HTML 4.01,
-// a document may contain a head and a body or a head and a frameset, but not
-// both a body and a frameset. However, an <iframe> can be used within a normal
-// document body. Each browsing context has its own session history and active
-// document. The browsing context that contains the embedded content is called
-// the parent browsing context. The top-level browsing context (which has no
-// parent) is typically the browser window.
+// InlineFrame represents a nested browsing context, effectively embedding
+// another HTML page into the current page. In HTML 4.01, a document may
+// contain a head and a body or a head and a frameset, but not both a body and
+// a frameset. However, an <iframe> can be used within a normal document body.
+// Each browsing context has its own session history and active document. The
+// browsing context that contains the embedded content is called the parent
+// browsing context. The top-level browsing context (which has no parent) is
+// typically the browser window.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
-func InlineFrame(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func InlineFrame(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("iframe", markup...)
 }
 
 // Image represents an image in the document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
-func Image(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Image(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("img", markup...)
 }
 
 // Input is used to create interactive controls for web-based forms in order to
-// accept data from the user. How an <input> works varies considerably
-// depending on the value of its type attribute.
+// accept data from the user.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
-func Input(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Input(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("input", markup...)
 }
 
 // InsertedText represents a range of text that has been added to a document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins
-func InsertedText(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func InsertedText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("ins", markup...)
 }
 
@@ -456,21 +456,21 @@ func InsertedText(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // in the browser's default monospace font.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd
-func KeyboardInput(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func KeyboardInput(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("kbd", markup...)
 }
 
 // Label represents a caption for an item in a user interface.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label
-func Label(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Label(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("label", markup...)
 }
 
 // Legend represents a caption for the content of its parent <fieldset>.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend
-func Legend(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Legend(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("legend", markup...)
 }
 
@@ -481,26 +481,26 @@ func Legend(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // ascending counter on the left, such as a number or letter.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li
-func ListItem(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func ListItem(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("li", markup...)
 }
 
 // Link specifies relationships between the current document and an external
 // resource. Possible uses for this element include defining a relational
-// framework for navigation. This Element is most used to link to style sheets.
+// framework for navigation. This element is most used to link to style sheets.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link
-func Link(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Link(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("link", markup...)
 }
 
-// Main represents the main content of the <body> of a document or application.
-// The main content area consists of content that is directly related to, or
-// expands upon the central topic of a document or the central functionality of
-// an application.
+// Main represents the main content of the <body> of a document, portion of a
+// document, or application. The main content area consists of content that is
+// directly related to, or expands upon the central topic of, a document or the
+// central functionality of an application.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main
-func Main(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Main(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("main", markup...)
 }
 
@@ -508,17 +508,15 @@ func Main(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // area).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map
-func Map(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Map(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("map", markup...)
 }
 
 // Mark represents highlighted text, i.e., a run of text marked for reference
-// purpose, due to its relevance in a particular context. For example it can be
-// used in a page showing search results to highlight every instance of the
-// searched-for word.
+// purpose, due to its relevance in a particular context.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark
-func Mark(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Mark(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("mark", markup...)
 }
 
@@ -528,7 +526,7 @@ func Mark(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // a button after it has been clicked.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu
-func Menu(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Menu(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("menu", markup...)
 }
 
@@ -537,16 +535,15 @@ func Menu(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // to a menu button.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem
-func MenuItem(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func MenuItem(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("menuitem", markup...)
 }
 
-// Meta represents any metadata information that cannot be represented by one
-// of the other HTML meta-related elements (<base>, <link>, <script>, <style>
-// or <title>).
+// Meta represents metadata that cannot be represented by other HTML
+// meta-related elements, like <base>, <link>, <script>, <style> or <title>.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
-func Meta(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Meta(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("meta", markup...)
 }
 
@@ -554,31 +551,33 @@ func Meta(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // value.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter
-func Meter(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Meter(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("meter", markup...)
 }
 
-// Navigation represents a section of a page that links to other pages or to
-// parts within the page: a section with navigation links.
+// Navigation represents a section of a page whose purpose is to provide
+// navigation links, either within the current document or to other documents.
+// Common examples of navigation sections are menus, tables of contents, and
+// indexes.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav
-func Navigation(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Navigation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("nav", markup...)
 }
 
-// <noframes> is an HTML element which is used to supporting browsers which are
+// <noframes> is an HTML element which is used to support browsers which are
 // not able to support <frame> elements or configured to do so.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noframes
-func NoFrames(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func NoFrames(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("noframes", markup...)
 }
 
-// NoScript defines a section of html to be inserted if a script type on the
+// NoScript defines a section of HTML to be inserted if a script type on the
 // page is unsupported or if scripting is currently turned off in the browser.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript
-func NoScript(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func NoScript(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("noscript", markup...)
 }
 
@@ -586,7 +585,7 @@ func NoScript(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // nested browsing context, or a resource to be handled by a plugin.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object
-func Object(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Object(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("object", markup...)
 }
 
@@ -594,43 +593,44 @@ func Object(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // numbered list.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol
-func OrderedList(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func OrderedList(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("ol", markup...)
 }
 
 // OptionsGroup creates a grouping of options within a <select> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup
-func OptionsGroup(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func OptionsGroup(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("optgroup", markup...)
 }
 
-// Option is used to create a control representing an item within a <select>,
-// an <optgroup> or a <datalist> HTML5 element.
+// Option is used to define an item contained in a <select>, an <optgroup>, or
+// a <datalist> element. As such, <option> can represent menu items in popups
+// and other lists of items in an HTML document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option
-func Option(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Option(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("option", markup...)
 }
 
 // Output represents the result of a calculation or user action.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output
-func Output(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Output(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("output", markup...)
 }
 
 // Paragraph represents a paragraph of text.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p
-func Paragraph(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Paragraph(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("p", markup...)
 }
 
 // Parameter defines parameters for an <object> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param
-func Parameter(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Parameter(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("param", markup...)
 }
 
@@ -641,7 +641,7 @@ func Parameter(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // normal or hiDPI device.)
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture
-func Picture(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Picture(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("picture", markup...)
 }
 
@@ -651,7 +651,7 @@ func Picture(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // typed.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre
-func Preformatted(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Preformatted(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("pre", markup...)
 }
 
@@ -659,7 +659,7 @@ func Preformatted(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // as a progress bar.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress
-func Progress(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Progress(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("progress", markup...)
 }
 
@@ -668,7 +668,7 @@ func Progress(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // breaks; for long quotations use the <blockquote> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q
-func Quote(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Quote(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("q", markup...)
 }
 
@@ -676,7 +676,7 @@ func Quote(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // do not support display of ruby annotations using the <ruby> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp
-func RubyParenthesis(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func RubyParenthesis(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rp", markup...)
 }
 
@@ -685,7 +685,7 @@ func RubyParenthesis(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // characters. This element is always used inside a <ruby> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt
-func RubyText(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func RubyText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rt", markup...)
 }
 
@@ -694,7 +694,7 @@ func RubyText(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // both pronunciation (<rt>) and semantic (<rtc>) annotations.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc
-func RubyTextContainer(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func RubyTextContainer(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rtc", markup...)
 }
 
@@ -702,7 +702,7 @@ func RubyTextContainer(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // pronunciation of East Asian characters.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby
-func Ruby(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Ruby(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("ruby", markup...)
 }
 
@@ -712,7 +712,7 @@ func Ruby(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // for that, use the <del> and <ins> elements, as appropriate.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
-func Strikethrough(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Strikethrough(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("s", markup...)
 }
 
@@ -721,37 +721,39 @@ func Strikethrough(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // (such as Lucida Console).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp
-func Sample(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Sample(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("samp", markup...)
 }
 
 // Script is used to embed or reference an executable script.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script
-func Script(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Script(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("script", markup...)
 }
 
-// Section represents a generic section of a document, i.e., a thematic
-// grouping of content, typically with a heading.
+// Section represents a standalone section of functionality contained within an
+// HTML document, typically with a heading, which doesn't have a more specific
+// semantic element to represent it.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section
-func Section(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Section(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("section", markup...)
 }
 
-// Select represents a control that provides a menu of options.
+// Select represents a control that provides a menu of options:
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
-func Select(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Select(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("select", markup...)
 }
 
-// Slot is a placeholder inside a web component that you can fill with your own
-// markup, with the effect of composing different DOM trees together.
+// Slot—part of the Web Components technology suite—is a placeholder inside
+// a web component that you can fill with your own markup, which lets you
+// create separate DOM trees and present them together.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot
-func Slot(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Slot(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("slot", markup...)
 }
 
@@ -762,7 +764,7 @@ func Slot(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // presentation.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small
-func Small(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Small(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("small", markup...)
 }
 
@@ -772,7 +774,7 @@ func Small(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // browsers.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source
-func Source(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Source(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("source", markup...)
 }
 
@@ -782,14 +784,14 @@ func Source(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // values, such as lang.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span
-func Span(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Span(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("span", markup...)
 }
 
 // Strong gives text strong importance, and is typically displayed in bold.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong
-func Strong(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Strong(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("strong", markup...)
 }
 
@@ -798,7 +800,7 @@ func Strong(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // be CSS.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
-func Style(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Style(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("style", markup...)
 }
 
@@ -806,7 +808,7 @@ func Style(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // reasons, lower, and often smaller, than the main span of text.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub
-func Subscript(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Subscript(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("sub", markup...)
 }
 
@@ -814,7 +816,7 @@ func Subscript(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // <details> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary
-func Summary(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Summary(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("summary", markup...)
 }
 
@@ -822,22 +824,22 @@ func Summary(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // reasons, higher, and often smaller, than the main span of text.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup
-func Superscript(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Superscript(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("sup", markup...)
 }
 
-// Table represents tabular data —that is, information expressed via a
+// Table represents tabular data — that is, information expressed via a
 // two-dimensional data table.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
-func Table(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Table(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("table", markup...)
 }
 
 // TableBody groups one or more <tr> elements as the body of a <table> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody
-func TableBody(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func TableBody(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("tbody", markup...)
 }
 
@@ -845,7 +847,7 @@ func TableBody(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // the table model.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td
-func TableData(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func TableData(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("td", markup...)
 }
 
@@ -854,21 +856,21 @@ func TableData(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // runtime using JavaScript.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
-func Template(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Template(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("template", markup...)
 }
 
 // TextArea represents a multi-line plain-text editing control.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
-func TextArea(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func TextArea(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("textarea", markup...)
 }
 
 // TableFoot defines a set of rows summarizing the columns of the table.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot
-func TableFoot(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func TableFoot(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("tfoot", markup...)
 }
 
@@ -876,7 +878,7 @@ func TableFoot(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // nature of this group is defined by the scope and headers attributes.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th
-func TableHeader(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func TableHeader(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("th", markup...)
 }
 
@@ -884,7 +886,7 @@ func TableHeader(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // table.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead
-func TableHead(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func TableHead(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("thead", markup...)
 }
 
@@ -892,7 +894,7 @@ func TableHead(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // Gregorian calendar (with optional time and timezone information).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time
-func Time(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Time(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("time", markup...)
 }
 
@@ -901,7 +903,7 @@ func Time(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // ignored.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
-func Title(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Title(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("title", markup...)
 }
 
@@ -909,17 +911,17 @@ func Title(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // <th> elements.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr
-func TableRow(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func TableRow(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("tr", markup...)
 }
 
-// Track is used as a child of the media elements—<audio> and <video>. It
-// lets you specify timed text tracks (or time-based data), for example to
+// Track is used as a child of the media elements <audio> and <video>. It lets
+// you specify timed text tracks (or time-based data), for example to
 // automatically handle subtitles. The tracks are formatted in WebVTT format
 // (.vtt files) — Web Video Text Tracks.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
-func Track(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Track(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("track", markup...)
 }
 
@@ -930,7 +932,7 @@ func Track(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // name mark), or labeling the text as being misspelled.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u
-func Underline(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Underline(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("u", markup...)
 }
 
@@ -938,7 +940,7 @@ func Underline(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // bulleted list.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul
-func UnorderedList(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func UnorderedList(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("ul", markup...)
 }
 
@@ -946,14 +948,14 @@ func UnorderedList(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // context.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var
-func Variable(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Variable(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("var", markup...)
 }
 
 // Use the HTML <video> element to embed video content in a document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video
-func Video(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func Video(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("video", markup...)
 }
 
@@ -962,6 +964,6 @@ func Video(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
 // rules would not otherwise create a break at that location.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr
-func WordBreakOpportunity(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func WordBreakOpportunity(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("wbr", markup...)
 }
