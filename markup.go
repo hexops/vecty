@@ -58,21 +58,13 @@ type Event struct {
 type MarkupOrChild interface{}
 
 func apply(m MarkupOrChild, h *HTML) {
-	if m == nil {
-		return
-	}
 	switch m := m.(type) {
 	case markupList:
 		if m == nil {
 			return
 		}
 		m.Apply(h)
-	case List:
-		m.apply(h)
-	case Component, *HTML:
-		if m == nil {
-			return
-		}
+	case Component, *HTML, List, nil:
 		h.children = append(h.children, m)
 	default:
 		panic(fmt.Sprintf("vecty: invalid type %T does not match MarkupOrChild interface", m))
@@ -179,18 +171,8 @@ func Markup(m ...Applyer) markupList {
 	return markupList(m)
 }
 
-// List represents a list of Markup, Component, or HTML which is individually
-// applied to an HTML element or text node.
-type List []MarkupOrChild
-
-func (l List) apply(h *HTML) {
-	for _, a := range l {
-		apply(a, h)
-	}
-}
-
 // If returns nil if cond is false, otherwise it returns the given markup.
-func If(cond bool, markup ...MarkupOrChild) MarkupOrChild {
+func If(cond bool, markup ...ComponentOrHTML) MarkupOrChild {
 	if cond {
 		return List(markup)
 	}
