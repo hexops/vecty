@@ -374,8 +374,7 @@ func (h *HTML) removeChildren(prev *HTML) {
 	}
 }
 
-// List represents a list of Markup, Component, or HTML which is
-// individually applied to an HTML element or text node.
+// List represents a list of components or HTML.
 type List []ComponentOrHTML
 
 // reconcile the List against the DOM node in isolation.  If insertBefore
