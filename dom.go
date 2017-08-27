@@ -377,9 +377,9 @@ func (h *HTML) removeChildren(prev *HTML) {
 // List represents a list of components or HTML.
 type List []ComponentOrHTML
 
-// reconcile the List against the DOM node in isolation.  If insertBefore
-// is non-nil, the List elements will be inserted into the DOM before that
-// node.
+// reconcile reconciles the List against the DOM node in isolation. If
+// insertBefore is non-nil, the List elements will be inserted into the DOM
+// before that node.
 func (l List) reconcile(node jsObject, insertBefore *HTML, prev ComponentOrHTML) {
 	nextHTML := &HTML{node: node, children: l}
 	switch c := prev.(type) {
