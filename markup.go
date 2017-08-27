@@ -60,9 +60,6 @@ type MarkupOrChild interface{}
 func apply(m MarkupOrChild, h *HTML) {
 	switch m := m.(type) {
 	case MarkupList:
-		if m.list == nil { // e.g. a user call to `Markup(nil)`
-			return
-		}
 		m.Apply(h)
 	case Component, *HTML, List, nil:
 		h.children = append(h.children, m)
