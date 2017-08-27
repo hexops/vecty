@@ -6,19 +6,20 @@ install:
   - nvm install node
   - npm install -g source-map-support
   - go get -u github.com/gopherjs/gopherjs
-  - go get -u gopkg.in/alecthomas/gometalinter.v1
+  - go get -u github.com/golang/lint/golint
   - go get -u honnef.co/go/tools/cmd/megacheck
   - go get -u github.com/haya14busa/goverage
-  - gometalinter.v1 --config=.gometalinter.json --install
 before_script:
   - export NODE_PATH="/usr/local/lib/node_modules"
 script:
   # Fetch dependencies.
   - go get -t -v ./...
 
-  # Consult gometalinter, megacheck tools.
-  - gometalinter.v1 --config=.gometalinter.json --severity=golint:error . ./example/...
-  - gometalinter.v1 --config=.gometalinter.json ./elem/... event/... prop/... storeutil/... # TODO(slimsag): address these linter errors
+  # Consult Go fmt, vet, lint, megacheck tools.
+  - diff -u <(echo -n) <(gofmt -d -s .)
+  - go tool vet .
+  - golint -set_exit_status . ./example/...
+  - golint ./elem/... event/... prop/... storeutil/... # TODO(slimsag): address these linter errors
   - megacheck ./...
   - megacheck -tags=js ./...
 
