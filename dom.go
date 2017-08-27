@@ -328,17 +328,23 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 			continue
 		}
 
+		// Perform the final reconciliation action for nextChildRender and
+		// prevChildRender. Replace, remove, insert or append the DOM nodes.
 		switch {
 		case nextChildRender == nil && prevChildRender == nil:
-			continue
+			continue // nothing to do.
+		case nextChildRender != nil && prevChildRender != nil:
+			replaceNode(nextChildRender.node, prevChildRender.node)
 		case nextChildRender == nil && prevChildRender != nil:
 			removeNode(prevChildRender.node)
-		case nextChildRender != nil && prevChildRender == nil && insertBefore == nil:
+		case nextChildRender != nil && prevChildRender == nil:
+			if insertBefore {
+				h.node.Call("insertBefore", nextChildRender.node, insertBefore.node)
+				continue
+			}
 			h.node.Call("appendChild", nextChildRender.node)
-		case nextChildRender != nil && prevChildRender == nil && insertBefore != nil:
-			h.node.Call("insertBefore", nextChildRender.node, insertBefore.node)
 		default:
-			replaceNode(nextChildRender.node, prevChildRender.node)
+			panic("vecty: internal error (unexpected switch state)")
 		}
 	}
 	h.removeChildren(prev)
