@@ -167,7 +167,7 @@ func (m markupList) Apply(h *HTML) {
 
 // Markup wraps a list of Applyer which is individually
 // applied to an HTML element or text node.
-func Markup(m ...Applyer) markupList {
+func Markup(m ...Applyer) markupList { // nolint: golint
 	return markupList(m)
 }
 

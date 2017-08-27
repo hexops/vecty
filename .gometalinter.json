@@ -1,0 +1,34 @@
+{
+  "Enable": [
+    "goconst",
+    "gofmt",
+    "misspell",
+    "structcheck",
+    "deadcode",
+    "errcheck",
+    "unparam",
+    "vetshadow",
+    "golint",
+    "goimports",
+    "varcheck",
+    "vet",
+    "ineffassign",
+    "unconvert"
+  ],
+  "Severity": {
+    "goconst": "error",
+    "gofmt": "error",
+    "misspell": "error",
+    "structcheck": "error",
+    "deadcode": "error",
+    "errcheck": "error",
+    "unparam": "error",
+    "vetshadow": "error",
+    "goimports": "error",
+    "varcheck": "error",
+    "vet": "error",
+    "ineffassign": "error",
+    "unconvert": "error"
+  },
+  "Errors": true
+}
