@@ -356,8 +356,8 @@ func (h *HTML) removeChildren(prev *HTML) {
 	if prev == nil {
 		return
 	}
-	for i := len(h.children); i < len(prev.children); i++ {
-		prevChild := prev.children[i]
+	// Every previous child that h.children does not have in common.
+	for _, prevChild := range prev.children[len(h.children):] {
 		if prevChildList, ok := prevChild.(List); ok {
 			prevChildList.removeExcept(h.node, -1)
 			continue
