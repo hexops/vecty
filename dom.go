@@ -273,10 +273,10 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 			continue
 		}
 
-		prevChild := prev.children[i]
 		// If the previous child was nil, try to find the next DOM node in the
 		// previous render so that we can insert this child at the correct
 		// location
+		prevChild := prev.children[i]
 		if prevChild == nil {
 			for j := i + 1; j < len(prev.children) && insertBefore == nil; j++ {
 				if prevChildList, ok := prev.children[j].(List); ok {
@@ -287,23 +287,29 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 			}
 		}
 
+		// If the next child is a list, reconcile its elements in-place.
+		// Otherwise determine the prevChildRender so that we can reconcile as
+		// usual.
 		var prevChildRender *HTML
 		switch {
 		case isList(nextChild):
-			// reconcile list elements in-place
+			// next child is a list; reconcile list elements in-place and we're
+			// done.
 			nextChild.(List).reconcile(h.node, insertBefore, prevChild)
 			continue
 		case isList(prevChild):
-			// remove additional list elements from the previous render, since
-			// we no longer have a list
+			// next child is not a list, previous child is a list; remove
+			// additional list elements from the previous render, since we no
+			// longer have a list.
 			var idx int
-			l := prevChild.(List)
-			idx, prevChildRender = l.firstHTML()
-			l.removeExcept(h.node, idx)
+			idx, prevChildRender = prevChild.(List).firstHTML()
+			prevChild.(List).removeExcept(h.node, idx)
 		default:
+			// next child and previous child are not lists.
 			prevChildRender = extractHTML(prevChild)
 		}
 
+		// Determine the next child render.
 		nextChildRender, skip := render(nextChild, prevChild)
 		if nextChildRender != nil && prevChildRender != nil && nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
