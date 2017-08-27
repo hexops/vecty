@@ -17,7 +17,7 @@ type EventListener struct {
 	wrapper             func(jsEvent *js.Object)
 }
 
-// PreventDefault prevents the default behavior of the event from occuring.
+// PreventDefault prevents the default behavior of the event from occurring.
 //
 // See https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault.
 func (l *EventListener) PreventDefault() *EventListener {

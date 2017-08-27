@@ -48,7 +48,7 @@ func TestCore(t *testing.T) {
 		}
 	})
 
-	// Test what happens when a user accidently embeds *Core instead of Core in
+	// Test what happens when a user accidentally embeds *Core instead of Core in
 	// their component.
 	t.Run("comp_ptr_and_core_ptr", func(t *testing.T) {
 		v1 := Tag("v1")
