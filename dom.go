@@ -410,9 +410,9 @@ func (l List) firstHTML() (idx int, h *HTML) {
 	return -1, nil
 }
 
-// removeExcept removes the List's elements from the DOM node, except for
-// the element at index exceptIndex.  If exceptIndex is less than zero, all
-// elements are removed.
+// removeExcept removes the List's elements from the DOM node, except for the
+// element at index exceptIndex. If exceptIndex is less than zero, all elements
+// are removed.
 func (l List) removeExcept(node jsObject, exceptIndex int) {
 	var children List
 	switch {
