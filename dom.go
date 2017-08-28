@@ -417,7 +417,7 @@ func (l List) removeExcept(node jsObject, exceptIndex int) {
 	var children List
 	switch {
 	case exceptIndex < 0:
-		children = l
+		children = l // removing everything in the list
 	case isList(l[exceptIndex]):
 		// TODO(pdf): I'm not sure I like the assumption here that we want to
 		// retain the first element of sub-lists, but not sure if there's a
