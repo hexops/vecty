@@ -395,7 +395,7 @@ func (l List) reconcile(node jsObject, insertBefore *HTML, prev ComponentOrHTML)
 }
 
 // firstHTML returns the index and content of the first element from which a
-// *HTML can be extracted.  Returns an index of -1 if not found.
+// *HTML can be extracted. Returns (-1, nil) if not found.
 func (l List) firstHTML() (idx int, h *HTML) {
 	for idx = 0; idx < len(l); idx++ {
 		if listChild, ok := l[idx].(List); ok {
