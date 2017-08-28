@@ -388,9 +388,9 @@ func (l List) reconcile(node jsObject, insertBefore *HTML, prev ComponentOrHTML)
 	default:
 		if prev == nil {
 			nextHTML.reconcileChildren(&HTML{node: node}, insertBefore)
-		} else {
-			nextHTML.reconcileChildren(&HTML{node: node, children: []ComponentOrHTML{prev}}, insertBefore)
+			return
 		}
+		nextHTML.reconcileChildren(&HTML{node: node, children: []ComponentOrHTML{prev}}, insertBefore)
 	}
 }
 
