@@ -29,19 +29,23 @@ func (p *PageView) Render() *vecty.HTML {
 	return elem.Body(
 		// Display a textarea on the right-hand side of the page.
 		elem.Div(
-			vecty.Style("float", "right"),
+			vecty.Markup(
+				vecty.Style("float", "right"),
+			),
 			elem.TextArea(
-				vecty.Style("font-family", "monospace"),
-				vecty.Property("rows", 14),
-				vecty.Property("cols", 70),
-				vecty.Text(p.Input), // initial textarea text.
+				vecty.Markup(
+					vecty.Style("font-family", "monospace"),
+					vecty.Property("rows", 14),
+					vecty.Property("cols", 70),
 
-				// When input is typed into the textarea, update the local
-				// component state and rerender.
-				event.Input(func(e *vecty.Event) {
-					p.Input = e.Target.Get("value").String()
-					vecty.Rerender(p)
-				}),
+					// When input is typed into the textarea, update the local
+					// component state and rerender.
+					event.Input(func(e *vecty.Event) {
+						p.Input = e.Target.Get("value").String()
+						vecty.Rerender(p)
+					}),
+				),
+				vecty.Text(p.Input), // initial textarea text.
 			),
 		),
 
@@ -67,6 +71,8 @@ func (m *Markdown) Render() *vecty.HTML {
 
 	// Return the HTML, which we guarantee to be safe / sanitized.
 	return elem.Div(
-		vecty.UnsafeHTML(safeHTML),
+		vecty.Markup(
+			vecty.UnsafeHTML(safeHTML),
+		),
 	)
 }

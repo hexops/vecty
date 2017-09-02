@@ -165,7 +165,7 @@ func writeElem(w io.Writer, name, desc, link string) {
 	fmt.Fprintf(w, `%s
 //
 // https://developer.mozilla.org%s
-func %s(markup ...vecty.MarkupOrComponentOrHTML) *vecty.HTML {
+func %s(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("%s", markup...)
 }
 `, descToComments(desc), link, funName, name)

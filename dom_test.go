@@ -48,7 +48,7 @@ func TestCore(t *testing.T) {
 		}
 	})
 
-	// Test what happens when a user accidently embeds *Core instead of Core in
+	// Test what happens when a user accidentally embeds *Core instead of Core in
 	// their component.
 	t.Run("comp_ptr_and_core_ptr", func(t *testing.T) {
 		v1 := Tag("v1")
@@ -144,16 +144,16 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}{
 			{
 				name:         "diff",
-				initHTML:     Tag("div", Property("a", 1), Property("b", "2foobar")),
+				initHTML:     Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
 				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Property("a", 3), Property("b", "4foobar")),
+				targetHTML:   Tag("div", Markup(Property("a", 3), Property("b", "4foobar"))),
 				targetResult: "a:3 b:4foobar",
 			},
 			{
 				name:         "remove",
-				initHTML:     Tag("div", Property("a", 1), Property("b", "2foobar")),
+				initHTML:     Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
 				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Property("a", 3)),
+				targetHTML:   Tag("div", Markup(Property("a", 3))),
 				targetResult: "a:3",
 			},
 		}
@@ -210,16 +210,16 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}{
 			{
 				name:         "diff",
-				initHTML:     Tag("div", Attribute("a", 1), Attribute("b", "2foobar")),
+				initHTML:     Tag("div", Markup(Attribute("a", 1), Attribute("b", "2foobar"))),
 				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Attribute("a", 3), Attribute("b", "4foobar")),
+				targetHTML:   Tag("div", Markup(Attribute("a", 3), Attribute("b", "4foobar"))),
 				targetResult: "a:3 b:4foobar",
 			},
 			{
 				name:         "remove",
-				initHTML:     Tag("div", Attribute("a", 1), Attribute("b", "2foobar")),
+				initHTML:     Tag("div", Markup(Attribute("a", 1), Attribute("b", "2foobar"))),
 				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Attribute("a", 3)),
+				targetHTML:   Tag("div", Markup(Attribute("a", 3))),
 				targetResult: "a:3",
 			},
 		}
@@ -287,16 +287,16 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}{
 			{
 				name:         "diff",
-				initHTML:     Tag("div", Data("a", "1"), Data("b", "2foobar")),
+				initHTML:     Tag("div", Markup(Data("a", "1"), Data("b", "2foobar"))),
 				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Data("a", "3"), Data("b", "4foobar")),
+				targetHTML:   Tag("div", Markup(Data("a", "3"), Data("b", "4foobar"))),
 				targetResult: "a:3 b:4foobar",
 			},
 			{
 				name:         "remove",
-				initHTML:     Tag("div", Data("a", "1"), Data("b", "2foobar")),
+				initHTML:     Tag("div", Markup(Data("a", "1"), Data("b", "2foobar"))),
 				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Data("a", "3")),
+				targetHTML:   Tag("div", Markup(Data("a", "3"))),
 				targetResult: "a:3",
 			},
 		}
@@ -358,16 +358,16 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}{
 			{
 				name:         "diff",
-				initHTML:     Tag("div", Style("a", "1"), Style("b", "2foobar")),
+				initHTML:     Tag("div", Markup(Style("a", "1"), Style("b", "2foobar"))),
 				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Style("a", "3"), Style("b", "4foobar")),
+				targetHTML:   Tag("div", Markup(Style("a", "3"), Style("b", "4foobar"))),
 				targetResult: "a:3 b:4foobar",
 			},
 			{
 				name:         "remove",
-				initHTML:     Tag("div", Style("a", "1"), Style("b", "2foobar")),
+				initHTML:     Tag("div", Markup(Style("a", "1"), Style("b", "2foobar"))),
 				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Style("a", "3")),
+				targetHTML:   Tag("div", Markup(Style("a", "3"))),
 				targetResult: "a:3",
 			},
 		}
@@ -434,16 +434,16 @@ func TestHTML_reconcile_std(t *testing.T) {
 		// TODO(pdf): Mock listener functions for equality testing
 		cases := []struct {
 			name                 string
-			initEventListeners   []MarkupOrComponentOrHTML
-			targetEventListeners []MarkupOrComponentOrHTML
+			initEventListeners   []Applyer
+			targetEventListeners []Applyer
 		}{
 			{
 				name: "diff",
-				initEventListeners: []MarkupOrComponentOrHTML{
+				initEventListeners: []Applyer{
 					&EventListener{Name: "click"},
 					&EventListener{Name: "keydown"},
 				},
-				targetEventListeners: []MarkupOrComponentOrHTML{
+				targetEventListeners: []Applyer{
 					&EventListener{Name: "click"},
 				},
 			},
@@ -491,7 +491,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 						"document": document,
 					},
 				}
-				prev := Tag("div", tst.initEventListeners...)
+				prev := Tag("div", Markup(tst.initEventListeners...))
 				prev.reconcile(nil)
 				for i, m := range tst.initEventListeners {
 					listener := m.(*EventListener)
@@ -505,7 +505,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 				if len(tst.initEventListeners) != len(addedListeners) {
 					t.Fatalf("listener count mismatch: %d != %d", len(tst.initEventListeners), len(addedListeners))
 				}
-				h := Tag("div", tst.targetEventListeners...)
+				h := Tag("div", Markup(tst.targetEventListeners...))
 				h.reconcile(prev)
 				for i, m := range tst.targetEventListeners {
 					listener := m.(*EventListener)
@@ -601,7 +601,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		}
 		wantTag := "strong"
 		wantNamespace := "foobar"
-		h := Tag(wantTag, Namespace(wantNamespace))
+		h := Tag(wantTag, Markup(Namespace(wantNamespace)))
 		h.reconcile(nil)
 		if createdElement != wantTag {
 			t.Fatalf("createdElement %q want tag %q", createdElement, wantTag)
@@ -667,7 +667,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 			},
 		}
 		want := "<p>hello</p>"
-		h := Tag("div", UnsafeHTML(want))
+		h := Tag("div", Markup(UnsafeHTML(want)))
 		h.reconcile(nil)
 		if setInnerHTML != want {
 			t.Fatalf("setInnerHTML %q want %q", setInnerHTML, want)
@@ -699,7 +699,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 				"document": document,
 			},
 		}
-		h := Tag("div", Property("a", 1), Property("b", "2foobar"))
+		h := Tag("div", Markup(Property("a", 1), Property("b", "2foobar")))
 		h.reconcile(nil)
 		got := sortedMapString(set)
 		want := "a:1 b:2foobar"
@@ -740,7 +740,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 				"document": document,
 			},
 		}
-		h := Tag("div", Attribute("a", 1), Attribute("b", "2foobar"))
+		h := Tag("div", Markup(Attribute("a", 1), Attribute("b", "2foobar")))
 		h.reconcile(nil)
 		got := sortedMapString(set)
 		want := "a:1 b:2foobar"
@@ -779,7 +779,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 				"document": document,
 			},
 		}
-		h := Tag("div", Data("a", "1"), Data("b", "2foobar"))
+		h := Tag("div", Markup(Data("a", "1"), Data("b", "2foobar")))
 		h.reconcile(nil)
 		got := sortedMapString(set)
 		want := "a:1 b:2foobar"
@@ -825,7 +825,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 				"document": document,
 			},
 		}
-		h := Tag("div", Style("a", "1"), Style("b", "2foobar"))
+		h := Tag("div", Markup(Style("a", "1"), Style("b", "2foobar")))
 		h.reconcile(nil)
 		got := sortedMapString(set)
 		want := "a:1 b:2foobar"
@@ -872,7 +872,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		}
 		e0 := &EventListener{Name: "click"}
 		e1 := &EventListener{Name: "keydown"}
-		h := Tag("div", e0, e1)
+		h := Tag("div", Markup(e0, e1))
 		h.reconcile(nil)
 		if e0.wrapper == nil {
 			t.Fatal("e0.wrapper == nil")
@@ -1041,9 +1041,9 @@ func TestHTML_reconcile_nil(t *testing.T) {
 func TestTag(t *testing.T) {
 	markupCalled := false
 	want := "foobar"
-	h := Tag(want, markupFunc(func(h *HTML) {
+	h := Tag(want, Markup(markupFunc(func(h *HTML) {
 		markupCalled = true
-	}))
+	})))
 	if !markupCalled {
 		t.Fatal("expected markup to be applied")
 	}
@@ -1058,9 +1058,9 @@ func TestTag(t *testing.T) {
 func TestText(t *testing.T) {
 	markupCalled := false
 	want := "Hello world!"
-	h := Text(want, markupFunc(func(h *HTML) {
+	h := Text(want, Markup(markupFunc(func(h *HTML) {
 		markupCalled = true
-	}))
+	})))
 	if !markupCalled {
 		t.Fatal("expected markup to be applied")
 	}

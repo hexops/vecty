@@ -64,6 +64,8 @@ type Unmounter interface {
 //
 //  Component
 //  *HTML
+//  List
+//  nil
 //
 // If the underlying value is not one of these types, the code handling the
 // value is expected to panic.
@@ -245,12 +247,26 @@ func (h *HTML) reconcile(prev *HTML) {
 		h.node.Set("innerHTML", h.innerHTML)
 	}
 
+	h.reconcileChildren(prev, nil)
+}
+
+// reconcileChildren reconciles children of the current HTML against a previous
+// render's DOM nodes.
+func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
 		// TODO(pdf): Add tests for h.new usage
 		if i >= len(prev.children) || h.new {
+			if nextChildList, ok := nextChild.(List); ok {
+				nextChildList.reconcile(h.node, insertBefore, nil)
+				continue
+			}
 			nextChildRender, skip := render(nextChild, nil)
-			if skip {
+			if skip || nextChildRender == nil {
+				continue
+			}
+			if insertBefore != nil {
+				h.node.Call("insertBefore", nextChildRender.node, insertBefore.node)
 				continue
 			}
 			h.node.Call("appendChild", nextChildRender.node)
@@ -258,9 +274,42 @@ func (h *HTML) reconcile(prev *HTML) {
 		}
 
 		prevChild := prev.children[i]
-		prevChildRender := extractHTML(prevChild)
+		var prevChildRender *HTML
+		// If the previous child was not a list, extract the previous child
+		// render.
+		if _, isList := prevChild.(List); !isList {
+			prevChildRender = extractHTML(prevChild)
+		}
+
+		// If the previous child render was nil, try to find the next DOM node
+		// in the previous render so that we can insert this child at the
+		// correct location.
+		if prevChildRender == nil {
+			for j := i + 1; j < len(prev.children) && insertBefore == nil; j++ {
+				if prevChildList, ok := prev.children[j].(List); ok {
+					insertBefore = prevChildList.firstHTML()
+				} else {
+					insertBefore = extractHTML(prev.children[j])
+				}
+			}
+		}
+
+		// If the next child is a list, reconcile its elements in-place, and
+		// we're done.
+		if nextChildList, ok := nextChild.(List); ok {
+			nextChildList.reconcile(h.node, insertBefore, prevChild)
+			continue
+		}
+
+		// If the previous child was a list, remove the list elements from the
+		// previous render, since we no longer have a list.
+		if prevChildList, ok := prevChild.(List); ok {
+			prevChildList.remove(h.node)
+		}
+
+		// Determine the next child render.
 		nextChildRender, skip := render(nextChild, prevChild)
-		if nextChildRender == prevChildRender {
+		if nextChildRender != nil && prevChildRender != nil && nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
 		}
 
@@ -276,11 +325,47 @@ func (h *HTML) reconcile(prev *HTML) {
 		if skip {
 			continue
 		}
-		replaceNode(nextChildRender.node, prevChildRender.node)
+
+		// Perform the final reconciliation action for nextChildRender and
+		// prevChildRender. Replace, remove, insert or append the DOM nodes.
+		switch {
+		case nextChildRender == nil && prevChildRender == nil:
+			continue // nothing to do.
+		case nextChildRender != nil && prevChildRender != nil:
+			replaceNode(nextChildRender.node, prevChildRender.node)
+		case nextChildRender == nil && prevChildRender != nil:
+			removeNode(prevChildRender.node)
+		case nextChildRender != nil && prevChildRender == nil:
+			if insertBefore != nil {
+				h.node.Call("insertBefore", nextChildRender.node, insertBefore.node)
+				continue
+			}
+			h.node.Call("appendChild", nextChildRender.node)
+		default:
+			panic("vecty: internal error (unexpected switch state)")
+		}
 	}
+	h.removeChildren(prev)
+}
+
+// removeChildren removes child elements from the previous render pass that no
+// longer exist on the current HTML children.
+func (h *HTML) removeChildren(prev *HTML) {
+	if prev == nil {
+		return
+	}
+	// Every previous child that h.children does not have in common.
 	for i := len(h.children); i < len(prev.children); i++ {
 		prevChild := prev.children[i]
+		if prevChildList, ok := prevChild.(List); ok {
+			// Previous child was a list, so remove all DOM nodes in it.
+			prevChildList.remove(h.node)
+			continue
+		}
 		prevChildRender := extractHTML(prevChild)
+		if prevChildRender == nil {
+			continue
+		}
 		removeNode(prevChildRender.node)
 		if u, ok := prevChild.(Unmounter); ok {
 			u.Unmount()
@@ -288,10 +373,52 @@ func (h *HTML) reconcile(prev *HTML) {
 	}
 }
 
+// List represents a list of components or HTML.
+type List []ComponentOrHTML
+
+// reconcile reconciles the List against the DOM node in isolation. If
+// insertBefore is non-nil, the List elements will be inserted into the DOM
+// before that node.
+func (l List) reconcile(node jsObject, insertBefore *HTML, prev ComponentOrHTML) {
+	nextHTML := &HTML{node: node, children: l}
+	switch c := prev.(type) {
+	case List:
+		nextHTML.reconcileChildren(&HTML{node: node, children: c}, insertBefore)
+	default:
+		if prev == nil {
+			nextHTML.reconcileChildren(&HTML{node: node}, insertBefore)
+			return
+		}
+		nextHTML.reconcileChildren(&HTML{node: node, children: []ComponentOrHTML{prev}}, insertBefore)
+	}
+}
+
+// firstHTML returns the content of the first element from which a *HTML can be
+// extracted. Returns nil if not found.
+func (l List) firstHTML() (h *HTML) {
+	for _, v := range l {
+		if listChild, ok := v.(List); ok {
+			h = listChild.firstHTML()
+		} else {
+			h = extractHTML(v)
+		}
+		if h != nil {
+			return h
+		}
+	}
+	return nil
+}
+
+// remove the List's elements from the DOM node
+func (l List) remove(node jsObject) {
+	nextHTML := &HTML{node: node}
+	nextHTML.removeChildren(&HTML{node: node, children: l})
+}
+
 // Tag returns an HTML element with the given tag name. Generally, this
 // function is not used directly but rather the elem subpackage (which is type
 // safe) is used instead.
-func Tag(tag string, m ...MarkupOrComponentOrHTML) *HTML {
+func Tag(tag string, m ...MarkupOrChild) *HTML {
 	h := &HTML{
 		tag: tag,
 	}
@@ -304,7 +431,7 @@ func Tag(tag string, m ...MarkupOrComponentOrHTML) *HTML {
 // Text returns a TextNode with the given literal text. Because the returned
 // HTML represents a TextNode, the text does not have to be escaped (arbitrary
 // user input fed into this function will always be safely rendered).
-func Text(text string, m ...MarkupOrComponentOrHTML) *HTML {
+func Text(text string, m ...MarkupOrChild) *HTML {
 	h := &HTML{
 		text: text,
 	}
@@ -422,6 +549,8 @@ func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
 	case Component:
 		// Cases 4, 5, and 6 above.
 		return renderComponent(v, prev)
+	case nil:
+		return nil, false
 	default:
 		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", next))
 	}

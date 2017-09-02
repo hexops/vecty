@@ -56,7 +56,9 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 func (p *PageView) Render() *vecty.HTML {
 	return elem.Body(
 		elem.Section(
-			prop.Class("todoapp"),
+			vecty.Markup(
+				prop.Class("todoapp"),
+			),
 
 			p.renderHeader(),
 			vecty.If(len(store.Items) > 0,
@@ -71,21 +73,27 @@ func (p *PageView) Render() *vecty.HTML {
 
 func (p *PageView) renderHeader() *vecty.HTML {
 	return elem.Header(
-		prop.Class("header"),
+		vecty.Markup(
+			prop.Class("header"),
+		),
 
 		elem.Heading1(
 			vecty.Text("todos"),
 		),
 		elem.Form(
-			style.Margin(style.Px(0)),
-			event.Submit(p.onAdd).PreventDefault(),
+			vecty.Markup(
+				style.Margin(style.Px(0)),
+				event.Submit(p.onAdd).PreventDefault(),
+			),
 
 			elem.Input(
-				prop.Class("new-todo"),
-				prop.Placeholder("What needs to be done?"),
-				prop.Autofocus(true),
-				prop.Value(p.newItemTitle),
-				event.Input(p.onNewItemTitleInput),
+				vecty.Markup(
+					prop.Class("new-todo"),
+					prop.Placeholder("What needs to be done?"),
+					prop.Autofocus(true),
+					prop.Value(p.newItemTitle),
+					event.Input(p.onNewItemTitleInput),
+				),
 			),
 		),
 	)
@@ -99,10 +107,14 @@ func (p *PageView) renderFooter() *vecty.HTML {
 	}
 
 	return elem.Footer(
-		prop.Class("footer"),
+		vecty.Markup(
+			prop.Class("footer"),
+		),
 
 		elem.Span(
-			prop.Class("todo-count"),
+			vecty.Markup(
+				prop.Class("todo-count"),
+			),
 
 			elem.Strong(
 				vecty.Text(fmt.Sprintf("%d", count)),
@@ -111,7 +123,9 @@ func (p *PageView) renderFooter() *vecty.HTML {
 		),
 
 		elem.UnorderedList(
-			prop.Class("filters"),
+			vecty.Markup(
+				prop.Class("filters"),
+			),
 			&FilterButton{Label: "All", Filter: model.All},
 			vecty.Text(" "),
 			&FilterButton{Label: "Active", Filter: model.Active},
@@ -121,9 +135,11 @@ func (p *PageView) renderFooter() *vecty.HTML {
 
 		vecty.If(store.CompletedItemCount() > 0,
 			elem.Button(
-				prop.Class("clear-completed"),
+				vecty.Markup(
+					prop.Class("clear-completed"),
+					event.Click(p.onClearCompleted),
+				),
 				vecty.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount())),
-				event.Click(p.onClearCompleted),
 			),
 		),
 	)
@@ -131,7 +147,9 @@ func (p *PageView) renderFooter() *vecty.HTML {
 
 func (p *PageView) renderInfo() *vecty.HTML {
 	return elem.Footer(
-		prop.Class("info"),
+		vecty.Markup(
+			prop.Class("info"),
+		),
 
 		elem.Paragraph(
 			vecty.Text("Double-click to edit a todo"),
@@ -139,14 +157,18 @@ func (p *PageView) renderInfo() *vecty.HTML {
 		elem.Paragraph(
 			vecty.Text("Created by "),
 			elem.Anchor(
-				prop.Href("http://github.com/neelance"),
+				vecty.Markup(
+					prop.Href("http://github.com/neelance"),
+				),
 				vecty.Text("Richard Musiol"),
 			),
 		),
 		elem.Paragraph(
 			vecty.Text("Part of "),
 			elem.Anchor(
-				prop.Href("http://todomvc.com"),
+				vecty.Markup(
+					prop.Href("http://todomvc.com"),
+				),
 				vecty.Text("TodoMVC"),
 			),
 		),
@@ -163,22 +185,30 @@ func (p *PageView) renderItemList() *vecty.HTML {
 	}
 
 	return elem.Section(
-		prop.Class("main"),
+		vecty.Markup(
+			prop.Class("main"),
+		),
 
 		elem.Input(
-			prop.ID("toggle-all"),
-			prop.Class("toggle-all"),
-			prop.Type(prop.TypeCheckbox),
-			prop.Checked(store.CompletedItemCount() == len(store.Items)),
-			event.Change(p.onToggleAllCompleted),
+			vecty.Markup(
+				prop.ID("toggle-all"),
+				prop.Class("toggle-all"),
+				prop.Type(prop.TypeCheckbox),
+				prop.Checked(store.CompletedItemCount() == len(store.Items)),
+				event.Change(p.onToggleAllCompleted),
+			),
 		),
 		elem.Label(
-			prop.For("toggle-all"),
+			vecty.Markup(
+				prop.For("toggle-all"),
+			),
 			vecty.Text("Mark all as complete"),
 		),
 
 		elem.UnorderedList(
-			prop.Class("todo-list"),
+			vecty.Markup(
+				prop.Class("todo-list"),
+			),
 			items,
 		),
 	)
