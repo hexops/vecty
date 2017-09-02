@@ -6,6 +6,60 @@ Although v1.0.0 [is not yet out](https://github.com/gopherjs/vecty/milestone/1),
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## Sept 2, 2017 ([PR #134](https://github.com/gopherjs/vecty/pull/134)): major breaking change
+
+Several breaking changes have been made. Below, we describe how to upgrade your Vecty code to reflect each of these changes.
+
+On the surface, these changes _may_ appear to be needless or simple API changes, however when combined they in fact resolve one of the last major open issues about how Vecty fundamentally operates. With this change, Vecty now ensures that the persistent pointer to your component instances remain the same regardless of e.g. the styles that you pass into element constructors.
+
+### constructors no longer accept markup directly
+
+`Tag`, `Text`, and `elem.Foo` constructors no longer accept markup (styles, properties, etc.) directly. You must now specify them via `vecty.Markup`. For example, this code:
+
+```Go
+func (p *PageView) Render() *vecty.HTML {
+ 	return elem.Body(
+ 		vecty.Style("background", "red"),
+	 	vecty.Text("Hello World"),
+ 	)
+}
+```
+
+Must now be written as:
+
+```Go
+func (p *PageView) Render() *vecty.HTML {
+ 	return elem.Body(
+ 		vecty.Markup(
+	 		vecty.Style("background", "red"),
+ 		),
+	 	vecty.Text("Hello World"),
+ 	)
+}
+```
+
+### If no longer works for markup
+
+`If` now only accepts `ComponentOrChild` (meaning `Component`, `*HTML`, `nil`, or a `List`). It does not accept markup anymore (styles, properties, etc). A new `MarkupIf` function is added for this purpose. For example you would need to make a chang elike this to your code:
+
+```diff
+func (p *PageView) Render() *vecty.HTML {
+ 	return elem.Body(
+ 		vecty.Markup(
+-			vecty.If(isBackgroundRed, vecty.Style("background", "red")),
++			vecty.MarkupIf(isBackgroundRed, vecty.Style("background", "red")),
+ 		),
+ 		vecty.Text("Hello World"),
+ 	)
+}
+```
+
+### Other breaking changes
+
+- `ComponentOrHTML` now includes `nil` and the new `List` type, rather than just `Component` and `*HTML`.
+- `MarkupOrComponentOrHTML` has been renamed to `MarkupOrChild`, and now includes `nil` and the new `List` and `MarkupList` (instead of `Markup`, see below) types.
+- The `Markup` _interface_ has been renamed to `Applyer`, and a `Markup` _function_ has been added to create a `MarkupList`.
+
 
 ## Aug 6, 2017 ([PR #130](https://github.com/gopherjs/vecty/pull/130)): minor breaking change
 
