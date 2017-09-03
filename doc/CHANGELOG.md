@@ -40,7 +40,7 @@ func (p *PageView) Render() *vecty.HTML {
 
 ### If no longer works for markup
 
-`If` now only accepts `ComponentOrChild` (meaning `Component`, `*HTML`, `nil`, or a `List`). It does not accept markup anymore (styles, properties, etc). A new `MarkupIf` function is added for this purpose. For example you would need to make a change like this to your code:
+`If` now only accepts `ComponentOrHTML` (meaning `Component`, `*HTML`, `List` or `nil`). It does not accept markup anymore (styles, properties, etc). A new `MarkupIf` function is added for this purpose. For example you would need to make a change like this to your code:
 
 ```diff
 func (p *PageView) Render() *vecty.HTML {
