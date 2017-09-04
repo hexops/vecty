@@ -543,6 +543,9 @@ func copyProps(src, dst Component) {
 func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
 	switch v := next.(type) {
 	case *HTML:
+		if v == nil {
+			return nil, false
+		}
 		// Cases 1, 2 and 3 above. Reconcile against the prevRender.
 		v.reconcile(extractHTML(prev))
 		return v, false
