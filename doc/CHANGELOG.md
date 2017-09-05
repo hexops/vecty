@@ -6,6 +6,11 @@ Although v1.0.0 [is not yet out](https://github.com/gopherjs/vecty/milestone/1),
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## Sept 5, 2017 ([PR #140](https://github.com/gopherjs/vecty/pull/140)): minor breaking change
+
+Package `storeutil` has been moved to `github.com/gopherjs/vecty/example/todomvc/store/storeutil` import path.
+
+
 ## Sept 2, 2017 ([PR #134](https://github.com/gopherjs/vecty/pull/134)): major breaking change
 
 Several breaking changes have been made. Below, we describe how to upgrade your Vecty code to reflect each of these changes.
@@ -68,7 +73,7 @@ The `Restorer` interface has been removed, component instances are now persisten
 
 ## Jun 17, 2017 ([PR #117](https://github.com/gopherjs/vecty/pull/117)): minor breaking change
 
-`(*HTML).Restore` is no longer exported, this method was not generally used externally. 
+`(*HTML).Restore` is no longer exported, this method was not generally used externally.
 
 
 ## May 11, 2017 ([PR #108](https://github.com/gopherjs/vecty/pull/108)): minor breaking change
