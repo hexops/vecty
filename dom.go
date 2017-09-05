@@ -100,14 +100,12 @@ type HTML struct {
 	properties, attributes          map[string]interface{}
 	eventListeners                  []*EventListener
 	children                        []ComponentOrHTML
-	new                             bool
 }
 
 // Node returns the underlying JavaScript Element or TextNode.
 func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 
 func (h *HTML) createNode() {
-	h.new = true
 	switch {
 	case h.tag != "" && h.text != "":
 		panic("vecty: only one of HTML.tag or HTML.text may be set")
@@ -147,9 +145,6 @@ func (h *HTML) reconcile(prev *HTML) {
 			prev = &HTML{}
 		}
 		h.createNode()
-		defer func() {
-			h.new = false
-		}()
 	}
 
 	// Wrap event listeners
@@ -181,7 +176,7 @@ func (h *HTML) reconcile(prev *HTML) {
 			h.node.Set(name, value)
 		}
 	}
-	if !h.new {
+	if h.node == prev.node {
 		for name := range prev.properties {
 			if _, ok := h.properties[name]; !ok {
 				h.node.Delete(name)
@@ -195,7 +190,7 @@ func (h *HTML) reconcile(prev *HTML) {
 			h.node.Call("setAttribute", name, value)
 		}
 	}
-	if !h.new {
+	if h.node == prev.node {
 		for name := range prev.attributes {
 			if _, ok := h.attributes[name]; !ok {
 				h.node.Call("removeAttribute", name)
@@ -210,7 +205,7 @@ func (h *HTML) reconcile(prev *HTML) {
 			dataset.Set(name, value)
 		}
 	}
-	if !h.new {
+	if h.node == prev.node {
 		for name := range prev.dataset {
 			if _, ok := h.dataset[name]; !ok {
 				dataset.Delete(name)
@@ -226,7 +221,7 @@ func (h *HTML) reconcile(prev *HTML) {
 			style.Call("setProperty", name, value)
 		}
 	}
-	if !h.new {
+	if h.node == prev.node {
 		for name := range prev.styles {
 			if _, ok := h.styles[name]; !ok {
 				style.Call("removeProperty", name)
@@ -234,7 +229,7 @@ func (h *HTML) reconcile(prev *HTML) {
 		}
 	}
 
-	if !h.new {
+	if h.node == prev.node {
 		for _, l := range prev.eventListeners {
 			h.node.Call("removeEventListener", l.Name, l.wrapper)
 		}
@@ -255,8 +250,8 @@ func (h *HTML) reconcile(prev *HTML) {
 func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
-		// TODO(pdf): Add tests for h.new usage
-		if i >= len(prev.children) || h.new {
+		// TODO(pdf): Add tests for node equality
+		if i >= len(prev.children) || h.node != prev.node {
 			if nextChildList, ok := nextChild.(List); ok {
 				nextChildList.reconcile(h.node, insertBefore, nil)
 				continue
