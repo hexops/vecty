@@ -25,7 +25,7 @@ script:
 
   # Test with Go compiler and GopherJS compiler.
   - go test -v -race ./...
-  - gopherjs test -v $(go list ./...)
+  - gopherjs test -v ./...
 
   # Generate and upload coverage to codecov.io
   - goverage -covermode=atomic -coverprofile=coverage.out $(go list ./... | grep -v -e vecty/elem -e vecty/event -e vecty/example -e vecty/prop -e vecty/style)
