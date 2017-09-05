@@ -55,8 +55,8 @@ type Copier interface {
 // Unmounter is an optional interface that a Component can implement in order
 // to receive component unmount events.
 type Unmounter interface {
-	// Unmount is called after the component has been unmounted, after the DOM
-	// element has been removed.
+	// Unmount is called before the component has been unmounted, before the
+	// DOM node has been removed.
 	Unmount()
 }
 
@@ -334,6 +334,7 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 		case nextChildRender != nil && prevChildRender != nil:
 			replaceNode(nextChildRender.node, prevChildRender.node)
 		case nextChildRender == nil && prevChildRender != nil:
+			unmount(prevChild)
 			removeNode(prevChildRender.node)
 		case nextChildRender != nil && prevChildRender == nil:
 			if insertBefore != nil {
@@ -366,10 +367,8 @@ func (h *HTML) removeChildren(prev *HTML) {
 		if prevChildRender == nil {
 			continue
 		}
+		unmount(prevChild)
 		removeNode(prevChildRender.node)
-		if u, ok := prevChild.(Unmounter); ok {
-			u.Unmount()
-		}
 	}
 }
 
@@ -599,6 +598,27 @@ func renderComponent(next Component, prev ComponentOrHTML) (h *HTML, skip bool) 
 	next.Context().prevRender = nextRender
 	next.Context().prevRenderComponent = doCopy(next)
 	return nextRender, false
+}
+
+// unmount recursively unmounts the provided ComponentOrHTML, and any children
+// that satisfy the Unmounter interface.
+func unmount(e ComponentOrHTML) {
+	if list, ok := e.(List); ok {
+		for _, child := range list {
+			unmount(child)
+		}
+		return
+	}
+
+	if h := extractHTML(e); h != nil {
+		for _, child := range h.children {
+			unmount(child)
+		}
+	}
+
+	if u, ok := e.(Unmounter); ok {
+		u.Unmount()
+	}
 }
 
 // RenderBody renders the given component as the document body. The given
