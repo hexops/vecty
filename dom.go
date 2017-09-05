@@ -12,6 +12,7 @@ import (
 type Core struct {
 	prevRenderComponent Component
 	prevRender          *HTML
+	unmounted           bool
 }
 
 // Context implements the Component interface.
@@ -50,6 +51,14 @@ type Component interface {
 type Copier interface {
 	// Copy returns a copy of the component.
 	Copy() Component
+}
+
+// Mounter is an optional interface that a Component can implement in order
+// to receive component mount events.
+type Mounter interface {
+	// Mount is called after the component has been mounted, after the DOM node
+	// has been attached.
+	Mount()
 }
 
 // Unmounter is an optional interface that a Component can implement in order
@@ -129,13 +138,13 @@ func (h *HTML) reconcileText(prev *HTML) {
 	}
 }
 
-func (h *HTML) reconcile(prev *HTML) {
+func (h *HTML) reconcile(prev *HTML) []Mounter {
 	// Check for compatible tag and mutate previous instance on match, otherwise start fresh
 	switch {
 	case prev != nil && h.tag == "" && prev.tag == "":
 		// Compatible text node
 		h.reconcileText(prev)
-		return
+		return nil
 	case prev != nil && h.tag != "" && prev.tag != "" && h.tag == prev.tag && h.namespace == prev.namespace:
 		// Compatible element node
 		h.node = prev.node
@@ -242,12 +251,12 @@ func (h *HTML) reconcile(prev *HTML) {
 		h.node.Set("innerHTML", h.innerHTML)
 	}
 
-	h.reconcileChildren(prev, nil)
+	return h.reconcileChildren(prev, nil)
 }
 
 // reconcileChildren reconciles children of the current HTML against a previous
 // render's DOM nodes.
-func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
+func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) (pendingMounts []Mounter) {
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
 		// TODO(pdf): Add tests for node equality
@@ -256,9 +265,13 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 				nextChildList.reconcile(h.node, insertBefore, nil)
 				continue
 			}
-			nextChildRender, skip := render(nextChild, nil)
+			nextChildRender, skip, mounters := render(nextChild, nil)
 			if skip || nextChildRender == nil {
 				continue
+			}
+			pendingMounts = append(pendingMounts, mounters...)
+			if m, ok := nextChild.(Mounter); ok {
+				pendingMounts = append(pendingMounts, m)
 			}
 			if insertBefore != nil {
 				h.node.Call("insertBefore", nextChildRender.node, insertBefore.node)
@@ -303,7 +316,7 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 		}
 
 		// Determine the next child render.
-		nextChildRender, skip := render(nextChild, prevChild)
+		nextChildRender, skip, mounters := render(nextChild, prevChild)
 		if nextChildRender != nil && prevChildRender != nil && nextChildRender == prevChildRender {
 			panic("vecty: next child render must not equal previous child render (did the child Render illegally return a stored render variable?)")
 		}
@@ -315,11 +328,13 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 		if prevChildComponent, ok := prevChild.(Component); ok {
 			if nextChildComponent, ok := nextChild.(Component); ok && sameType(prevChildComponent, nextChildComponent) {
 				h.children[i] = prevChild
+				nextChild = prevChild
 			}
 		}
 		if skip {
 			continue
 		}
+		pendingMounts = append(pendingMounts, mounters...)
 
 		// Perform the final reconciliation action for nextChildRender and
 		// prevChildRender. Replace, remove, insert or append the DOM nodes.
@@ -327,11 +342,17 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 		case nextChildRender == nil && prevChildRender == nil:
 			continue // nothing to do.
 		case nextChildRender != nil && prevChildRender != nil:
+			if m := mountUnmount(nextChild, prevChild); m != nil {
+				pendingMounts = append(pendingMounts, m)
+			}
 			replaceNode(nextChildRender.node, prevChildRender.node)
 		case nextChildRender == nil && prevChildRender != nil:
 			unmount(prevChild)
 			removeNode(prevChildRender.node)
 		case nextChildRender != nil && prevChildRender == nil:
+			if m, ok := nextChild.(Mounter); ok {
+				pendingMounts = append(pendingMounts, m)
+			}
 			if insertBefore != nil {
 				h.node.Call("insertBefore", nextChildRender.node, insertBefore.node)
 				continue
@@ -342,6 +363,7 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) {
 		}
 	}
 	h.removeChildren(prev)
+	return pendingMounts
 }
 
 // removeChildren removes child elements from the previous render pass that no
@@ -373,17 +395,16 @@ type List []ComponentOrHTML
 // reconcile reconciles the List against the DOM node in isolation. If
 // insertBefore is non-nil, the List elements will be inserted into the DOM
 // before that node.
-func (l List) reconcile(node jsObject, insertBefore *HTML, prev ComponentOrHTML) {
+func (l List) reconcile(node jsObject, insertBefore *HTML, prev ComponentOrHTML) []Mounter {
 	nextHTML := &HTML{node: node, children: l}
 	switch c := prev.(type) {
 	case List:
-		nextHTML.reconcileChildren(&HTML{node: node, children: c}, insertBefore)
+		return nextHTML.reconcileChildren(&HTML{node: node, children: c}, insertBefore)
 	default:
 		if prev == nil {
-			nextHTML.reconcileChildren(&HTML{node: node}, insertBefore)
-			return
+			return nextHTML.reconcileChildren(&HTML{node: node}, insertBefore)
 		}
-		nextHTML.reconcileChildren(&HTML{node: node, children: []ComponentOrHTML{prev}}, insertBefore)
+		return nextHTML.reconcileChildren(&HTML{node: node, children: []ComponentOrHTML{prev}}, insertBefore)
 	}
 }
 
@@ -447,11 +468,18 @@ func Rerender(c Component) {
 	if prevRender == nil {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
-	nextRender, skip := renderComponent(c, prevRender)
+	if c.Context().unmounted {
+		global.Get("console").Call("warn", "vecty: Rerender invoked on unmounted Component")
+		return
+	}
+	nextRender, skip, pendingMounts := renderComponent(c, prevRender)
 	if skip {
 		return
 	}
+	// mountUnmount to check for node replacement
+	mountUnmount(nextRender, prevRender)
 	replaceNode(nextRender.node, prevRender.node)
+	mount(pendingMounts...)
 }
 
 // extractHTML returns the *HTML from a ComponentOrHTML.
@@ -534,17 +562,17 @@ func copyProps(src, dst Component) {
 // 5. nextChild == Component && prevChild == *HTML
 // 6. nextChild == Component && prevChild == nil
 //
-func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
+func render(next, prev ComponentOrHTML) (h *HTML, skip bool, pendingMounts []Mounter) {
 	switch v := next.(type) {
 	case *HTML:
 		// Cases 1, 2 and 3 above. Reconcile against the prevRender.
-		v.reconcile(extractHTML(prev))
-		return v, false
+		pendingMounts := v.reconcile(extractHTML(prev))
+		return v, false, pendingMounts
 	case Component:
 		// Cases 4, 5, and 6 above.
 		return renderComponent(v, prev)
 	case nil:
-		return nil, false
+		return nil, false, nil
 	default:
 		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", next))
 	}
@@ -553,7 +581,7 @@ func render(next, prev ComponentOrHTML) (h *HTML, skip bool) {
 // renderComponent handles rendering the given Component into *HTML. If skip ==
 // true is returned, the Component's SkipRender method has signaled the
 // component does not need to be rendered and h == nil is returned.
-func renderComponent(next Component, prev ComponentOrHTML) (h *HTML, skip bool) {
+func renderComponent(next Component, prev ComponentOrHTML) (h *HTML, skip bool, pendingMounts []Mounter) {
 	// If we had a component last render, and it's of compatible type, operate
 	// on the previous instance.
 	if prevComponent, ok := prev.(Component); ok && sameType(next, prevComponent) {
@@ -574,7 +602,7 @@ func renderComponent(next Component, prev ComponentOrHTML) (h *HTML, skip bool) 
 				panic("vecty: internal error (SkipRender called with identical prev component)")
 			}
 			if rs.SkipRender(prevRenderComponent) {
-				return nil, true
+				return nil, true, nil
 			}
 		}
 	}
@@ -587,17 +615,55 @@ func renderComponent(next Component, prev ComponentOrHTML) (h *HTML, skip bool) 
 	}
 
 	// Reconcile the actual rendered HTML.
-	nextRender.reconcile(extractHTML(prev))
+	pendingMounts = nextRender.reconcile(extractHTML(prev))
 
 	// Update the context to consider this render.
 	next.Context().prevRender = nextRender
 	next.Context().prevRenderComponent = doCopy(next)
-	return nextRender, false
+	next.Context().unmounted = false
+	return nextRender, false, pendingMounts
+}
+
+// mountUnmount determines whether a mount or unmount event should occur,
+// actions unmounts recursively if appropriate, and returns either a Mounter,
+// or nil.
+func mountUnmount(next, prev ComponentOrHTML) Mounter {
+	if next == prev {
+		return nil
+	}
+	if prevHTML := extractHTML(prev); prevHTML != nil {
+		if nextHTML := extractHTML(next); nextHTML == nil || prevHTML.node != nextHTML.node {
+			for _, child := range prevHTML.children {
+				unmount(child)
+			}
+		}
+	}
+	if u, ok := prev.(Unmounter); ok {
+		u.Unmount()
+	}
+	if m, ok := next.(Mounter); ok {
+		return m
+	}
+	return nil
+}
+
+// mount all pending Mounters
+func mount(pendingMounts ...Mounter) {
+	for _, mounter := range pendingMounts {
+		if mounter == nil {
+			continue
+		}
+		mounter.Mount()
+	}
 }
 
 // unmount recursively unmounts the provided ComponentOrHTML, and any children
 // that satisfy the Unmounter interface.
 func unmount(e ComponentOrHTML) {
+	if c, ok := e.(Component); ok {
+		c.Context().unmounted = true
+	}
+
 	if list, ok := e.(List); ok {
 		for _, child := range list {
 			unmount(child)
@@ -619,7 +685,7 @@ func unmount(e ComponentOrHTML) {
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
-	nextRender, skip := renderComponent(body, nil)
+	nextRender, skip, pendingMounts := renderComponent(body, nil)
 	if skip {
 		panic("vecty: RenderBody Component.SkipRender returned true")
 	}
@@ -630,10 +696,18 @@ func RenderBody(body Component) {
 	if doc.Get("readyState").String() == "loading" {
 		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
 			doc.Set("body", nextRender.node)
+			mount(pendingMounts...)
+			if m, ok := body.(Mounter); ok {
+				mount(m)
+			}
 		})
 		return
 	}
 	doc.Set("body", nextRender.node)
+	mount(pendingMounts...)
+	if m, ok := body.(Mounter); ok {
+		mount(m)
+	}
 }
 
 // SetTitle sets the title of the document.
