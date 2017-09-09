@@ -461,7 +461,8 @@ func Text(text string, m ...MarkupOrChild) *HTML {
 // Rerender causes the body of the given component (i.e. the HTML returned by
 // the Component's Render method) to be re-rendered.
 //
-// If the component has not been rendered before, Rerender panics.
+// If the component has not been rendered before, Rerender panics. If the
+// component was previously unmounted, Rerender is no-op.
 func Rerender(c Component) {
 	if c == nil {
 		panic("vecty: Rerender illegally called with a nil Component argument")
@@ -471,7 +472,6 @@ func Rerender(c Component) {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
 	if c.Context().unmounted {
-		global.Get("console").Call("warn", "vecty: Rerender invoked on unmounted Component")
 		return
 	}
 	nextRender, skip, pendingMounts := renderComponent(c, prevRender)
