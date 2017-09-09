@@ -185,7 +185,8 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 			h.node.Set(name, value)
 		}
 	}
-	if h.node == prev.node {
+	new := h.node != prev.node
+	if !new {
 		for name := range prev.properties {
 			if _, ok := h.properties[name]; !ok {
 				h.node.Delete(name)
@@ -199,7 +200,7 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 			h.node.Call("setAttribute", name, value)
 		}
 	}
-	if h.node == prev.node {
+	if !new {
 		for name := range prev.attributes {
 			if _, ok := h.attributes[name]; !ok {
 				h.node.Call("removeAttribute", name)
@@ -214,7 +215,7 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 			dataset.Set(name, value)
 		}
 	}
-	if h.node == prev.node {
+	if !new {
 		for name := range prev.dataset {
 			if _, ok := h.dataset[name]; !ok {
 				dataset.Delete(name)
@@ -230,7 +231,7 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 			style.Call("setProperty", name, value)
 		}
 	}
-	if h.node == prev.node {
+	if !new {
 		for name := range prev.styles {
 			if _, ok := h.styles[name]; !ok {
 				style.Call("removeProperty", name)
@@ -238,7 +239,7 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 		}
 	}
 
-	if h.node == prev.node {
+	if !new {
 		for _, l := range prev.eventListeners {
 			h.node.Call("removeEventListener", l.Name, l.wrapper)
 		}
@@ -260,7 +261,8 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) (pendingMounts 
 	// TODO better list element reuse
 	for i, nextChild := range h.children {
 		// TODO(pdf): Add tests for node equality
-		if i >= len(prev.children) || h.node != prev.node {
+		new := h.node != prev.node
+		if i >= len(prev.children) || new {
 			if nextChildList, ok := nextChild.(List); ok {
 				nextChildList.reconcile(h.node, insertBefore, nil)
 				continue
