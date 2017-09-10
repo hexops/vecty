@@ -1,8 +1,7 @@
 package vecty
 
 import (
-	"fmt"
-	"strings"
+	"reflect"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -70,7 +69,7 @@ func apply(m MarkupOrChild, h *HTML) {
 	case Component, List, nil:
 		h.children = append(h.children, m)
 	default:
-		panic(fmt.Sprintf("vecty: invalid type %T does not match MarkupOrChild interface", m))
+		panic("vecty: invalid type " + reflect.TypeOf(m).String() + " does not match MarkupOrChild interface")
 	}
 }
 
@@ -151,7 +150,7 @@ func (m ClassMap) Apply(h *HTML) {
 			classes = append(classes, name)
 		}
 	}
-	Property("className", strings.Join(classes, " ")).Apply(h)
+	Property("className", join(classes, " ")).Apply(h)
 }
 
 // MarkupList represents a list of Applyer which is individually
@@ -225,4 +224,34 @@ func Namespace(uri string) Applyer {
 	return markupFunc(func(h *HTML) {
 		h.namespace = uri
 	})
+}
+
+// join is extracted from the stdlib `strings` package
+func join(a []string, sep string) string {
+	switch len(a) {
+	case 0:
+		return ""
+	case 1:
+		return a[0]
+	case 2:
+		// Special case for common small values.
+		// Remove if golang.org/issue/6714 is fixed
+		return a[0] + sep + a[1]
+	case 3:
+		// Special case for common small values.
+		// Remove if golang.org/issue/6714 is fixed
+		return a[0] + sep + a[1] + sep + a[2]
+	}
+	n := len(sep) * (len(a) - 1)
+	for i := 0; i < len(a); i++ {
+		n += len(a[i])
+	}
+
+	b := make([]byte, n)
+	bp := copy(b, a[0])
+	for _, s := range a[1:] {
+		bp += copy(b[bp:], sep)
+		bp += copy(b[bp:], s)
+	}
+	return string(b)
 }

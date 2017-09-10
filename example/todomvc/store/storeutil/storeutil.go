@@ -1,8 +1,6 @@
 // Package storeutil contains a ListenerRegistry type.
 package storeutil
 
-import "fmt"
-
 // ListenerRegistry is a listener registry.
 // The zero value is unfit for use; use NewListenerRegistry to create an instance.
 type ListenerRegistry struct {
@@ -24,7 +22,7 @@ func (r *ListenerRegistry) Add(key interface{}, listener func()) {
 		key = new(int)
 	}
 	if _, ok := r.listeners[key]; ok {
-		panic(fmt.Sprintf("listener with key already exists: %v", key))
+		panic("duplicate listener key")
 	}
 	r.listeners[key] = listener
 }

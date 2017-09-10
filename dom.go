@@ -1,7 +1,6 @@
 package vecty
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -494,7 +493,7 @@ func extractHTML(e ComponentOrHTML) *HTML {
 	case Component:
 		return v.Context().prevRender
 	default:
-		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", e))
+		panic("vecty: encountered invalid ComponentOrHTML " + reflect.TypeOf(e).String())
 	}
 }
 
@@ -523,7 +522,7 @@ func doCopy(c Component) Component {
 	// copy.
 	v := reflect.ValueOf(c)
 	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
-		panic(fmt.Sprintf("vecty: Component must be pointer to struct, found %T", c))
+		panic("vecty: Component must be pointer to struct, found " + reflect.TypeOf(c).String())
 	}
 	cpy := reflect.New(v.Elem().Type())
 	cpy.Elem().Set(v.Elem())
@@ -576,7 +575,7 @@ func render(next, prev ComponentOrHTML) (h *HTML, skip bool, pendingMounts []Mou
 	case nil:
 		return nil, false, nil
 	default:
-		panic(fmt.Sprintf("vecty: encountered invalid ComponentOrHTML %T", next))
+		panic("vecty: encountered invalid ComponentOrHTML " + reflect.TypeOf(next).String())
 	}
 }
 
@@ -692,7 +691,7 @@ func RenderBody(body Component) {
 		panic("vecty: RenderBody Component.SkipRender returned true")
 	}
 	if nextRender.tag != "body" {
-		panic(fmt.Sprintf("vecty: RenderBody expected Component.Render to return a body tag, found %q", nextRender.tag))
+		panic("vecty: RenderBody expected Component.Render to return a body tag, found \"" + nextRender.tag + "\"")
 	}
 	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {
