@@ -261,6 +261,16 @@ func (h *HTML) reconcileChildren(prev *HTML, insertBefore *HTML) (pendingMounts 
 	for i, nextChild := range h.children {
 		// TODO(pdf): Add tests for node equality
 		new := h.node != prev.node
+
+		// Massage concrete type if necessary.
+		switch v := nextChild.(type) {
+		case *HTML:
+			if v == nil {
+				nextChild = nil
+				h.children[i] = nextChild
+			}
+		}
+
 		if i >= len(prev.children) || new {
 			if nextChildList, ok := nextChild.(List); ok {
 				nextChildList.reconcile(h.node, insertBefore, nil)
