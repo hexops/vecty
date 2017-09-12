@@ -31,6 +31,11 @@ func (p *ItemView) Restore(prev vecty.Component) {
 	}
 }
 
+// Key implements the vecty.Keyer interface.
+func (p *ItemView) Key() interface{} {
+	return p.Index
+}
+
 func (p *ItemView) onDestroy(event *vecty.Event) {
 	dispatcher.Dispatch(&actions.DestroyItem{
 		Index: p.Index,

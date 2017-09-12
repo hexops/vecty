@@ -49,6 +49,7 @@ type Event struct {
 //  Component
 //  *HTML
 //  List
+//  KeyedList
 //  nil
 //  MarkupList
 //
@@ -60,7 +61,7 @@ func apply(m MarkupOrChild, h *HTML) {
 	switch m := m.(type) {
 	case MarkupList:
 		m.Apply(h)
-	case Component, *HTML, List, nil:
+	case Component, *HTML, List, KeyedList, nil:
 		h.children = append(h.children, m)
 	default:
 		panic("vecty: invalid type " + reflect.TypeOf(m).String() + " does not match MarkupOrChild interface")
@@ -87,6 +88,15 @@ func Style(key, value string) Applyer {
 			h.styles = make(map[string]string)
 		}
 		h.styles[key] = value
+	})
+}
+
+// Key returns Applyer that uniquely identifies the HTML element amongst its
+// siblings. When used, all other sibling elements and components must also be
+// keyed.
+func Key(key interface{}) Applyer {
+	return markupFunc(func(h *HTML) {
+		h.key = key
 	})
 }
 
