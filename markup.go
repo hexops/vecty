@@ -60,13 +60,7 @@ func apply(m MarkupOrChild, h *HTML) {
 	switch m := m.(type) {
 	case MarkupList:
 		m.Apply(h)
-	case *HTML:
-		if m == nil {
-			h.children = append(h.children, nil)
-			return
-		}
-		h.children = append(h.children, m)
-	case Component, List, nil:
+	case Component, *HTML, List, nil:
 		h.children = append(h.children, m)
 	default:
 		panic("vecty: invalid type " + reflect.TypeOf(m).String() + " does not match MarkupOrChild interface")
