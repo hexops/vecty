@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/gopherjs/vecty"
@@ -31,7 +30,7 @@ func attachLocalStorage() {
 	store.Listeners.Add(nil, func() {
 		data, err := json.Marshal(store.Items)
 		if err != nil {
-			fmt.Printf("failed to store items: %s\n", err)
+			println("failed to store items: " + err.Error())
 		}
 		js.Global.Get("localStorage").Set("items", string(data))
 	})
@@ -39,7 +38,7 @@ func attachLocalStorage() {
 	if data := js.Global.Get("localStorage").Get("items"); data != js.Undefined {
 		var items []*model.Item
 		if err := json.Unmarshal([]byte(data.String()), &items); err != nil {
-			fmt.Printf("failed to load items: %s\n", err)
+			println("failed to load items: " + err.Error())
 		}
 		dispatcher.Dispatch(&actions.ReplaceItems{
 			Items: items,

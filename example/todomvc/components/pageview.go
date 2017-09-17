@@ -1,7 +1,7 @@
 package components
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/gopherjs/vecty"
 	"github.com/gopherjs/vecty/elem"
@@ -117,7 +117,7 @@ func (p *PageView) renderFooter() *vecty.HTML {
 			),
 
 			elem.Strong(
-				vecty.Text(fmt.Sprintf("%d", count)),
+				vecty.Text(strconv.Itoa(count)),
 			),
 			vecty.Text(itemsLeftText),
 		),
@@ -139,7 +139,7 @@ func (p *PageView) renderFooter() *vecty.HTML {
 					prop.Class("clear-completed"),
 					event.Click(p.onClearCompleted),
 				),
-				vecty.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount())),
+				vecty.Text("Clear completed ("+strconv.Itoa(store.CompletedItemCount())+")"),
 			),
 		),
 	)
