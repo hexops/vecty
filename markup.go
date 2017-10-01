@@ -79,7 +79,7 @@ type markupFunc func(h *HTML)
 
 func (m markupFunc) Apply(h *HTML) { m(h) }
 
-// Style returns Applyer which applies the given CSS style. Generally, this
+// Style returns an Applyer which applies the given CSS style. Generally, this
 // function is not used directly but rather the style subpackage (which is type
 // safe) should be used instead.
 func Style(key, value string) Applyer {
@@ -91,7 +91,7 @@ func Style(key, value string) Applyer {
 	})
 }
 
-// Key returns Applyer that uniquely identifies the HTML element amongst its
+// Key returns an Applyer that uniquely identifies the HTML element amongst its
 // siblings. When used, all other sibling elements and components must also be
 // keyed.
 func Key(key interface{}) Applyer {
@@ -100,7 +100,7 @@ func Key(key interface{}) Applyer {
 	})
 }
 
-// Property returns Applyer which applies the given JavaScript property to an
+// Property returns an Applyer which applies the given JavaScript property to an
 // HTML element or text node. Generally, this function is not used directly but
 // rather the prop and style subpackages (which are type safe) should be used instead.
 //
@@ -117,7 +117,7 @@ func Property(key string, value interface{}) Applyer {
 	})
 }
 
-// Attribute returns Applyer which applies the given attribute to an element.
+// Attribute returns an Applyer which applies the given attribute to an element.
 //
 // In most situations, you should use Property function, or the prop subpackage
 // (which is type-safe) instead. There are only a few attributes (aria-*, role,
@@ -132,7 +132,7 @@ func Attribute(key string, value interface{}) Applyer {
 	})
 }
 
-// Data returns Applyer which applies the given data attribute.
+// Data returns an Applyer which applies the given data attribute.
 func Data(key, value string) Applyer {
 	return markupFunc(func(h *HTML) {
 		if h.dataset == nil {
