@@ -6,6 +6,9 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
+// batch renderer singleton
+var batch = &batchRenderer{idx: make(map[Component]int)}
+
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
@@ -708,30 +711,115 @@ func Text(text string, m ...MarkupOrChild) *HTML {
 	return h
 }
 
-// Rerender causes the body of the given component (i.e. the HTML returned by
+// Rerender causes the body of the given Component (i.e. the HTML returned by
 // the Component's Render method) to be re-rendered.
 //
-// If the component has not been rendered before, Rerender panics. If the
-// component was previously unmounted, Rerender is no-op.
+// If the Component has not been rendered before, Rerender panics. If the
+// Component was previously unmounted, Rerender is no-op.
+//
+// Rerender operates efficiently by batching renders together. As a result,
+// there is no guarantee that a calls to Rerender will map 1:1 with calls to
+// the Component's Render method. For example, two calls to Rerender may
+// result in only one call to the Component's Render method.
 func Rerender(c Component) {
 	if c == nil {
 		panic("vecty: Rerender illegally called with a nil Component argument")
 	}
-	prevRender := c.Context().prevRender
-	if prevRender == nil {
+	if c.Context().prevRender == nil {
 		panic("vecty: Rerender invoked on Component that has never been rendered")
 	}
 	if c.Context().unmounted {
 		return
 	}
-	nextRender, skip, pendingMounts := renderComponent(c, prevRender)
-	if skip {
+	batch.add(c)
+}
+
+// batchRenderer handles component re-renders by queueing and deduplicating
+// them, to be rendered on the next animation frame (via requestAnimationFrame).
+type batchRenderer struct {
+	// batch contains the list of pending components to render.
+	batch []Component
+	// idx maps components to batch indexes to allow dedup, retaining order.
+	idx map[Component]int
+	// scheduled tracks whether a batch has been scheduled for processing.
+	scheduled bool
+}
+
+// add a Component to the pending batch.
+func (b *batchRenderer) add(c Component) {
+	if i, ok := b.idx[c]; ok {
+		// Shift idx for delete.
+		for j, c := range b.batch[i+1:] {
+			b.idx[c] = j - 1
+		}
+		// Delete previously queued render.
+		copy(b.batch[i:], b.batch[i+1:])
+		b.batch[len(b.batch)-1] = nil
+		b.batch = b.batch[:len(b.batch)-1]
+	}
+	// Append and index component.
+	b.batch = append(b.batch, c)
+	b.idx[c] = len(b.batch) - 1
+	// If we're not already scheduled for a render batch, request a render on
+	// the next frame.
+	if !b.scheduled {
+		b.scheduled = true
+		requestAnimationFrame(b.render)
+	}
+}
+
+// render the pending batch.
+// TODO(pdf): Add tests for time budget and multi-pass renders.
+func (b *batchRenderer) render(startTime float64) {
+	// If the batch is empty, mark as unscheduled, and stop render cycle.
+	if len(b.batch) == 0 {
+		b.scheduled = false
 		return
 	}
-	// mountUnmount to check for node replacement
-	mountUnmount(nextRender, prevRender)
-	replaceNode(nextRender.node, prevRender.node)
-	mount(pendingMounts...)
+
+	// Drain the current batch.
+	pending := b.batch
+	b.batch = nil
+	b.idx = make(map[Component]int)
+
+	// Process batch.
+	for i, c := range pending {
+		// Skip unmounted components.
+		if c.Context().unmounted {
+			continue
+		}
+
+		// Check for remaining time budget, targeting 60fps (~16ms per frame).
+		if i > 0 {
+			elapsed := global.Get("performance").Call("now").Float() - startTime
+			budgetRemaining := (1000 / 60) - elapsed
+			avgRenderTime := elapsed / float64(i)
+			// If the budget remaining is less than 2 times the average
+			// Component render time, push the remainder of the batch to the
+			// next frame.
+			if budgetRemaining < avgRenderTime*2 {
+				b.batch = pending[i:]
+				for i, c := range b.batch {
+					b.idx[c] = i
+				}
+				break
+			}
+		}
+
+		// Perform render.
+		prevRender := c.Context().prevRender
+		nextRender, skip, pendingMounts := renderComponent(c, prevRender)
+		if skip {
+			continue
+		}
+		// mountUnmount to check for node replacement.
+		mountUnmount(nextRender, prevRender)
+		replaceNode(nextRender.node, prevRender.node)
+		mount(pendingMounts...)
+	}
+
+	// Schedule next frame.
+	requestAnimationFrame(b.render)
 }
 
 // extractHTML returns the *HTML from a ComponentOrHTML.
@@ -934,9 +1022,19 @@ func unmount(e ComponentOrHTML) {
 	}
 }
 
+// requestAnimationFrame calls the native JS function of the same name.
+func requestAnimationFrame(callback func(float64)) int {
+	return global.Call("requestAnimationFrame", callback).Int()
+}
+
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
+	// block batch until we're done
+	batch.scheduled = true
+	defer func() {
+		requestAnimationFrame(batch.render)
+	}()
 	nextRender, skip, pendingMounts := renderComponent(body, nil)
 	if skip {
 		panic("vecty: RenderBody Component.SkipRender returned true")
@@ -987,6 +1085,8 @@ type jsObject interface {
 	Call(name string, args ...interface{}) jsObject
 	String() string
 	Bool() bool
+	Int() int
+	Float() float64
 }
 
 func wrapObject(j *js.Object) jsObject {
@@ -1032,6 +1132,14 @@ func (w wrappedObject) String() string {
 }
 func (w wrappedObject) Bool() bool {
 	return w.j.Bool()
+}
+
+func (w wrappedObject) Int() int {
+	return w.j.Int()
+}
+
+func (w wrappedObject) Float() float64 {
+	return w.j.Float()
 }
 
 var isTest bool

@@ -1094,6 +1094,35 @@ func TestRerender_nil(t *testing.T) {
 // TestRerender_no_prevRender tests the behavior of Rerender when there is no
 // previous render.
 func TestRerender_no_prevRender(t *testing.T) {
+	var renderCallback func(float64)
+	global = &mockObject{
+		get: map[string]jsObject{
+			"performance": &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "now" {
+						panic(fmt.Sprintf("expected call to now, not %q", name))
+					}
+					if len(args) != 0 {
+						panic("len(args) != 0")
+					}
+					return &mockObject{floatValue: 0}
+				},
+			},
+		},
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "requestAnimationFrame" {
+				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			var ok bool
+			if renderCallback, ok = args[0].(func(float64)); !ok {
+				panic("incorrect argument to requestAnimationFrame")
+			}
+			return &mockObject{intValue: 0}
+		},
+	}
 	got := recoverStr(func() {
 		Rerender(&componentFunc{
 			render: func() *HTML {
@@ -1103,6 +1132,7 @@ func TestRerender_no_prevRender(t *testing.T) {
 				panic("expected no SkipRender call")
 			},
 		})
+		renderCallback(0)
 	})
 	want := "vecty: Rerender invoked on Component that has never been rendered"
 	if got != want {
@@ -1142,9 +1172,34 @@ func TestRerender_identical(t *testing.T) {
 			bodySet = true
 		},
 	}
+	var renderCallback func(float64)
 	global = &mockObject{
 		get: map[string]jsObject{
 			"document": document,
+			"performance": &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "now" {
+						panic(fmt.Sprintf("expected call to now, not %q", name))
+					}
+					if len(args) != 0 {
+						panic("len(args) != 0")
+					}
+					return &mockObject{floatValue: 0}
+				},
+			},
+		},
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "requestAnimationFrame" {
+				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			var ok bool
+			if renderCallback, ok = args[0].(func(float64)); !ok {
+				panic("incorrect argument to requestAnimationFrame")
+			}
+			return &mockObject{intValue: 0}
 		},
 	}
 
@@ -1172,7 +1227,6 @@ func TestRerender_identical(t *testing.T) {
 	}
 
 	// Perform a re-render.
-	global = nil // Expecting no JS calls past here
 	newRender := Tag("body")
 	comp.id = "modified"
 	comp.render = func() *HTML {
@@ -1193,6 +1247,8 @@ func TestRerender_identical(t *testing.T) {
 		return false
 	}
 	Rerender(comp)
+	renderCallback(0)
+	global = nil // Expecting no JS calls past here
 	if renderCalled != 2 {
 		t.Fatal("renderCalled != 2")
 	}
@@ -1270,9 +1326,34 @@ func TestRerender_change(t *testing.T) {
 					bodySet = true
 				},
 			}
+			var renderCallback func(float64)
 			global = &mockObject{
 				get: map[string]jsObject{
 					"document": document,
+					"performance": &mockObject{
+						call: func(name string, args ...interface{}) jsObject {
+							if name != "now" {
+								panic(fmt.Sprintf("expected call to now, not %q", name))
+							}
+							if len(args) != 0 {
+								panic("len(args) != 0")
+							}
+							return &mockObject{floatValue: 0}
+						},
+					},
+				},
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "requestAnimationFrame" {
+						panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+					}
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					var ok bool
+					if renderCallback, ok = args[0].(func(float64)); !ok {
+						panic("incorrect argument to requestAnimationFrame")
+					}
+					return &mockObject{intValue: 0}
 				},
 			}
 
@@ -1325,8 +1406,33 @@ func TestRerender_change(t *testing.T) {
 			global = &mockObject{
 				get: map[string]jsObject{
 					"document": document,
+					"performance": &mockObject{
+						call: func(name string, args ...interface{}) jsObject {
+							if name != "now" {
+								panic(fmt.Sprintf("expected call to now, not %q", name))
+							}
+							if len(args) != 0 {
+								panic("len(args) != 0")
+							}
+							return &mockObject{floatValue: 0}
+						},
+					},
+				},
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "requestAnimationFrame" {
+						panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+					}
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					var ok bool
+					if renderCallback, ok = args[0].(func(float64)); !ok {
+						panic("incorrect argument to requestAnimationFrame")
+					}
+					return &mockObject{intValue: 0}
 				},
 			}
+
 			comp.id = "modified"
 			comp.render = func() *HTML {
 				renderCalled++
@@ -1346,6 +1452,7 @@ func TestRerender_change(t *testing.T) {
 				return false
 			}
 			Rerender(comp)
+			renderCallback(0)
 			if renderCalled != 2 {
 				t.Fatal("renderCalled != 2")
 			}
@@ -1407,6 +1514,29 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 			global = &mockObject{
 				get: map[string]jsObject{
 					"document": document,
+					"performance": &mockObject{
+						call: func(name string, args ...interface{}) jsObject {
+							if name != "now" {
+								panic(fmt.Sprintf("expected call to now, not %q", name))
+							}
+							if len(args) != 0 {
+								panic("len(args) != 0")
+							}
+							return &mockObject{floatValue: 0}
+						},
+					},
+				},
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "requestAnimationFrame" {
+						panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+					}
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					if _, ok := args[0].(func(float64)); !ok {
+						panic("incorrect argument to requestAnimationFrame")
+					}
+					return &mockObject{intValue: 0}
 				},
 			}
 			var gotPanic string
@@ -1463,6 +1593,29 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 	global = &mockObject{
 		get: map[string]jsObject{
 			"document": document,
+			"performance": &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "now" {
+						panic(fmt.Sprintf("expected call to now, not %q", name))
+					}
+					if len(args) != 0 {
+						panic("len(args) != 0")
+					}
+					return &mockObject{floatValue: 0}
+				},
+			},
+		},
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "requestAnimationFrame" {
+				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if _, ok := args[0].(func(float64)); !ok {
+				panic("incorrect argument to requestAnimationFrame")
+			}
+			return &mockObject{intValue: 0}
 		},
 	}
 	comp := &componentFunc{
@@ -1519,6 +1672,29 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 	global = &mockObject{
 		get: map[string]jsObject{
 			"document": document,
+			"performance": &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "now" {
+						panic(fmt.Sprintf("expected call to now, not %q", name))
+					}
+					if len(args) != 0 {
+						panic("len(args) != 0")
+					}
+					return &mockObject{floatValue: 0}
+				},
+			},
+		},
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "requestAnimationFrame" {
+				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if _, ok := args[0].(func(float64)); !ok {
+				panic("incorrect argument to requestAnimationFrame")
+			}
+			return &mockObject{intValue: 0}
 		},
 	}
 	RenderBody(&componentFunc{
@@ -1578,6 +1754,29 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 	global = &mockObject{
 		get: map[string]jsObject{
 			"document": document,
+			"performance": &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "now" {
+						panic(fmt.Sprintf("expected call to now, not %q", name))
+					}
+					if len(args) != 0 {
+						panic("len(args) != 0")
+					}
+					return &mockObject{floatValue: 0}
+				},
+			},
+		},
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "requestAnimationFrame" {
+				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if _, ok := args[0].(func(float64)); !ok {
+				panic("incorrect argument to requestAnimationFrame")
+			}
+			return &mockObject{intValue: 0}
 		},
 	}
 	RenderBody(&componentFunc{
@@ -1722,6 +1921,8 @@ type mockObject struct {
 	call        func(name string, args ...interface{}) jsObject
 	stringValue string
 	boolValue   bool
+	intValue    int
+	floatValue  float64
 }
 
 func (w *mockObject) Set(key string, value interface{})              { w.set(key, value) }
@@ -1730,3 +1931,5 @@ func (w *mockObject) Delete(key string)                              { w.delete(
 func (w *mockObject) Call(name string, args ...interface{}) jsObject { return w.call(name, args...) }
 func (w *mockObject) String() string                                 { return w.stringValue }
 func (w *mockObject) Bool() bool                                     { return w.boolValue }
+func (w *mockObject) Int() int                                       { return w.intValue }
+func (w *mockObject) Float() float64                                 { return w.floatValue }
