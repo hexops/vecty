@@ -780,7 +780,7 @@ func (b *batchRenderer) render(startTime float64) {
 	// Drain the current batch.
 	pending := b.batch
 	b.batch = nil
-	b.idx = make(map[Component]int)
+	b.idx = make(map[Component]int, len(b.idx))
 
 	// Process batch.
 	for i, c := range pending {
