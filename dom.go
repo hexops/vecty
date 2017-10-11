@@ -144,6 +144,7 @@ func (h *HTML) Key() interface{} {
 	return h.key
 }
 
+// createNode creates a HTML node of the appropriate type and namespace.
 func (h *HTML) createNode() {
 	switch {
 	case h.tag != "" && h.text != "":
@@ -159,6 +160,7 @@ func (h *HTML) createNode() {
 	}
 }
 
+// reconcileText replaces the content of a text node.
 func (h *HTML) reconcileText(prev *HTML) {
 	h.node = prev.node
 
@@ -184,6 +186,24 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 			prev = &HTML{}
 		}
 		h.createNode()
+	}
+
+	if h.node != prev.node {
+		// reconcile properties against empty prev for new nodes.
+		h.reconcileProperties(&HTML{})
+	} else {
+		h.reconcileProperties(prev)
+	}
+
+	return h.reconcileChildren(prev)
+}
+
+// reconcileProperties updates properties/attributes/etc to match the current
+// element.
+func (h *HTML) reconcileProperties(prev *HTML) {
+	// If nodes match, remove any outdated properties
+	if h.node == prev.node {
+		h.removeProperties(prev)
 	}
 
 	// Wrap event listeners
@@ -215,26 +235,11 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 			h.node.Set(name, value)
 		}
 	}
-	new := h.node != prev.node
-	if !new {
-		for name := range prev.properties {
-			if _, ok := h.properties[name]; !ok {
-				h.node.Delete(name)
-			}
-		}
-	}
 
 	// Attributes
 	for name, value := range h.attributes {
 		if value != prev.attributes[name] {
 			h.node.Call("setAttribute", name, value)
-		}
-	}
-	if !new {
-		for name := range prev.attributes {
-			if _, ok := h.attributes[name]; !ok {
-				h.node.Call("removeAttribute", name)
-			}
 		}
 	}
 
@@ -243,13 +248,6 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 	for name, value := range h.dataset {
 		if value != prev.dataset[name] {
 			dataset.Set(name, value)
-		}
-	}
-	if !new {
-		for name := range prev.dataset {
-			if _, ok := h.dataset[name]; !ok {
-				dataset.Delete(name)
-			}
 		}
 	}
 
@@ -261,28 +259,55 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 			style.Call("setProperty", name, value)
 		}
 	}
-	if !new {
-		for name := range prev.styles {
-			if _, ok := h.styles[name]; !ok {
-				style.Call("removeProperty", name)
-			}
-		}
-	}
 
-	if !new {
-		for _, l := range prev.eventListeners {
-			h.node.Call("removeEventListener", l.Name, l.wrapper)
-		}
-	}
+	// Event listeners
 	for _, l := range h.eventListeners {
 		h.node.Call("addEventListener", l.Name, l.wrapper)
 	}
 
+	// InnerHTML
 	if h.innerHTML != prev.innerHTML {
 		h.node.Set("innerHTML", h.innerHTML)
 	}
+}
 
-	return h.reconcileChildren(prev)
+// removeProperties removes properties/attributes/etc that are no longer
+// present on the current element.
+func (h *HTML) removeProperties(prev *HTML) {
+	// Properties
+	for name := range prev.properties {
+		if _, ok := h.properties[name]; !ok {
+			h.node.Delete(name)
+		}
+	}
+
+	// Attributes
+	for name := range prev.attributes {
+		if _, ok := h.attributes[name]; !ok {
+			h.node.Call("removeAttribute", name)
+		}
+	}
+
+	// Dataset
+	dataset := h.node.Get("dataset")
+	for name := range prev.dataset {
+		if _, ok := h.dataset[name]; !ok {
+			dataset.Delete(name)
+		}
+	}
+
+	// Styles
+	style := h.node.Get("style")
+	for name := range prev.styles {
+		if _, ok := h.styles[name]; !ok {
+			style.Call("removeProperty", name)
+		}
+	}
+
+	// Event listeners
+	for _, l := range prev.eventListeners {
+		h.node.Call("removeEventListener", l.Name, l.wrapper)
+	}
 }
 
 // reconcileChildren reconciles children of the current HTML against a previous
