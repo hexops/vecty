@@ -156,44 +156,79 @@ func TestHTML_reconcile_std(t *testing.T) {
 				targetHTML:   Tag("div", Markup(Property("a", 3))),
 				targetResult: "a:3",
 			},
+			{
+				name:         "replaced_elem_diff",
+				initHTML:     Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("span", Markup(Property("a", 3), Property("b", "4foobar"))),
+				targetResult: "a:3 b:4foobar",
+			},
+			{
+				name:         "replaced_elem_shared",
+				initHTML:     Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
+				initResult:   "a:1 b:2foobar",
+				targetHTML:   Tag("span", Markup(Property("a", 1), Property("b", "4foobar"))),
+				targetResult: "a:1 b:4foobar",
+			},
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				set := map[string]interface{}{}
-				div := &mockObject{
+				initSet := make(map[string]interface{})
+				targetSet := make(map[string]interface{})
+				initElem := &mockObject{
 					set: func(key string, value interface{}) {
-						set[key] = value
+						initSet[key] = value
 					},
 					delete: func(key string) {
-						delete(set, key)
+						delete(initSet, key)
 					},
 				}
-				document := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
+				targetElem := &mockObject{
+					set: func(key string, value interface{}) {
+						targetSet[key] = value
+					},
+					delete: func(key string) {
+						delete(targetSet, key)
+					},
+				}
+				wrapperFunc := func(obj jsObject) func(string, ...interface{}) jsObject {
+					return func(name string, args ...interface{}) jsObject {
 						if name != "createElement" {
 							panic(fmt.Sprintf("expected call to createElement, not %q", name))
 						}
 						if len(args) != 1 {
 							panic("len(args) != 1")
 						}
-						if args[0].(string) != "div" {
-							panic(`args[0].(string) != "div"`)
+						if args[0].(string) != "div" && args[0].(string) != "span" {
+							panic(`args[0].(string) != "div|span"`)
 						}
-						return div
-					},
+						return obj
+					}
 				}
 				global = &mockObject{
 					get: map[string]jsObject{
-						"document": document,
+						"document": &mockObject{call: wrapperFunc(initElem)},
 					},
 				}
 				tst.initHTML.reconcile(nil)
-				got := sortedMapString(set)
+				got := sortedMapString(initSet)
 				if got != tst.initResult {
 					t.Fatalf("got %q want %q", got, tst.initResult)
 				}
+				matchingTags := tst.initHTML.tag == tst.targetHTML.tag
+				if !matchingTags {
+					global = &mockObject{
+						get: map[string]jsObject{
+							"document": &mockObject{call: wrapperFunc(targetElem)},
+						},
+					}
+				}
 				tst.targetHTML.reconcile(tst.initHTML)
-				got = sortedMapString(set)
+				if matchingTags {
+					got = sortedMapString(initSet)
+				} else {
+					got = sortedMapString(targetSet)
+				}
 				if got != tst.targetResult {
 					t.Fatalf("got %q want %q", got, tst.targetResult)
 				}
