@@ -57,7 +57,7 @@ func (p *PageView) Render() *vecty.HTML {
 	return elem.Body(
 		elem.Section(
 			vecty.Markup(
-				prop.Class("todoapp"),
+				vecty.Class("todoapp"),
 			),
 
 			p.renderHeader(),
@@ -74,7 +74,7 @@ func (p *PageView) Render() *vecty.HTML {
 func (p *PageView) renderHeader() *vecty.HTML {
 	return elem.Header(
 		vecty.Markup(
-			prop.Class("header"),
+			vecty.Class("header"),
 		),
 
 		elem.Heading1(
@@ -88,7 +88,7 @@ func (p *PageView) renderHeader() *vecty.HTML {
 
 			elem.Input(
 				vecty.Markup(
-					prop.Class("new-todo"),
+					vecty.Class("new-todo"),
 					prop.Placeholder("What needs to be done?"),
 					prop.Autofocus(true),
 					prop.Value(p.newItemTitle),
@@ -108,12 +108,12 @@ func (p *PageView) renderFooter() *vecty.HTML {
 
 	return elem.Footer(
 		vecty.Markup(
-			prop.Class("footer"),
+			vecty.Class("footer"),
 		),
 
 		elem.Span(
 			vecty.Markup(
-				prop.Class("todo-count"),
+				vecty.Class("todo-count"),
 			),
 
 			elem.Strong(
@@ -124,7 +124,7 @@ func (p *PageView) renderFooter() *vecty.HTML {
 
 		elem.UnorderedList(
 			vecty.Markup(
-				prop.Class("filters"),
+				vecty.Class("filters"),
 			),
 			&FilterButton{Label: "All", Filter: model.All},
 			vecty.Text(" "),
@@ -136,7 +136,7 @@ func (p *PageView) renderFooter() *vecty.HTML {
 		vecty.If(store.CompletedItemCount() > 0,
 			elem.Button(
 				vecty.Markup(
-					prop.Class("clear-completed"),
+					vecty.Class("clear-completed"),
 					event.Click(p.onClearCompleted),
 				),
 				vecty.Text("Clear completed ("+strconv.Itoa(store.CompletedItemCount())+")"),
@@ -148,7 +148,7 @@ func (p *PageView) renderFooter() *vecty.HTML {
 func (p *PageView) renderInfo() *vecty.HTML {
 	return elem.Footer(
 		vecty.Markup(
-			prop.Class("info"),
+			vecty.Class("info"),
 		),
 
 		elem.Paragraph(
@@ -186,13 +186,13 @@ func (p *PageView) renderItemList() *vecty.HTML {
 
 	return elem.Section(
 		vecty.Markup(
-			prop.Class("main"),
+			vecty.Class("main"),
 		),
 
 		elem.Input(
 			vecty.Markup(
+				vecty.Class("toggle-all"),
 				prop.ID("toggle-all"),
-				prop.Class("toggle-all"),
 				prop.Type(prop.TypeCheckbox),
 				prop.Checked(store.CompletedItemCount() == len(store.Items)),
 				event.Change(p.onToggleAllCompleted),
@@ -207,7 +207,7 @@ func (p *PageView) renderItemList() *vecty.HTML {
 
 		elem.UnorderedList(
 			vecty.Markup(
-				prop.Class("todo-list"),
+				vecty.Class("todo-list"),
 			),
 			items,
 		),

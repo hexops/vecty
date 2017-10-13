@@ -74,7 +74,7 @@ func (p *ItemView) onStopEdit(event *vecty.Event) {
 func (p *ItemView) Render() *vecty.HTML {
 	p.input = elem.Input(
 		vecty.Markup(
-			prop.Class("edit"),
+			vecty.Class("edit"),
 			prop.Value(p.editTitle),
 			event.Input(p.onEditInput),
 		),
@@ -90,12 +90,12 @@ func (p *ItemView) Render() *vecty.HTML {
 
 		elem.Div(
 			vecty.Markup(
-				prop.Class("view"),
+				vecty.Class("view"),
 			),
 
 			elem.Input(
 				vecty.Markup(
-					prop.Class("toggle"),
+					vecty.Class("toggle"),
 					prop.Type(prop.TypeCheckbox),
 					prop.Checked(p.Item.Completed),
 					event.Change(p.onToggleCompleted),
@@ -109,7 +109,7 @@ func (p *ItemView) Render() *vecty.HTML {
 			),
 			elem.Button(
 				vecty.Markup(
-					prop.Class("destroy"),
+					vecty.Class("destroy"),
 					event.Click(p.onDestroy),
 				),
 			),

@@ -312,6 +312,116 @@ func TestHTML_reconcile_std(t *testing.T) {
 			})
 		}
 	})
+	t.Run("class", func(t *testing.T) {
+		cases := []struct {
+			name         string
+			initHTML     *HTML
+			initResult   string
+			targetHTML   *HTML
+			targetResult string
+		}{
+			{
+				name:         "multi",
+				initHTML:     Tag("div", Markup(Class("a"), Class("b"))),
+				initResult:   "a:true b:true",
+				targetHTML:   Tag("div", Markup(Class("a"), Class("c"))),
+				targetResult: "a:true c:true",
+			},
+			{
+				name:         "diff",
+				initHTML:     Tag("div", Markup(Class("a", "b"))),
+				initResult:   "a:true b:true",
+				targetHTML:   Tag("div", Markup(Class("a", "c"))),
+				targetResult: "a:true c:true",
+			},
+			{
+				name:         "remove",
+				initHTML:     Tag("div", Markup(Class("a", "b"))),
+				initResult:   "a:true b:true",
+				targetHTML:   Tag("div", Markup(Class("a"))),
+				targetResult: "a:true",
+			},
+			{
+				name:         "map",
+				initHTML:     Tag("div", Markup(ClassMap{"a": true, "b": true})),
+				initResult:   "a:true b:true",
+				targetHTML:   Tag("div", Markup(ClassMap{"a": true})),
+				targetResult: "a:true",
+			},
+			{
+				name:         "map_toggle",
+				initHTML:     Tag("div", Markup(ClassMap{"a": true, "b": true})),
+				initResult:   "a:true b:true",
+				targetHTML:   Tag("div", Markup(ClassMap{"a": true, "b": false})),
+				targetResult: "a:true",
+			},
+			{
+				name:         "combo",
+				initHTML:     Tag("div", Markup(ClassMap{"a": true, "b": true}, Class("c"))),
+				initResult:   "a:true b:true c:true",
+				targetHTML:   Tag("div", Markup(ClassMap{"a": true, "b": false}, Class("d"))),
+				targetResult: "a:true d:true",
+			},
+		}
+		for _, tst := range cases {
+			t.Run(tst.name, func(t *testing.T) {
+				set := map[string]interface{}{}
+				classList := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						if _, ok := args[0].(string); !ok {
+							panic("args[0].(string) is not string")
+						}
+						switch name {
+						case "add":
+							set[args[0].(string)] = true
+						case "remove":
+							delete(set, args[0].(string))
+						default:
+							panic(fmt.Sprintf("expected call to add|remove, not %q", name))
+						}
+						return nil
+					},
+				}
+				div := &mockObject{
+					get: map[string]jsObject{
+						"classList": classList,
+					},
+				}
+				document := &mockObject{
+					call: func(name string, args ...interface{}) jsObject {
+						if name != "createElement" {
+							panic(fmt.Sprintf("expected call to createElement, not %q", name))
+						}
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						if args[0].(string) != "div" {
+							panic(`args[0].(string) != "div"`)
+						}
+						return div
+					},
+				}
+				global = &mockObject{
+					get: map[string]jsObject{
+						"document": document,
+					},
+				}
+				tst.initHTML.reconcile(nil)
+				got := sortedMapString(set)
+				if got != tst.initResult {
+					t.Fatalf("got %q want %q", got, tst.initResult)
+				}
+				tst.targetHTML.reconcile(tst.initHTML)
+				got = sortedMapString(set)
+				if got != tst.targetResult {
+					t.Fatalf("got %q want %q", got, tst.targetResult)
+				}
+			})
+		}
+	})
 	t.Run("dataset", func(t *testing.T) {
 		cases := []struct {
 			name         string
