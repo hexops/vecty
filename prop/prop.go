@@ -42,10 +42,6 @@ func Checked(checked bool) vecty.Applyer {
 	return vecty.Property("checked", checked)
 }
 
-func Class(class string) vecty.Applyer {
-	return vecty.Property("className", class)
-}
-
 func For(id string) vecty.Applyer {
 	return vecty.Property("htmlFor", id)
 }

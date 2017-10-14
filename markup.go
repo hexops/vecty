@@ -142,19 +142,36 @@ func Data(key, value string) Applyer {
 	})
 }
 
+// Class returns an Applyer which applies the provided classes. Subsequent
+// calls to this function will append additional classes. To toggle classes,
+// use ClassMap instead.
+func Class(class ...string) Applyer {
+	return markupFunc(func(h *HTML) {
+		if h.classes == nil {
+			h.classes = make(map[string]struct{})
+		}
+		for _, name := range class {
+			h.classes[name] = struct{}{}
+		}
+	})
+}
+
 // ClassMap is markup that specifies classes to be applied to an element if
 // their boolean value are true.
 type ClassMap map[string]bool
 
 // Apply implements the Applyer interface.
 func (m ClassMap) Apply(h *HTML) {
-	var classes []string
-	for name, active := range m {
-		if active {
-			classes = append(classes, name)
-		}
+	if h.classes == nil {
+		h.classes = make(map[string]struct{})
 	}
-	Property("className", join(classes, " ")).Apply(h)
+	for name, active := range m {
+		if !active {
+			delete(h.classes, name)
+			continue
+		}
+		h.classes[name] = struct{}{}
+	}
 }
 
 // MarkupList represents a list of Applyer which is individually
@@ -228,34 +245,4 @@ func Namespace(uri string) Applyer {
 	return markupFunc(func(h *HTML) {
 		h.namespace = uri
 	})
-}
-
-// join is extracted from the stdlib `strings` package
-func join(a []string, sep string) string {
-	switch len(a) {
-	case 0:
-		return ""
-	case 1:
-		return a[0]
-	case 2:
-		// Special case for common small values.
-		// Remove if golang.org/issue/6714 is fixed
-		return a[0] + sep + a[1]
-	case 3:
-		// Special case for common small values.
-		// Remove if golang.org/issue/6714 is fixed
-		return a[0] + sep + a[1] + sep + a[2]
-	}
-	n := len(sep) * (len(a) - 1)
-	for i := 0; i < len(a); i++ {
-		n += len(a[i])
-	}
-
-	b := make([]byte, n)
-	bp := copy(b, a[0])
-	for _, s := range a[1:] {
-		bp += copy(b[bp:], sep)
-		bp += copy(b[bp:], s)
-	}
-	return string(b)
 }

@@ -6,6 +6,10 @@ Although v1.0.0 [is not yet out](https://github.com/gopherjs/vecty/milestone/1),
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## Oct 14, 2017 ([PR #155](https://github.com/gopherjs/vecty/pull/155)): major breaking change
+
+The function `prop.Class(string)` has been removed and replaced with `vecty.Class(...string)`.  Migrating users must use the new function and split their classes into separate strings, rather than a single space-separated string.
+
 ## Oct 1, 2017 ([PR #147](https://github.com/gopherjs/vecty/pull/147)): minor breaking change
 
 `MarkupOrChild` and `ComponentOrHTML` can both now contain `KeyedList` (a new type that has been added)

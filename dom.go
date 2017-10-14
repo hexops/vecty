@@ -121,6 +121,7 @@ type HTML struct {
 	node jsObject
 
 	namespace, tag, text, innerHTML string
+	classes                         map[string]struct{}
 	styles, dataset                 map[string]string
 	properties, attributes          map[string]interface{}
 	eventListeners                  []*EventListener
@@ -243,6 +244,14 @@ func (h *HTML) reconcileProperties(prev *HTML) {
 		}
 	}
 
+	// Classes
+	classList := h.node.Get("classList")
+	for name := range h.classes {
+		if _, ok := prev.classes[name]; !ok {
+			classList.Call("add", name)
+		}
+	}
+
 	// Dataset
 	dataset := h.node.Get("dataset")
 	for name, value := range h.dataset {
@@ -285,6 +294,14 @@ func (h *HTML) removeProperties(prev *HTML) {
 	for name := range prev.attributes {
 		if _, ok := h.attributes[name]; !ok {
 			h.node.Call("removeAttribute", name)
+		}
+	}
+
+	// Classes
+	classList := h.node.Get("classList")
+	for name := range prev.classes {
+		if _, ok := h.classes[name]; !ok {
+			classList.Call("remove", name)
 		}
 	}
 
