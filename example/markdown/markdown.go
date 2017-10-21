@@ -25,7 +25,7 @@ type PageView struct {
 }
 
 // Render implements the vecty.Component interface.
-func (p *PageView) Render() *vecty.HTML {
+func (p *PageView) Render() vecty.ComponentOrHTML {
 	return elem.Body(
 		// Display a textarea on the right-hand side of the page.
 		elem.Div(
@@ -62,7 +62,7 @@ type Markdown struct {
 }
 
 // Render implements the vecty.Component interface.
-func (m *Markdown) Render() *vecty.HTML {
+func (m *Markdown) Render() vecty.ComponentOrHTML {
 	// Render the markdown input into HTML using Blackfriday.
 	unsafeHTML := blackfriday.MarkdownCommon([]byte(m.Input))
 

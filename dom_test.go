@@ -16,11 +16,11 @@ var _ = func() bool {
 
 type testCore struct{ Core }
 
-func (testCore) Render() *HTML { return Tag("p") }
+func (testCore) Render() ComponentOrHTML { return Tag("p") }
 
 type testCorePtr struct{ *Core }
 
-func (testCorePtr) Render() *HTML { return Tag("p") }
+func (testCorePtr) Render() ComponentOrHTML { return Tag("p") }
 
 func TestCore(t *testing.T) {
 	// Test that a standard *MyComponent with embedded Core works as we expect.
@@ -1078,7 +1078,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		compRender := Tag("div")
 		comp := &componentFunc{
 			id: "foobar",
-			render: func() *HTML {
+			render: func() ComponentOrHTML {
 				compRenderCalls++
 				return compRender
 			},
@@ -1152,7 +1152,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		)
 		comp := &componentFunc{
 			id: "foobar",
-			render: func() *HTML {
+			render: func() ComponentOrHTML {
 				compRenderCalls++
 				return nil
 			},
@@ -1270,7 +1270,7 @@ func TestRerender_no_prevRender(t *testing.T) {
 	}
 	got := recoverStr(func() {
 		Rerender(&componentFunc{
-			render: func() *HTML {
+			render: func() ComponentOrHTML {
 				panic("expected no Render call")
 			},
 			skipRender: func(prev Component) bool {
@@ -1352,7 +1352,7 @@ func TestRerender_identical(t *testing.T) {
 	var renderCalled, skipRenderCalled int
 	comp := &componentFunc{
 		id: "original",
-		render: func() *HTML {
+		render: func() ComponentOrHTML {
 			renderCalled++
 			return render
 		},
@@ -1374,7 +1374,7 @@ func TestRerender_identical(t *testing.T) {
 	// Perform a re-render.
 	newRender := Tag("body")
 	comp.id = "modified"
-	comp.render = func() *HTML {
+	comp.render = func() ComponentOrHTML {
 		renderCalled++
 		return newRender
 	}
@@ -1506,7 +1506,7 @@ func TestRerender_change(t *testing.T) {
 			var renderCalled, skipRenderCalled int
 			comp := &componentFunc{
 				id: "original",
-				render: func() *HTML {
+				render: func() ComponentOrHTML {
 					renderCalled++
 					return render
 				},
@@ -1579,7 +1579,229 @@ func TestRerender_change(t *testing.T) {
 			}
 
 			comp.id = "modified"
-			comp.render = func() *HTML {
+			comp.render = func() ComponentOrHTML {
+				renderCalled++
+				return tst.newRender
+			}
+			comp.skipRender = func(prev Component) bool {
+				if comp.id != "modified" {
+					panic(`comp.id != "modified"`)
+				}
+				if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
+					panic(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
+				}
+				if prev.(*componentFunc).id != "original" {
+					panic(`prev.(*componentFunc).id != "original"`)
+				}
+				skipRenderCalled++
+				return false
+			}
+			Rerender(comp)
+			renderCallback(0)
+			if renderCalled != 2 {
+				t.Fatal("renderCalled != 2")
+			}
+			if skipRenderCalled != 1 {
+				t.Fatal("skipRenderCalled != 1")
+			}
+			if comp.Context().prevRender != tst.newRender {
+				t.Fatal("comp.Context().prevRender != tst.newRender")
+			}
+			if comp.Context().prevRenderComponent.(*componentFunc).id != "modified" {
+				t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "modified"`)
+			}
+			if bodyAppendChild != newNode {
+				t.Fatal("bodyAppendChild != newNode")
+			}
+		})
+	}
+}
+
+// TestRerender_Nested tests the behavior of Rerender when there is a
+// nested Component that is exchanged for *HTML.
+func TestRerender_Nested(t *testing.T) {
+	cases := []struct {
+		name                     string
+		initialRender, newRender ComponentOrHTML
+	}{
+		{
+			name:          "html_to_component",
+			initialRender: Tag("body"),
+			newRender: &componentFunc{
+				render: func() ComponentOrHTML {
+					return Tag("body", Tag("div"))
+				},
+				skipRender: func(Component) bool {
+					return false
+				},
+			},
+		},
+		{
+			name: "component_to_html",
+			initialRender: &componentFunc{
+				render: func() ComponentOrHTML {
+					return Tag("body")
+				},
+				skipRender: func(Component) bool {
+					return false
+				},
+			},
+			newRender: Tag("body", Tag("div")),
+		},
+	}
+	for _, tst := range cases {
+		t.Run(tst.name, func(t *testing.T) {
+			// Perform the initial render of the component.
+			var bodyAppendChild jsObject
+			body := &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					switch name {
+					case "appendChild":
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						bodyAppendChild = args[0].(jsObject)
+						return nil
+					default:
+						panic(fmt.Sprintf("unexpected call to %q", name))
+					}
+				},
+			}
+			bodySet := false
+			document := &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "createElement" {
+						panic(fmt.Sprintf("expected call to createElement, not %q", name))
+					}
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					if args[0].(string) != "body" {
+						panic(`args[0].(string) != "body"`)
+					}
+					return body
+				},
+				get: map[string]jsObject{
+					"readyState": &mockObject{stringValue: "complete"},
+				},
+				set: func(key string, value interface{}) {
+					if key != "body" {
+						panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+					}
+					if value != body {
+						panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+					}
+					bodySet = true
+				},
+			}
+			var renderCallback func(float64)
+			global = &mockObject{
+				get: map[string]jsObject{
+					"document": document,
+					"performance": &mockObject{
+						call: func(name string, args ...interface{}) jsObject {
+							if name != "now" {
+								panic(fmt.Sprintf("expected call to now, not %q", name))
+							}
+							if len(args) != 0 {
+								panic("len(args) != 0")
+							}
+							return &mockObject{floatValue: 0}
+						},
+					},
+				},
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "requestAnimationFrame" {
+						panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+					}
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					var ok bool
+					if renderCallback, ok = args[0].(func(float64)); !ok {
+						panic("incorrect argument to requestAnimationFrame")
+					}
+					return &mockObject{intValue: 0}
+				},
+			}
+
+			var renderCalled, skipRenderCalled int
+			comp := &componentFunc{
+				id: "original",
+				render: func() ComponentOrHTML {
+					renderCalled++
+					return tst.initialRender
+				},
+			}
+			RenderBody(comp)
+			if !bodySet {
+				t.Fatal("!bodySet")
+			}
+			if renderCalled != 1 {
+				t.Fatal("renderCalled != 1")
+			}
+			if comp.Context().prevRender != tst.initialRender {
+				t.Fatal("comp.Context().prevRender != render")
+			}
+			if comp.Context().prevRenderComponent.(*componentFunc).id != "original" {
+				t.Fatal(`comp.Context().prevRenderComponent.(*componentFunc).id != "original"`)
+			}
+
+			// Perform a re-render.
+			body = &mockObject{}
+			newNode := &mockObject{}
+			document = &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					switch name {
+					case "createElement":
+						if len(args) != 1 {
+							panic("len(args) != 1")
+						}
+						switch args[0].(string) {
+						case "body":
+							return body
+						case "div", "noscript":
+							return newNode
+						default:
+							panic("unexpected createElement call")
+						}
+					default:
+						panic(fmt.Sprintf("unexpected call to %q", name))
+					}
+				},
+			}
+			global = &mockObject{
+				get: map[string]jsObject{
+					"document": document,
+					"performance": &mockObject{
+						call: func(name string, args ...interface{}) jsObject {
+							if name != "now" {
+								panic(fmt.Sprintf("expected call to now, not %q", name))
+							}
+							if len(args) != 0 {
+								panic("len(args) != 0")
+							}
+							return &mockObject{floatValue: 0}
+						},
+					},
+				},
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "requestAnimationFrame" {
+						panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+					}
+					if len(args) != 1 {
+						panic("len(args) != 1")
+					}
+					var ok bool
+					if renderCallback, ok = args[0].(func(float64)); !ok {
+						panic("incorrect argument to requestAnimationFrame")
+					}
+					return &mockObject{intValue: 0}
+				},
+			}
+
+			comp.id = "modified"
+			comp.render = func() ComponentOrHTML {
 				renderCalled++
 				return tst.newRender
 			}
@@ -1693,7 +1915,7 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 					}
 				}()
 				RenderBody(&componentFunc{
-					render: func() *HTML {
+					render: func() ComponentOrHTML {
 						return c.render
 					},
 					skipRender: func(prev Component) bool { return false },
@@ -1764,7 +1986,7 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 		},
 	}
 	comp := &componentFunc{
-		render: func() *HTML {
+		render: func() ComponentOrHTML {
 			return Tag("body")
 		},
 		skipRender: func(prev Component) bool {
@@ -1843,7 +2065,7 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 		},
 	}
 	RenderBody(&componentFunc{
-		render: func() *HTML {
+		render: func() ComponentOrHTML {
 			return Tag("body")
 		},
 	})
@@ -1925,7 +2147,7 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 		},
 	}
 	RenderBody(&componentFunc{
-		render: func() *HTML {
+		render: func() ComponentOrHTML {
 			return Tag("body")
 		},
 	})
@@ -1936,6 +2158,83 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 		t.Fatalf("expected document.body to NOT be set")
 	}
 	domLoadedEventListener()
+	if !bodySet {
+		t.Fatalf("expected document.body to be set")
+	}
+}
+
+// TestRenderBody_Nested tests that RenderBody properly handles nested
+// Components.
+func TestRenderBody_Nested(t *testing.T) {
+	body := &mockObject{}
+	bodySet := false
+	document := &mockObject{
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "createElement" {
+				panic(fmt.Sprintf("expected call to createElement, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if args[0].(string) != "body" {
+				panic(`args[0].(string) != "body"`)
+			}
+			return body
+		},
+		get: map[string]jsObject{
+			"readyState": &mockObject{stringValue: "complete"},
+		},
+		set: func(key string, value interface{}) {
+			if key != "body" {
+				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
+			}
+			if value != body {
+				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
+			}
+			bodySet = true
+		},
+	}
+	global = &mockObject{
+		get: map[string]jsObject{
+			"document": document,
+			"performance": &mockObject{
+				call: func(name string, args ...interface{}) jsObject {
+					if name != "now" {
+						panic(fmt.Sprintf("expected call to now, not %q", name))
+					}
+					if len(args) != 0 {
+						panic("len(args) != 0")
+					}
+					return &mockObject{floatValue: 0}
+				},
+			},
+		},
+		call: func(name string, args ...interface{}) jsObject {
+			if name != "requestAnimationFrame" {
+				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
+			}
+			if len(args) != 1 {
+				panic("len(args) != 1")
+			}
+			if _, ok := args[0].(func(float64)); !ok {
+				panic("incorrect argument to requestAnimationFrame")
+			}
+			return &mockObject{intValue: 0}
+		},
+	}
+	RenderBody(&componentFunc{
+		render: func() ComponentOrHTML {
+			return &componentFunc{
+				render: func() ComponentOrHTML {
+					return &componentFunc{
+						render: func() ComponentOrHTML {
+							return Tag("body")
+						},
+					}
+				},
+			}
+		},
+	})
 	if !bodySet {
 		t.Fatalf("expected document.body to be set")
 	}
@@ -2052,11 +2351,11 @@ func recoverStr(f func()) (s string) {
 type componentFunc struct {
 	Core
 	id         string
-	render     func() *HTML
+	render     func() ComponentOrHTML
 	skipRender func(prev Component) bool
 }
 
-func (c *componentFunc) Render() *HTML                  { return c.render() }
+func (c *componentFunc) Render() ComponentOrHTML        { return c.render() }
 func (c *componentFunc) SkipRender(prev Component) bool { return c.skipRender(prev) }
 
 type mockObject struct {

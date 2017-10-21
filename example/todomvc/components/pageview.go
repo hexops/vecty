@@ -53,7 +53,7 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 }
 
 // Render implements the vecty.Component interface.
-func (p *PageView) Render() *vecty.HTML {
+func (p *PageView) Render() vecty.ComponentOrHTML {
 	return elem.Body(
 		elem.Section(
 			vecty.Markup(
