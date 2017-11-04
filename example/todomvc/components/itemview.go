@@ -71,7 +71,7 @@ func (p *ItemView) onStopEdit(event *vecty.Event) {
 }
 
 // Render implements the vecty.Component interface.
-func (p *ItemView) Render() *vecty.HTML {
+func (p *ItemView) Render() vecty.ComponentOrHTML {
 	p.input = elem.Input(
 		vecty.Markup(
 			vecty.Class("edit"),

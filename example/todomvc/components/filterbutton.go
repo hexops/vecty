@@ -27,7 +27,7 @@ func (b *FilterButton) onClick(event *vecty.Event) {
 }
 
 // Render implements the vecty.Component interface.
-func (b *FilterButton) Render() *vecty.HTML {
+func (b *FilterButton) Render() vecty.ComponentOrHTML {
 	return elem.ListItem(
 		elem.Anchor(
 			vecty.Markup(

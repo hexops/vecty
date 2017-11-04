@@ -6,6 +6,31 @@ Although v1.0.0 [is not yet out](https://github.com/gopherjs/vecty/milestone/1),
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## Nov 4, 2017 ([PR #158](https://github.com/gopherjs/vecty/pull/158)): major breaking change
+
+All `Component`s must now have a `Render` method which returns `vecty.ComponentOrHTML` instead of the prior `*vecty.HTML` type.
+
+This change allows for higher order components (components that themselves render components), which is useful for many more advanced uses of Vecty.
+
+### Upgrading
+
+Upgrading most codebases should be trivial with a find-and-replace across all files.
+
+From your editor:
+* Find `) Render() *vecty.HTML` and replace with `) Render() vecty.ComponentOrHTML`.
+
+From the __Linux__ command line:
+```bash
+git grep -l ') Render() \*vecty.HTML' | xargs sed -i 's/) Render() \*vecty.HTML/) Render() vecty.ComponentOrHTML/g'
+```
+
+From the __Mac__ command line:
+```bash
+git grep -l ') Render() \*vecty.HTML' | xargs sed -i '' -e 's/) Render() \*vecty.HTML/) Render() vecty.ComponentOrHTML/g'
+```
+
+Obviously, you'll still need to verify that this only modifies your `Component` implementations. No other changes are needed, and no behavior change is expected for components that return `*vecty.HTML` (as the new `vecty.ComponentOrHTML` interface return type).
+
 ## Oct 14, 2017 ([PR #155](https://github.com/gopherjs/vecty/pull/155)): major breaking change
 
 The function `prop.Class(string)` has been removed and replaced with `vecty.Class(...string)`.  Migrating users must use the new function and split their classes into separate strings, rather than a single space-separated string.
