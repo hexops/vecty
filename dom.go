@@ -20,7 +20,7 @@ type Core struct {
 // Context implements the Component interface.
 func (c *Core) Context() *Core { return c }
 
-// isMarkupOrChild implements ComponentOrHTML
+// isMarkupOrChild implements MarkupOrChild
 func (c *Core) isMarkupOrChild() {}
 
 // isComponentOrHTML implements ComponentOrHTML
