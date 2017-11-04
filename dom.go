@@ -51,10 +51,8 @@ type Component interface {
 	// Vecty in order to store the previous component render for diffing.
 	Context() *Core
 
-	// ComponentOrHTML is satisfied by vecty.Core
-	ComponentOrHTML
-	// MarkupOrChild is satisfied by vecty.Core
-	MarkupOrChild
+	isComponentOrHTML()
+	isMarkupOrChild()
 }
 
 // Copier is an optional interface that a Component can implement in order to
