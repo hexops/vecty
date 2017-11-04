@@ -55,14 +55,16 @@ type Event struct {
 //
 // If the underlying value is not one of these types, the code handling the
 // value is expected to panic.
-type MarkupOrChild interface{}
+type MarkupOrChild interface {
+	isMarkupOrChild()
+}
 
 func apply(m MarkupOrChild, h *HTML) {
 	switch m := m.(type) {
 	case MarkupList:
 		m.Apply(h)
 	case Component, *HTML, List, KeyedList, nil:
-		h.children = append(h.children, m)
+		h.children = append(h.children, m.(ComponentOrHTML))
 	default:
 		panic("vecty: invalid type " + reflect.TypeOf(m).String() + " does not match MarkupOrChild interface")
 	}
@@ -192,6 +194,9 @@ func (m MarkupList) Apply(h *HTML) {
 	}
 }
 
+// isMarkupOrChild implements MarkupOrChild
+func (m MarkupList) isMarkupOrChild() {}
+
 // Markup wraps a list of Applyer which is individually
 // applied to an HTML element or text node.
 func Markup(m ...Applyer) MarkupList {
@@ -202,10 +207,10 @@ func Markup(m ...Applyer) MarkupList {
 	return MarkupList{list: m}
 }
 
-// If returns nil if cond is false, otherwise it returns the given markup.
-func If(cond bool, markup ...ComponentOrHTML) MarkupOrChild {
+// If returns nil if cond is false, otherwise it returns the given children.
+func If(cond bool, children ...ComponentOrHTML) MarkupOrChild {
 	if cond {
-		return List(markup)
+		return List(children)
 	}
 	return nil
 }
