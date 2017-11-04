@@ -103,8 +103,8 @@ type Keyer interface {
 //  KeyedList
 //  nil
 //
-// If the underlying value is not one of these types, the code handling the
-// value is expected to panic.
+// An unexported method on this interface ensures at compile time that the
+// underlying value must be one of these types.
 type ComponentOrHTML interface {
 	isComponentOrHTML()
 }
