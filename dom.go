@@ -105,6 +105,7 @@ type Keyer interface {
 // underlying value must be one of these types.
 type ComponentOrHTML interface {
 	isComponentOrHTML()
+	isMarkupOrChild()
 }
 
 // RenderSkipper is an optional interface that Component's can implement in
