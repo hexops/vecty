@@ -20,6 +20,12 @@ type Core struct {
 // Context implements the Component interface.
 func (c *Core) Context() *Core { return c }
 
+// isMarkupOrChild implements ComponentOrHTML
+func (c *Core) isMarkupOrChild() {}
+
+// isComponentOrHTML implements ComponentOrHTML
+func (c *Core) isComponentOrHTML() {}
+
 // Component represents a single visual component within an application. To
 // define a new component simply implement the Render method and embed the Core
 // struct:
@@ -44,6 +50,11 @@ type Component interface {
 	// Context returns the components context, which is used internally by
 	// Vecty in order to store the previous component render for diffing.
 	Context() *Core
+
+	// ComponentOrHTML is satisfied by vecty.Core
+	ComponentOrHTML
+	// MarkupOrChild is satisfied by vecty.Core
+	MarkupOrChild
 }
 
 // Copier is an optional interface that a Component can implement in order to
@@ -94,7 +105,9 @@ type Keyer interface {
 //
 // If the underlying value is not one of these types, the code handling the
 // value is expected to panic.
-type ComponentOrHTML interface{}
+type ComponentOrHTML interface {
+	isComponentOrHTML()
+}
 
 // RenderSkipper is an optional interface that Component's can implement in
 // order to short-circuit the reconciliation of a Component's rendered body.
@@ -144,6 +157,12 @@ func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 func (h *HTML) Key() interface{} {
 	return h.key
 }
+
+// isMarkupOrChild implements MarkupOrChild
+func (h *HTML) isMarkupOrChild() {}
+
+// isComponentOrHTML implements ComponentOrHTML
+func (h *HTML) isComponentOrHTML() {}
 
 // createNode creates a HTML node of the appropriate type and namespace.
 func (h *HTML) createNode() {
@@ -646,6 +665,12 @@ func (h *HTML) insertBefore(node jsObject, child *HTML) {
 // List represents a list of components or HTML.
 type List []ComponentOrHTML
 
+// isMarkupOrChild implements MarkupOrChild
+func (l List) isMarkupOrChild() {}
+
+// isComponentOrHTML implements ComponentOrHTML
+func (l List) isComponentOrHTML() {}
+
 // WithKey wraps the List in a Keyer using the given key. List members are
 // inaccessible within the returned value.
 func (l List) WithKey(key interface{}) KeyedList {
@@ -662,6 +687,12 @@ type KeyedList struct {
 	// key is optional, and only required when the KeyedList has keyed siblings.
 	key interface{}
 }
+
+// isMarkupOrChild implements MarkupOrChild
+func (l KeyedList) isMarkupOrChild() {}
+
+// isComponentOrHTML implements ComponentOrHTML
+func (l KeyedList) isComponentOrHTML() {}
 
 // Key implements the Keyer interface
 func (l KeyedList) Key() interface{} {
