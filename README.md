@@ -35,6 +35,8 @@ Current Status
 -	The scope of Vecty is only ~80% defined currently.
 -	There are a number of important [open issues](https://github.com/gopherjs/vecty/issues).
 
+For a list of projects currently using Vecty, see the [doc/projects-using-vecty.md](doc/projects-using-vecty.md) file.
+
 Community
 =========
 
