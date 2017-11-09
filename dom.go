@@ -403,7 +403,7 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 		// can not be determined by children index, so skip if keyed.
 		if (i >= len(prev.children) && !hasKeyedChildren) || new {
 			if nextChildList, ok := nextChild.(KeyedList); ok {
-				nextChildList.reconcile(h, nil)
+				pendingMounts = append(pendingMounts, nextChildList.reconcile(h, nil)...)
 				continue
 			}
 			nextChildRender, skip, mounters := render(nextChild, nil)
@@ -483,7 +483,7 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 		// If the next child is a list, reconcile its elements in-place, and
 		// we're done.
 		if nextChildList, ok := nextChild.(KeyedList); ok {
-			nextChildList.reconcile(h, prevChild)
+			pendingMounts = append(pendingMounts, nextChildList.reconcile(h, prevChild)...)
 			continue
 		}
 
