@@ -29,24 +29,22 @@ func (p *PageView) Render() vecty.ComponentOrHTML {
 	return elem.Body(
 		// Display a textarea on the right-hand side of the page.
 		elem.Div(
-			vecty.Markup(
-				vecty.Style("float", "right"),
-			),
 			elem.TextArea(
-				vecty.Markup(
-					vecty.Style("font-family", "monospace"),
-					vecty.Property("rows", 14),
-					vecty.Property("cols", 70),
-
-					// When input is typed into the textarea, update the local
-					// component state and rerender.
-					event.Input(func(e *vecty.Event) {
-						p.Input = e.Target.Get("value").String()
-						vecty.Rerender(p)
-					}),
-				),
 				vecty.Text(p.Input), // initial textarea text.
+			).WithMarkup(
+				vecty.Style("font-family", "monospace"),
+				vecty.Property("rows", 14),
+				vecty.Property("cols", 70),
+
+				// When input is typed into the textarea, update the local
+				// component state and rerender.
+				event.Input(func(e *vecty.Event) {
+					p.Input = e.Target.Get("value").String()
+					vecty.Rerender(p)
+				}),
 			),
+		).WithMarkup(
+			vecty.Style("float", "right"),
 		),
 
 		// Render the markdown.
@@ -70,9 +68,5 @@ func (m *Markdown) Render() vecty.ComponentOrHTML {
 	safeHTML := string(bluemonday.UGCPolicy().SanitizeBytes(unsafeHTML))
 
 	// Return the HTML, which we guarantee to be safe / sanitized.
-	return elem.Div(
-		vecty.Markup(
-			vecty.UnsafeHTML(safeHTML),
-		),
-	)
+	return elem.Div().WithMarkup(vecty.UnsafeHTML(safeHTML))
 }
