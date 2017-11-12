@@ -56,16 +56,12 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 func (p *PageView) Render() vecty.ComponentOrHTML {
 	return elem.Body(
 		elem.Section(
-			vecty.Markup(
-				vecty.Class("todoapp"),
-			),
-
 			p.renderHeader(),
 			vecty.If(len(store.Items) > 0,
 				p.renderItemList(),
 				p.renderFooter(),
 			),
-		),
+		).WithMarkup(vecty.Class("todoapp")),
 
 		p.renderInfo(),
 	)
@@ -73,29 +69,23 @@ func (p *PageView) Render() vecty.ComponentOrHTML {
 
 func (p *PageView) renderHeader() *vecty.HTML {
 	return elem.Header(
-		vecty.Markup(
-			vecty.Class("header"),
-		),
-
 		elem.Heading1(
 			vecty.Text("todos"),
 		),
 		elem.Form(
-			vecty.Markup(
-				style.Margin(style.Px(0)),
-				event.Submit(p.onAdd).PreventDefault(),
+			elem.Input().WithMarkup(
+				vecty.Class("new-todo"),
+				prop.Placeholder("What needs to be done?"),
+				prop.Autofocus(true),
+				prop.Value(p.newItemTitle),
+				event.Input(p.onNewItemTitleInput),
 			),
-
-			elem.Input(
-				vecty.Markup(
-					vecty.Class("new-todo"),
-					prop.Placeholder("What needs to be done?"),
-					prop.Autofocus(true),
-					prop.Value(p.newItemTitle),
-					event.Input(p.onNewItemTitleInput),
-				),
-			),
+		).WithMarkup(
+			style.Margin(style.Px(0)),
+			event.Submit(p.onAdd).PreventDefault(),
 		),
+	).WithMarkup(
+		vecty.Class("header"),
 	)
 }
 
@@ -107,72 +97,50 @@ func (p *PageView) renderFooter() *vecty.HTML {
 	}
 
 	return elem.Footer(
-		vecty.Markup(
-			vecty.Class("footer"),
-		),
-
 		elem.Span(
-			vecty.Markup(
-				vecty.Class("todo-count"),
-			),
-
 			elem.Strong(
 				vecty.Text(strconv.Itoa(count)),
 			),
 			vecty.Text(itemsLeftText),
-		),
+		).WithMarkup(vecty.Class("todo-count")),
 
 		elem.UnorderedList(
-			vecty.Markup(
-				vecty.Class("filters"),
-			),
 			&FilterButton{Label: "All", Filter: model.All},
 			vecty.Text(" "),
 			&FilterButton{Label: "Active", Filter: model.Active},
 			vecty.Text(" "),
 			&FilterButton{Label: "Completed", Filter: model.Completed},
-		),
+		).WithMarkup(vecty.Class("filters")),
 
 		vecty.If(store.CompletedItemCount() > 0,
 			elem.Button(
-				vecty.Markup(
-					vecty.Class("clear-completed"),
-					event.Click(p.onClearCompleted),
-				),
 				vecty.Text("Clear completed ("+strconv.Itoa(store.CompletedItemCount())+")"),
+			).WithMarkup(
+				vecty.Class("clear-completed"),
+				event.Click(p.onClearCompleted),
 			),
 		),
-	)
+	).WithMarkup(vecty.Class("footer"))
 }
 
 func (p *PageView) renderInfo() *vecty.HTML {
 	return elem.Footer(
-		vecty.Markup(
-			vecty.Class("info"),
-		),
-
 		elem.Paragraph(
 			vecty.Text("Double-click to edit a todo"),
 		),
 		elem.Paragraph(
 			vecty.Text("Created by "),
 			elem.Anchor(
-				vecty.Markup(
-					prop.Href("http://github.com/neelance"),
-				),
 				vecty.Text("Richard Musiol"),
-			),
+			).WithMarkup(prop.Href("http://github.com/neelance")),
 		),
 		elem.Paragraph(
 			vecty.Text("Part of "),
 			elem.Anchor(
-				vecty.Markup(
-					prop.Href("http://todomvc.com"),
-				),
 				vecty.Text("TodoMVC"),
-			),
+			).WithMarkup(prop.Href("http://todomvc.com")),
 		),
-	)
+	).WithMarkup(vecty.Class("info"))
 }
 
 func (p *PageView) renderItemList() *vecty.HTML {
@@ -185,31 +153,19 @@ func (p *PageView) renderItemList() *vecty.HTML {
 	}
 
 	return elem.Section(
-		vecty.Markup(
-			vecty.Class("main"),
-		),
-
-		elem.Input(
-			vecty.Markup(
-				vecty.Class("toggle-all"),
-				prop.ID("toggle-all"),
-				prop.Type(prop.TypeCheckbox),
-				prop.Checked(store.CompletedItemCount() == len(store.Items)),
-				event.Change(p.onToggleAllCompleted),
-			),
+		elem.Input().WithMarkup(
+			vecty.Class("toggle-all"),
+			prop.ID("toggle-all"),
+			prop.Type(prop.TypeCheckbox),
+			prop.Checked(store.CompletedItemCount() == len(store.Items)),
+			event.Change(p.onToggleAllCompleted),
 		),
 		elem.Label(
-			vecty.Markup(
-				prop.For("toggle-all"),
-			),
 			vecty.Text("Mark all as complete"),
-		),
+		).WithMarkup(prop.For("toggle-all")),
 
 		elem.UnorderedList(
-			vecty.Markup(
-				vecty.Class("todo-list"),
-			),
 			items,
-		),
-	)
+		).WithMarkup(vecty.Class("todo-list")),
+	).WithMarkup(vecty.Class("main"))
 }

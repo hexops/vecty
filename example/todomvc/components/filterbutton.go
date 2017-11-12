@@ -30,13 +30,11 @@ func (b *FilterButton) onClick(event *vecty.Event) {
 func (b *FilterButton) Render() vecty.ComponentOrHTML {
 	return elem.ListItem(
 		elem.Anchor(
-			vecty.Markup(
-				vecty.MarkupIf(store.Filter == b.Filter, vecty.Class("selected")),
-				prop.Href("#"),
-				event.Click(b.onClick).PreventDefault(),
-			),
-
 			vecty.Text(b.Label),
+		).WithMarkup(
+			vecty.MarkupIf(store.Filter == b.Filter, vecty.Class("selected")),
+			prop.Href("#"),
+			event.Click(b.onClick).PreventDefault(),
 		),
 	)
 }

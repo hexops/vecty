@@ -1,10 +1,6 @@
 package vecty
 
-import (
-	"reflect"
-
-	"github.com/gopherjs/gopherjs/js"
-)
+import "github.com/gopherjs/gopherjs/js"
 
 // EventListener is markup that specifies a callback function to be invoked when
 // the named DOM event is fired.
@@ -42,34 +38,6 @@ func (l *EventListener) Apply(h *HTML) {
 type Event struct {
 	*js.Object
 	Target *js.Object
-}
-
-// MarkupOrChild represents one of:
-//
-//  Component
-//  *HTML
-//  List
-//  KeyedList
-//  nil
-//  MarkupList
-//
-// An unexported method on this interface ensures at compile time that the
-// underlying value must be one of these types.
-type MarkupOrChild interface {
-	isMarkupOrChild()
-}
-
-func apply(m MarkupOrChild, h *HTML) {
-	switch m := m.(type) {
-	case MarkupList:
-		m.Apply(h)
-	case nil:
-		h.children = append(h.children, nil)
-	case Component, *HTML, List, KeyedList:
-		h.children = append(h.children, m.(ComponentOrHTML))
-	default:
-		panic("vecty: invalid type " + reflect.TypeOf(m).String() + " does not match MarkupOrChild interface")
-	}
 }
 
 // Applyer represents some type of markup (a style, property, data, etc) which
@@ -178,16 +146,14 @@ func (m ClassMap) Apply(h *HTML) {
 	}
 }
 
-// MarkupList represents a list of Applyer which is individually
+// markupList represents a list of Applyer which is individually
 // applied to an HTML element or text node.
-//
-// It may only be created through the Markup function.
-type MarkupList struct {
+type markupList struct {
 	list []Applyer
 }
 
 // Apply implements the Applyer interface.
-func (m MarkupList) Apply(h *HTML) {
+func (m markupList) Apply(h *HTML) {
 	for _, a := range m.list {
 		if a == nil {
 			continue
@@ -196,21 +162,8 @@ func (m MarkupList) Apply(h *HTML) {
 	}
 }
 
-// isMarkupOrChild implements MarkupOrChild
-func (m MarkupList) isMarkupOrChild() {}
-
-// Markup wraps a list of Applyer which is individually
-// applied to an HTML element or text node.
-func Markup(m ...Applyer) MarkupList {
-	// returns public non-pointer struct value with private field so that users
-	// must acquire a MarkupList only from this function, and so that it can
-	// never be nil (which would make it indistinguishable from (*HTML)(nil) in
-	// a call to e.g. Tag).
-	return MarkupList{list: m}
-}
-
 // If returns nil if cond is false, otherwise it returns the given children.
-func If(cond bool, children ...ComponentOrHTML) MarkupOrChild {
+func If(cond bool, children ...ComponentOrHTML) ComponentOrHTML {
 	if cond {
 		return List(children)
 	}
@@ -218,9 +171,11 @@ func If(cond bool, children ...ComponentOrHTML) MarkupOrChild {
 }
 
 // MarkupIf returns nil if cond is false, otherwise it returns the given markup.
+//
+// TODO(slimsag): we could offer (*HTML).WithMarkupIf(cond, markup...) instead?
 func MarkupIf(cond bool, markup ...Applyer) Applyer {
 	if cond {
-		return Markup(markup...)
+		return markupList{list: markup}
 	}
 	return nil
 }

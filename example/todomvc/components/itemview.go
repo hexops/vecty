@@ -72,54 +72,38 @@ func (p *ItemView) onStopEdit(event *vecty.Event) {
 
 // Render implements the vecty.Component interface.
 func (p *ItemView) Render() vecty.ComponentOrHTML {
-	p.input = elem.Input(
-		vecty.Markup(
-			vecty.Class("edit"),
-			prop.Value(p.editTitle),
-			event.Input(p.onEditInput),
-		),
+	p.input = elem.Input().WithMarkup(
+		vecty.Class("edit"),
+		prop.Value(p.editTitle),
+		event.Input(p.onEditInput),
 	)
 
 	return elem.ListItem(
-		vecty.Markup(
-			vecty.ClassMap{
-				"completed": p.Item.Completed,
-				"editing":   p.editing,
-			},
-		),
-
 		elem.Div(
-			vecty.Markup(
-				vecty.Class("view"),
+			elem.Input().WithMarkup(
+				vecty.Class("toggle"),
+				prop.Type(prop.TypeCheckbox),
+				prop.Checked(p.Item.Completed),
+				event.Change(p.onToggleCompleted),
 			),
-
-			elem.Input(
-				vecty.Markup(
-					vecty.Class("toggle"),
-					prop.Type(prop.TypeCheckbox),
-					prop.Checked(p.Item.Completed),
-					event.Change(p.onToggleCompleted),
-				),
+			elem.Label(vecty.Text(p.Item.Title)).WithMarkup(
+				event.DoubleClick(p.onStartEdit),
 			),
-			elem.Label(
-				vecty.Markup(
-					event.DoubleClick(p.onStartEdit),
-				),
-				vecty.Text(p.Item.Title),
+			elem.Button().WithMarkup(
+				vecty.Class("destroy"),
+				event.Click(p.onDestroy),
 			),
-			elem.Button(
-				vecty.Markup(
-					vecty.Class("destroy"),
-					event.Click(p.onDestroy),
-				),
-			),
+		).WithMarkup(
+			vecty.Class("view"),
 		),
-		elem.Form(
-			vecty.Markup(
-				style.Margin(style.Px(0)),
-				event.Submit(p.onStopEdit).PreventDefault(),
-			),
-			p.input,
+		elem.Form(p.input).WithMarkup(
+			style.Margin(style.Px(0)),
+			event.Submit(p.onStopEdit).PreventDefault(),
 		),
+	).WithMarkup(
+		vecty.ClassMap{
+			"completed": p.Item.Completed,
+			"editing":   p.editing,
+		},
 	)
 }

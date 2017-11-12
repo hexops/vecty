@@ -20,9 +20,6 @@ type Core struct {
 // Context implements the Component interface.
 func (c *Core) Context() *Core { return c }
 
-// isMarkupOrChild implements MarkupOrChild
-func (c *Core) isMarkupOrChild() {}
-
 // isComponentOrHTML implements ComponentOrHTML
 func (c *Core) isComponentOrHTML() {}
 
@@ -52,7 +49,6 @@ type Component interface {
 	Context() *Core
 
 	isComponentOrHTML()
-	isMarkupOrChild()
 }
 
 // Copier is an optional interface that a Component can implement in order to
@@ -105,7 +101,6 @@ type Keyer interface {
 // underlying value must be one of these types.
 type ComponentOrHTML interface {
 	isComponentOrHTML()
-	isMarkupOrChild()
 }
 
 // RenderSkipper is an optional interface that Component's can implement in
@@ -152,13 +147,22 @@ type HTML struct {
 // Node returns the underlying JavaScript Element or TextNode.
 func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
 
+// WithMarkup returns a copy of this HTML with the given markup applied.
+func (h *HTML) WithMarkup(markup ...Applyer) *HTML {
+	cpy := *h
+	for _, m := range markup {
+		if m == nil {
+			continue
+		}
+		m.Apply(&cpy)
+	}
+	return &cpy
+}
+
 // Key implements the Keyer interface.
 func (h *HTML) Key() interface{} {
 	return h.key
 }
-
-// isMarkupOrChild implements MarkupOrChild
-func (h *HTML) isMarkupOrChild() {}
 
 // isComponentOrHTML implements ComponentOrHTML
 func (h *HTML) isComponentOrHTML() {}
@@ -664,9 +668,6 @@ func (h *HTML) insertBefore(node jsObject, child *HTML) {
 // List represents a list of components or HTML.
 type List []ComponentOrHTML
 
-// isMarkupOrChild implements MarkupOrChild
-func (l List) isMarkupOrChild() {}
-
 // isComponentOrHTML implements ComponentOrHTML
 func (l List) isComponentOrHTML() {}
 
@@ -686,9 +687,6 @@ type KeyedList struct {
 	// key is optional, and only required when the KeyedList has keyed siblings.
 	key interface{}
 }
-
-// isMarkupOrChild implements MarkupOrChild
-func (l KeyedList) isMarkupOrChild() {}
 
 // isComponentOrHTML implements ComponentOrHTML
 func (l KeyedList) isComponentOrHTML() {}
@@ -760,12 +758,19 @@ func (l KeyedList) remove(parent *HTML) {
 // Tag returns an HTML element with the given tag name. Generally, this
 // function is not used directly but rather the elem subpackage (which is type
 // safe) is used instead.
-func Tag(tag string, m ...MarkupOrChild) *HTML {
+func Tag(tag string, children ...ComponentOrHTML) *HTML {
 	h := &HTML{
 		tag: tag,
 	}
-	for _, m := range m {
-		apply(m, h)
+	for _, c := range children {
+		switch m := c.(type) {
+		case nil:
+			h.children = append(h.children, nil)
+		case Component, *HTML, List, KeyedList:
+			h.children = append(h.children, m.(ComponentOrHTML))
+		default:
+			panic("vecty: invalid type " + reflect.TypeOf(m).String() + " does not match ComponentOrHTML interface")
+		}
 	}
 	return h
 }
@@ -773,14 +778,8 @@ func Tag(tag string, m ...MarkupOrChild) *HTML {
 // Text returns a TextNode with the given literal text. Because the returned
 // HTML represents a TextNode, the text does not have to be escaped (arbitrary
 // user input fed into this function will always be safely rendered).
-func Text(text string, m ...MarkupOrChild) *HTML {
-	h := &HTML{
-		text: text,
-	}
-	for _, m := range m {
-		apply(m, h)
-	}
-	return h
+func Text(text string) *HTML {
+	return &HTML{text: text}
 }
 
 // Rerender causes the body of the given Component (i.e. the HTML returned by
