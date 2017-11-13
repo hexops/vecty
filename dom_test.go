@@ -2071,89 +2071,20 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 // standard case of rendering into the "body" tag when the DOM is in a loading
 // state.
 func TestRenderBody_Standard_loading(t *testing.T) {
-	body := &mockObject{}
-	bodySet := false
-	var domLoadedEventListener func()
-	document := &mockObject{
-		call: func(name string, args ...interface{}) jsObject {
-			switch name {
-			case "createElement":
-				if len(args) != 1 {
-					panic("len(args) != 1")
-				}
-				if args[0].(string) != "body" {
-					panic(`args[0].(string) != "body"`)
-				}
-				return body
-			case "addEventListener":
-				if len(args) != 2 {
-					panic("len(args) != 2")
-				}
-				if args[0].(string) != "DOMContentLoaded" {
-					panic(`args[0].(string) != "DOMContentLoaded"`)
-				}
-				domLoadedEventListener = args[1].(func())
-				return nil
-			default:
-				panic(fmt.Sprintf("unexpected call to %q", name))
-			}
-		},
-		get: map[string]jsObject{
-			"readyState": &mockObject{stringValue: "loading"},
-		},
-		set: func(key string, value interface{}) {
-			if key != "body" {
-				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
-			}
-			if value != body {
-				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
-			}
-			bodySet = true
-		},
-	}
-	global = &mockObject{
-		get: map[string]jsObject{
-			"document": document,
-			"performance": &mockObject{
-				call: func(name string, args ...interface{}) jsObject {
-					if name != "now" {
-						panic(fmt.Sprintf("expected call to now, not %q", name))
-					}
-					if len(args) != 0 {
-						panic("len(args) != 0")
-					}
-					return &mockObject{floatValue: 0}
-				},
-			},
-		},
-		call: func(name string, args ...interface{}) jsObject {
-			if name != "requestAnimationFrame" {
-				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
-			}
-			if len(args) != 1 {
-				panic("len(args) != 1")
-			}
-			if _, ok := args[0].(func(float64)); !ok {
-				panic("incorrect argument to requestAnimationFrame")
-			}
-			return &mockObject{intValue: 0}
-		},
-	}
+	ts := testSuite(t, "TestRenderBody_Standard_loading")
+	defer ts.done()
+
+	ts.strings.mock(`global.Get("document").Get("readyState")`, "loading")
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+
 	RenderBody(&componentFunc{
 		render: func() ComponentOrHTML {
 			return Tag("body")
 		},
 	})
-	if domLoadedEventListener == nil {
-		t.Fatalf("domLoadedEventListener == nil")
-	}
-	if bodySet {
-		t.Fatalf("expected document.body to NOT be set")
-	}
-	domLoadedEventListener()
-	if !bodySet {
-		t.Fatalf("expected document.body to be set")
-	}
+
+	ts.record("(invoking DOMContentLoaded event listener)")
+	ts.callbacks[`global.Get("document").Call("addEventListener", "DOMContentLoaded", func())`].(func())()
 }
 
 // TestRenderBody_Nested tests that RenderBody properly handles nested
