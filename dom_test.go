@@ -1232,35 +1232,9 @@ func TestRerender_nil(t *testing.T) {
 // TestRerender_no_prevRender tests the behavior of Rerender when there is no
 // previous render.
 func TestRerender_no_prevRender(t *testing.T) {
-	var renderCallback func(float64)
-	global = &mockObject{
-		get: map[string]jsObject{
-			"performance": &mockObject{
-				call: func(name string, args ...interface{}) jsObject {
-					if name != "now" {
-						panic(fmt.Sprintf("expected call to now, not %q", name))
-					}
-					if len(args) != 0 {
-						panic("len(args) != 0")
-					}
-					return &mockObject{floatValue: 0}
-				},
-			},
-		},
-		call: func(name string, args ...interface{}) jsObject {
-			if name != "requestAnimationFrame" {
-				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
-			}
-			if len(args) != 1 {
-				panic("len(args) != 1")
-			}
-			var ok bool
-			if renderCallback, ok = args[0].(func(float64)); !ok {
-				panic("incorrect argument to requestAnimationFrame")
-			}
-			return &mockObject{intValue: 0}
-		},
-	}
+	ts := testSuite(t, "TestRerender_no_prevRender")
+	defer ts.done()
+
 	got := recoverStr(func() {
 		Rerender(&componentFunc{
 			render: func() ComponentOrHTML {
@@ -1270,7 +1244,6 @@ func TestRerender_no_prevRender(t *testing.T) {
 				panic("expected no SkipRender call")
 			},
 		})
-		renderCallback(0)
 	})
 	want := "vecty: Rerender invoked on Component that has never been rendered"
 	if got != want {
