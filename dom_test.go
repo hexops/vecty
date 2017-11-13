@@ -2,17 +2,10 @@ package vecty
 
 import (
 	"fmt"
-	"sort"
-	"strings"
 	"testing"
 
 	"github.com/gopherjs/gopherjs/js"
 )
-
-var _ = func() bool {
-	isTest = true
-	return true
-}()
 
 type testCore struct{ Core }
 
@@ -2328,52 +2321,3 @@ func TestAddStylesheet(t *testing.T) {
 		t.Fatal(`linkSet["href"] != url`)
 	}
 }
-
-// sortedMapString returns the map converted to a string, but sorted.
-func sortedMapString(m map[string]interface{}) string {
-	var strs []string
-	for k, v := range m {
-		strs = append(strs, fmt.Sprintf("%v:%v", k, v))
-	}
-	sort.Strings(strs)
-	return strings.Join(strs, " ")
-}
-
-// recoverStr runs f and returns the recovered panic as a string.
-func recoverStr(f func()) (s string) {
-	defer func() {
-		s = fmt.Sprint(recover())
-	}()
-	f()
-	return
-}
-
-type componentFunc struct {
-	Core
-	id         string
-	render     func() ComponentOrHTML
-	skipRender func(prev Component) bool
-}
-
-func (c *componentFunc) Render() ComponentOrHTML        { return c.render() }
-func (c *componentFunc) SkipRender(prev Component) bool { return c.skipRender(prev) }
-
-type mockObject struct {
-	set         func(key string, value interface{})
-	get         map[string]jsObject
-	delete      func(key string)
-	call        func(name string, args ...interface{}) jsObject
-	stringValue string
-	boolValue   bool
-	intValue    int
-	floatValue  float64
-}
-
-func (w *mockObject) Set(key string, value interface{})              { w.set(key, value) }
-func (w *mockObject) Get(key string) jsObject                        { return w.get[key] }
-func (w *mockObject) Delete(key string)                              { w.delete(key) }
-func (w *mockObject) Call(name string, args ...interface{}) jsObject { return w.call(name, args...) }
-func (w *mockObject) String() string                                 { return w.stringValue }
-func (w *mockObject) Bool() bool                                     { return w.boolValue }
-func (w *mockObject) Int() int                                       { return w.intValue }
-func (w *mockObject) Float() float64                                 { return w.floatValue }
