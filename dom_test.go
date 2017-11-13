@@ -2255,69 +2255,11 @@ func TestSetTitle(t *testing.T) {
 	}
 }
 
+// TestAddStylesheet tests that the AddStylesheet performs the correct DOM
+// operations.
 func TestAddStylesheet(t *testing.T) {
-	linkSet := map[string]interface{}{}
-	link := &mockObject{
-		set: func(key string, value interface{}) {
-			linkSet[key] = value
-		},
-	}
-	appendedToHead := false
-	head := &mockObject{
-		call: func(name string, args ...interface{}) jsObject {
-			switch name {
-			case "appendChild":
-				if len(args) != 1 {
-					panic("len(args) != 1")
-				}
-				if args[0] != link {
-					panic(`args[0] != link`)
-				}
-				appendedToHead = true
-				return nil
-			default:
-				panic(fmt.Sprintf("unexpected call to %q", name))
-			}
-		},
-	}
-	document := &mockObject{
-		call: func(name string, args ...interface{}) jsObject {
-			switch name {
-			case "createElement":
-				if len(args) != 1 {
-					panic("len(args) != 1")
-				}
-				if args[0].(string) != "link" {
-					panic(`args[0].(string) != "link"`)
-				}
-				return link
-			default:
-				panic(fmt.Sprintf("unexpected call to %q", name))
-			}
-		},
-		set: func(key string, value interface{}) {
-			if key != "title" {
-				panic(fmt.Sprintf(`expected document.set "title", not %q`, key))
-			}
-		},
-		get: map[string]jsObject{
-			"head": head,
-		},
-	}
-	global = &mockObject{
-		get: map[string]jsObject{
-			"document": document,
-		},
-	}
-	url := "https://google.com/foobar.css"
-	AddStylesheet(url)
-	if !appendedToHead {
-		t.Fatal("expected link to be appended to document.head")
-	}
-	if linkSet["rel"] != "stylesheet" {
-		t.Fatal(`linkSet["rel"] != "stylesheet"`)
-	}
-	if linkSet["href"] != url {
-		t.Fatal(`linkSet["href"] != url`)
-	}
+	ts := testSuite(t, "TestAddStylesheet")
+	defer ts.done()
+
+	AddStylesheet("https://google.com/foobar.css")
 }

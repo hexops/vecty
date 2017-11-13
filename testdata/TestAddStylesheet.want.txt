@@ -1,0 +1,7 @@
+global.Get("document")
+global.Get("document").Call("createElement", "link")
+global.Get("document").Call("createElement", "link").Set("rel", "stylesheet")
+global.Get("document").Call("createElement", "link").Set("href", "https://google.com/foobar.css")
+global.Get("document")
+global.Get("document").Get("head")
+global.Get("document").Get("head").Call("appendChild", jsObject(global.Get("document").Call("createElement", "link")))
