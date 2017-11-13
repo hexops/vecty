@@ -2233,26 +2233,13 @@ func TestRenderBody_Nested(t *testing.T) {
 	}
 }
 
+// TestSetTitle tests that the SetTitle function performs the correct DOM
+// operations.
 func TestSetTitle(t *testing.T) {
-	titleSet := ""
-	document := &mockObject{
-		set: func(key string, value interface{}) {
-			if key != "title" {
-				panic(fmt.Sprintf(`expected document.set "title", not %q`, key))
-			}
-			titleSet = value.(string)
-		},
-	}
-	global = &mockObject{
-		get: map[string]jsObject{
-			"document": document,
-		},
-	}
-	want := "foobar"
-	SetTitle(want)
-	if titleSet != want {
-		t.Fatalf("titleSet is %q, want %q", titleSet, want)
-	}
+	ts := testSuite(t, "TestSetTitle")
+	defer ts.done()
+
+	SetTitle("foobartitle")
 }
 
 // TestAddStylesheet tests that the AddStylesheet performs the correct DOM
