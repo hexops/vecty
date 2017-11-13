@@ -1,0 +1,6 @@
+global.Get("document")
+global.Get("document").Call("createTextNode", "Hello world!")
+global.Get("document").Call("createTextNode", "Hello world!").Get("classList")
+global.Get("document").Call("createTextNode", "Hello world!").Get("dataset")
+global.Get("document").Call("createTextNode", "Hello world!").Get("style")
+global.Call("requestAnimationFrame", func(float64))

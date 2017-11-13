@@ -1858,47 +1858,11 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			document := &mockObject{
-				call: func(name string, args ...interface{}) jsObject {
-					switch name {
-					case "createElement", "createTextNode":
-						if len(args) != 1 {
-							panic("len(args) != 1")
-						}
-						return &mockObject{}
-					default:
-						panic(fmt.Sprintf("unexpected call to %q", name))
-					}
-				},
-			}
-			global = &mockObject{
-				get: map[string]jsObject{
-					"document": document,
-					"performance": &mockObject{
-						call: func(name string, args ...interface{}) jsObject {
-							if name != "now" {
-								panic(fmt.Sprintf("expected call to now, not %q", name))
-							}
-							if len(args) != 0 {
-								panic("len(args) != 0")
-							}
-							return &mockObject{floatValue: 0}
-						},
-					},
-				},
-				call: func(name string, args ...interface{}) jsObject {
-					if name != "requestAnimationFrame" {
-						panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
-					}
-					if len(args) != 1 {
-						panic("len(args) != 1")
-					}
-					if _, ok := args[0].(func(float64)); !ok {
-						panic("incorrect argument to requestAnimationFrame")
-					}
-					return &mockObject{intValue: 0}
-				},
-			}
+			ts := testSuite(t, "TestRenderBody_ExpectsBody__"+c.name)
+			defer ts.done()
+
+			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+
 			var gotPanic string
 			func() {
 				defer func() {
