@@ -2001,70 +2001,17 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 // standard case of rendering into the "body" tag when the DOM is in a loaded
 // state.
 func TestRenderBody_Standard_loaded(t *testing.T) {
-	body := &mockObject{}
-	bodySet := false
-	document := &mockObject{
-		call: func(name string, args ...interface{}) jsObject {
-			if name != "createElement" {
-				panic(fmt.Sprintf("expected call to createElement, not %q", name))
-			}
-			if len(args) != 1 {
-				panic("len(args) != 1")
-			}
-			if args[0].(string) != "body" {
-				panic(`args[0].(string) != "body"`)
-			}
-			return body
-		},
-		get: map[string]jsObject{
-			"readyState": &mockObject{stringValue: "complete"},
-		},
-		set: func(key string, value interface{}) {
-			if key != "body" {
-				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
-			}
-			if value != body {
-				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
-			}
-			bodySet = true
-		},
-	}
-	global = &mockObject{
-		get: map[string]jsObject{
-			"document": document,
-			"performance": &mockObject{
-				call: func(name string, args ...interface{}) jsObject {
-					if name != "now" {
-						panic(fmt.Sprintf("expected call to now, not %q", name))
-					}
-					if len(args) != 0 {
-						panic("len(args) != 0")
-					}
-					return &mockObject{floatValue: 0}
-				},
-			},
-		},
-		call: func(name string, args ...interface{}) jsObject {
-			if name != "requestAnimationFrame" {
-				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
-			}
-			if len(args) != 1 {
-				panic("len(args) != 1")
-			}
-			if _, ok := args[0].(func(float64)); !ok {
-				panic("incorrect argument to requestAnimationFrame")
-			}
-			return &mockObject{intValue: 0}
-		},
-	}
+	ts := testSuite(t, "TestRenderBody_Standard_loaded")
+	defer ts.done()
+
+	ts.strings.mock(`global.Get("document").Get("readyState")`, "loaded")
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+
 	RenderBody(&componentFunc{
 		render: func() ComponentOrHTML {
 			return Tag("body")
 		},
 	})
-	if !bodySet {
-		t.Fatalf("expected document.body to be set")
-	}
 }
 
 // TestRenderBody_Standard_loading tests that RenderBody properly handles the
