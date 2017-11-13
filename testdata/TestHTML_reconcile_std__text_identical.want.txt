@@ -1,0 +1,5 @@
+global.Get("document")
+global.Get("document").Call("createTextNode", "foobar")
+global.Get("document").Call("createTextNode", "foobar").Get("classList")
+global.Get("document").Call("createTextNode", "foobar").Get("dataset")
+global.Get("document").Call("createTextNode", "foobar").Get("style")

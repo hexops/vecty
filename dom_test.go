@@ -92,572 +92,246 @@ func TestHTML_Node(t *testing.T) {
 // works as expected (i.e. that it updates nodes correctly).
 func TestHTML_reconcile_std(t *testing.T) {
 	t.Run("text_identical", func(t *testing.T) {
-		h := Text("foobar")
-		hNode := &mockObject{}
-		h.node = hNode
-		prev := Text("foobar")
-		prevNode := &mockObject{}
-		prev.node = prevNode
-		h.reconcile(prev)
-		if h.node != prevNode {
-			t.Fatal("h.node != prevNode")
-		}
+		ts := testSuite(t, "TestHTML_reconcile_std__text_identical")
+		defer ts.done()
+
+		init := Text("foobar")
+		init.reconcile(nil)
+
+		target := Text("foobar")
+		target.reconcile(init)
 	})
 	t.Run("text_diff", func(t *testing.T) {
-		want := "bar"
-		h := Text(want)
-		hNode := &mockObject{}
-		h.node = hNode
-		prev := Text("foo")
-		setNodeValue := ""
-		prevNode := &mockObject{
-			set: func(key string, value interface{}) {
-				if key != "nodeValue" {
-					panic(`key != "nodeValue"`)
-				}
-				setNodeValue = value.(string)
-			},
-		}
-		prev.node = prevNode
-		h.reconcile(prev)
-		if h.node != prevNode {
-			t.Fatal("h.node != prevNode")
-		}
-		if setNodeValue != want {
-			t.Fatalf("got %q want %q", setNodeValue, want)
-		}
+		ts := testSuite(t, "TestHTML_reconcile_std__text_diff")
+		defer ts.done()
+
+		init := Text("bar")
+		init.reconcile(nil)
+
+		target := Text("foo")
+		target.reconcile(init)
 	})
 	t.Run("properties", func(t *testing.T) {
 		cases := []struct {
-			name         string
-			initHTML     *HTML
-			initResult   string
-			targetHTML   *HTML
-			targetResult string
+			name        string
+			initHTML    *HTML
+			targetHTML  *HTML
+			sortedLines [][2]int
 		}{
 			{
-				name:         "diff",
-				initHTML:     Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Markup(Property("a", 3), Property("b", "4foobar"))),
-				targetResult: "a:3 b:4foobar",
+				name:        "diff",
+				initHTML:    Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
+				targetHTML:  Tag("div", Markup(Property("a", 3), Property("b", "4foobar"))),
+				sortedLines: [][2]int{{3, 4}, {12, 13}},
 			},
 			{
-				name:         "remove",
-				initHTML:     Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Markup(Property("a", 3))),
-				targetResult: "a:3",
+				name:        "remove",
+				initHTML:    Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
+				targetHTML:  Tag("div", Markup(Property("a", 3))),
+				sortedLines: [][2]int{{3, 4}},
 			},
 			{
-				name:         "replaced_elem_diff",
-				initHTML:     Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("span", Markup(Property("a", 3), Property("b", "4foobar"))),
-				targetResult: "a:3 b:4foobar",
+				name:        "replaced_elem_diff",
+				initHTML:    Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
+				targetHTML:  Tag("span", Markup(Property("a", 3), Property("b", "4foobar"))),
+				sortedLines: [][2]int{{3, 4}, {11, 12}},
 			},
 			{
-				name:         "replaced_elem_shared",
-				initHTML:     Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("span", Markup(Property("a", 1), Property("b", "4foobar"))),
-				targetResult: "a:1 b:4foobar",
+				name:        "replaced_elem_shared",
+				initHTML:    Tag("div", Markup(Property("a", 1), Property("b", "2foobar"))),
+				targetHTML:  Tag("span", Markup(Property("a", 1), Property("b", "4foobar"))),
+				sortedLines: [][2]int{{3, 4}, {11, 12}},
 			},
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				initSet := make(map[string]interface{})
-				targetSet := make(map[string]interface{})
-				initElem := &mockObject{
-					set: func(key string, value interface{}) {
-						initSet[key] = value
-					},
-					delete: func(key string) {
-						delete(initSet, key)
-					},
-				}
-				targetElem := &mockObject{
-					set: func(key string, value interface{}) {
-						targetSet[key] = value
-					},
-					delete: func(key string) {
-						delete(targetSet, key)
-					},
-				}
-				wrapperFunc := func(obj jsObject) func(string, ...interface{}) jsObject {
-					return func(name string, args ...interface{}) jsObject {
-						if name != "createElement" {
-							panic(fmt.Sprintf("expected call to createElement, not %q", name))
-						}
-						if len(args) != 1 {
-							panic("len(args) != 1")
-						}
-						if args[0].(string) != "div" && args[0].(string) != "span" {
-							panic(`args[0].(string) != "div|span"`)
-						}
-						return obj
-					}
-				}
-				global = &mockObject{
-					get: map[string]jsObject{
-						"document": &mockObject{call: wrapperFunc(initElem)},
-					},
-				}
+				ts := testSuite(t, "TestHTML_reconcile_std__properties__"+tst.name)
+				defer ts.multiSortedDone(tst.sortedLines...)
+
 				tst.initHTML.reconcile(nil)
-				got := sortedMapString(initSet)
-				if got != tst.initResult {
-					t.Fatalf("got %q want %q", got, tst.initResult)
-				}
-				matchingTags := tst.initHTML.tag == tst.targetHTML.tag
-				if !matchingTags {
-					global = &mockObject{
-						get: map[string]jsObject{
-							"document": &mockObject{call: wrapperFunc(targetElem)},
-						},
-					}
-				}
+				ts.record("(first reconcile done)")
 				tst.targetHTML.reconcile(tst.initHTML)
-				if matchingTags {
-					got = sortedMapString(initSet)
-				} else {
-					got = sortedMapString(targetSet)
-				}
-				if got != tst.targetResult {
-					t.Fatalf("got %q want %q", got, tst.targetResult)
-				}
 			})
 		}
 	})
 	t.Run("attributes", func(t *testing.T) {
 		cases := []struct {
-			name         string
-			initHTML     *HTML
-			initResult   string
-			targetHTML   *HTML
-			targetResult string
+			name        string
+			initHTML    *HTML
+			targetHTML  *HTML
+			sortedLines [][2]int
 		}{
 			{
-				name:         "diff",
-				initHTML:     Tag("div", Markup(Attribute("a", 1), Attribute("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Markup(Attribute("a", 3), Attribute("b", "4foobar"))),
-				targetResult: "a:3 b:4foobar",
+				name:        "diff",
+				initHTML:    Tag("div", Markup(Attribute("a", 1), Attribute("b", "2foobar"))),
+				targetHTML:  Tag("div", Markup(Attribute("a", 3), Attribute("b", "4foobar"))),
+				sortedLines: [][2]int{{3, 4}, {12, 13}},
 			},
 			{
-				name:         "remove",
-				initHTML:     Tag("div", Markup(Attribute("a", 1), Attribute("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Markup(Attribute("a", 3))),
-				targetResult: "a:3",
+				name:        "remove",
+				initHTML:    Tag("div", Markup(Attribute("a", 1), Attribute("b", "2foobar"))),
+				targetHTML:  Tag("div", Markup(Attribute("a", 3))),
+				sortedLines: [][2]int{{3, 4}},
 			},
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				set := map[string]interface{}{}
-				div := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						switch name {
-						case "setAttribute":
-							if len(args) != 2 {
-								panic("setAttribute: len(args) != 2")
-							}
-							set[args[0].(string)] = args[1]
-						case "removeAttribute":
-							if len(args) != 1 {
-								panic("removeAttribute: len(args) != 1")
-							}
-							delete(set, args[0].(string))
-						default:
-							panic(fmt.Sprintf("expected call to [setAttribute, removeAttribute], not %q", name))
-						}
-						return nil
-					},
-				}
-				document := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						if name != "createElement" {
-							panic(fmt.Sprintf("expected call to createElement, not %q", name))
-						}
-						if len(args) != 1 {
-							panic("len(args) != 1")
-						}
-						if args[0].(string) != "div" {
-							panic(`args[0].(string) != "div"`)
-						}
-						return div
-					},
-				}
-				global = &mockObject{
-					get: map[string]jsObject{
-						"document": document,
-					},
-				}
+				ts := testSuite(t, "TestHTML_reconcile_std__attributes__"+tst.name)
+				defer ts.multiSortedDone(tst.sortedLines...)
+
 				tst.initHTML.reconcile(nil)
-				got := sortedMapString(set)
-				if got != tst.initResult {
-					t.Fatalf("got %q want %q", got, tst.initResult)
-				}
+				ts.record("(first reconcile done)")
 				tst.targetHTML.reconcile(tst.initHTML)
-				got = sortedMapString(set)
-				if got != tst.targetResult {
-					t.Fatalf("got %q want %q", got, tst.targetResult)
-				}
 			})
 		}
 	})
 	t.Run("class", func(t *testing.T) {
 		cases := []struct {
-			name         string
-			initHTML     *HTML
-			initResult   string
-			targetHTML   *HTML
-			targetResult string
+			name        string
+			initHTML    *HTML
+			targetHTML  *HTML
+			sortedLines [][2]int
 		}{
 			{
-				name:         "multi",
-				initHTML:     Tag("div", Markup(Class("a"), Class("b"))),
-				initResult:   "a:true b:true",
-				targetHTML:   Tag("div", Markup(Class("a"), Class("c"))),
-				targetResult: "a:true c:true",
+				name:        "multi",
+				initHTML:    Tag("div", Markup(Class("a"), Class("b"))),
+				targetHTML:  Tag("div", Markup(Class("a"), Class("c"))),
+				sortedLines: [][2]int{{4, 5}},
 			},
 			{
-				name:         "diff",
-				initHTML:     Tag("div", Markup(Class("a", "b"))),
-				initResult:   "a:true b:true",
-				targetHTML:   Tag("div", Markup(Class("a", "c"))),
-				targetResult: "a:true c:true",
+				name:        "diff",
+				initHTML:    Tag("div", Markup(Class("a", "b"))),
+				targetHTML:  Tag("div", Markup(Class("a", "c"))),
+				sortedLines: [][2]int{{4, 5}},
 			},
 			{
-				name:         "remove",
-				initHTML:     Tag("div", Markup(Class("a", "b"))),
-				initResult:   "a:true b:true",
-				targetHTML:   Tag("div", Markup(Class("a"))),
-				targetResult: "a:true",
+				name:        "remove",
+				initHTML:    Tag("div", Markup(Class("a", "b"))),
+				targetHTML:  Tag("div", Markup(Class("a"))),
+				sortedLines: [][2]int{{4, 5}},
 			},
 			{
-				name:         "map",
-				initHTML:     Tag("div", Markup(ClassMap{"a": true, "b": true})),
-				initResult:   "a:true b:true",
-				targetHTML:   Tag("div", Markup(ClassMap{"a": true})),
-				targetResult: "a:true",
+				name:        "map",
+				initHTML:    Tag("div", Markup(ClassMap{"a": true, "b": true})),
+				targetHTML:  Tag("div", Markup(ClassMap{"a": true})),
+				sortedLines: [][2]int{{4, 5}},
 			},
 			{
-				name:         "map_toggle",
-				initHTML:     Tag("div", Markup(ClassMap{"a": true, "b": true})),
-				initResult:   "a:true b:true",
-				targetHTML:   Tag("div", Markup(ClassMap{"a": true, "b": false})),
-				targetResult: "a:true",
+				name:        "map_toggle",
+				initHTML:    Tag("div", Markup(ClassMap{"a": true, "b": true})),
+				targetHTML:  Tag("div", Markup(ClassMap{"a": true, "b": false})),
+				sortedLines: [][2]int{{4, 5}},
 			},
 			{
-				name:         "combo",
-				initHTML:     Tag("div", Markup(ClassMap{"a": true, "b": true}, Class("c"))),
-				initResult:   "a:true b:true c:true",
-				targetHTML:   Tag("div", Markup(ClassMap{"a": true, "b": false}, Class("d"))),
-				targetResult: "a:true d:true",
+				name:        "combo",
+				initHTML:    Tag("div", Markup(ClassMap{"a": true, "b": true}, Class("c"))),
+				targetHTML:  Tag("div", Markup(ClassMap{"a": true, "b": false}, Class("d"))),
+				sortedLines: [][2]int{{4, 6}, {11, 12}},
 			},
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				set := map[string]interface{}{}
-				classList := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						if len(args) != 1 {
-							panic("len(args) != 1")
-						}
-						if _, ok := args[0].(string); !ok {
-							panic("args[0].(string) is not string")
-						}
-						switch name {
-						case "add":
-							set[args[0].(string)] = true
-						case "remove":
-							delete(set, args[0].(string))
-						default:
-							panic(fmt.Sprintf("expected call to add|remove, not %q", name))
-						}
-						return nil
-					},
-				}
-				div := &mockObject{
-					get: map[string]jsObject{
-						"classList": classList,
-					},
-				}
-				document := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						if name != "createElement" {
-							panic(fmt.Sprintf("expected call to createElement, not %q", name))
-						}
-						if len(args) != 1 {
-							panic("len(args) != 1")
-						}
-						if args[0].(string) != "div" {
-							panic(`args[0].(string) != "div"`)
-						}
-						return div
-					},
-				}
-				global = &mockObject{
-					get: map[string]jsObject{
-						"document": document,
-					},
-				}
+				ts := testSuite(t, "TestHTML_reconcile_std__class__"+tst.name)
+				defer ts.multiSortedDone(tst.sortedLines...)
+
 				tst.initHTML.reconcile(nil)
-				got := sortedMapString(set)
-				if got != tst.initResult {
-					t.Fatalf("got %q want %q", got, tst.initResult)
-				}
+				ts.record("(first reconcile done)")
 				tst.targetHTML.reconcile(tst.initHTML)
-				got = sortedMapString(set)
-				if got != tst.targetResult {
-					t.Fatalf("got %q want %q", got, tst.targetResult)
-				}
 			})
 		}
 	})
 	t.Run("dataset", func(t *testing.T) {
 		cases := []struct {
-			name         string
-			initHTML     *HTML
-			initResult   string
-			targetHTML   *HTML
-			targetResult string
+			name        string
+			initHTML    *HTML
+			targetHTML  *HTML
+			sortedLines [][2]int
 		}{
 			{
-				name:         "diff",
-				initHTML:     Tag("div", Markup(Data("a", "1"), Data("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Markup(Data("a", "3"), Data("b", "4foobar"))),
-				targetResult: "a:3 b:4foobar",
+				name:        "diff",
+				initHTML:    Tag("div", Markup(Data("a", "1"), Data("b", "2foobar"))),
+				targetHTML:  Tag("div", Markup(Data("a", "3"), Data("b", "4foobar"))),
+				sortedLines: [][2]int{{5, 6}, {14, 15}},
 			},
 			{
-				name:         "remove",
-				initHTML:     Tag("div", Markup(Data("a", "1"), Data("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Markup(Data("a", "3"))),
-				targetResult: "a:3",
+				name:        "remove",
+				initHTML:    Tag("div", Markup(Data("a", "1"), Data("b", "2foobar"))),
+				targetHTML:  Tag("div", Markup(Data("a", "3"))),
+				sortedLines: [][2]int{{5, 6}},
 			},
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				set := map[string]interface{}{}
-				dataset := &mockObject{
-					set: func(key string, value interface{}) {
-						set[key] = value
-					},
-					delete: func(key string) {
-						delete(set, key)
-					},
-				}
-				div := &mockObject{
-					get: map[string]jsObject{
-						"dataset": dataset,
-					},
-				}
-				document := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						if name != "createElement" {
-							panic(fmt.Sprintf("expected call to createElement, not %q", name))
-						}
-						if len(args) != 1 {
-							panic("len(args) != 1")
-						}
-						if args[0].(string) != "div" {
-							panic(`args[0].(string) != "div"`)
-						}
-						return div
-					},
-				}
-				global = &mockObject{
-					get: map[string]jsObject{
-						"document": document,
-					},
-				}
+				ts := testSuite(t, "TestHTML_reconcile_std__dataset__"+tst.name)
+				defer ts.multiSortedDone(tst.sortedLines...)
+
 				tst.initHTML.reconcile(nil)
-				got := sortedMapString(set)
-				if got != tst.initResult {
-					t.Fatalf("got %q want %q", got, tst.initResult)
-				}
+				ts.record("(first reconcile done)")
 				tst.targetHTML.reconcile(tst.initHTML)
-				got = sortedMapString(set)
-				if got != tst.targetResult {
-					t.Fatalf("got %q want %q", got, tst.targetResult)
-				}
 			})
 		}
 	})
 	t.Run("style", func(t *testing.T) {
 		cases := []struct {
-			name         string
-			initHTML     *HTML
-			initResult   string
-			targetHTML   *HTML
-			targetResult string
+			name        string
+			initHTML    *HTML
+			targetHTML  *HTML
+			sortedLines [][2]int
 		}{
 			{
-				name:         "diff",
-				initHTML:     Tag("div", Markup(Style("a", "1"), Style("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Markup(Style("a", "3"), Style("b", "4foobar"))),
-				targetResult: "a:3 b:4foobar",
+				name:        "diff",
+				initHTML:    Tag("div", Markup(Style("a", "1"), Style("b", "2foobar"))),
+				targetHTML:  Tag("div", Markup(Style("a", "3"), Style("b", "4foobar"))),
+				sortedLines: [][2]int{{6, 7}, {15, 16}},
 			},
 			{
-				name:         "remove",
-				initHTML:     Tag("div", Markup(Style("a", "1"), Style("b", "2foobar"))),
-				initResult:   "a:1 b:2foobar",
-				targetHTML:   Tag("div", Markup(Style("a", "3"))),
-				targetResult: "a:3",
+				name:        "remove",
+				initHTML:    Tag("div", Markup(Style("a", "1"), Style("b", "2foobar"))),
+				targetHTML:  Tag("div", Markup(Style("a", "3"))),
+				sortedLines: [][2]int{{6, 7}},
 			},
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				set := map[string]interface{}{}
-				style := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						switch name {
-						case "setProperty":
-							if len(args) != 2 {
-								panic("setProperty: len(args) != 2")
-							}
-							set[args[0].(string)] = args[1]
-						case "removeProperty":
-							if len(args) != 1 {
-								panic("removeProperty: len(args) != 1")
-							}
-							delete(set, args[0].(string))
-						default:
-							panic(fmt.Sprintf("expected call to [setProperty, removeProperty], not %q", name))
-						}
-						return nil
-					},
-				}
-				div := &mockObject{
-					get: map[string]jsObject{
-						"style": style,
-					},
-				}
-				document := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						if name != "createElement" {
-							panic(fmt.Sprintf("expected call to createElement, not %q", name))
-						}
-						if len(args) != 1 {
-							panic("len(args) != 1")
-						}
-						if args[0].(string) != "div" {
-							panic(`args[0].(string) != "div"`)
-						}
-						return div
-					},
-				}
-				global = &mockObject{
-					get: map[string]jsObject{
-						"document": document,
-					},
-				}
+				ts := testSuite(t, "TestHTML_reconcile_std__style__"+tst.name)
+				defer ts.multiSortedDone(tst.sortedLines...)
+
 				tst.initHTML.reconcile(nil)
-				got := sortedMapString(set)
-				if got != tst.initResult {
-					t.Fatalf("got %q want %q", got, tst.initResult)
-				}
+				ts.record("(first reconcile done)")
 				tst.targetHTML.reconcile(tst.initHTML)
-				got = sortedMapString(set)
-				if got != tst.targetResult {
-					t.Fatalf("got %q want %q", got, tst.targetResult)
-				}
 			})
 		}
 	})
 	t.Run("event_listener", func(t *testing.T) {
 		// TODO(pdf): Mock listener functions for equality testing
-		cases := []struct {
-			name                 string
-			initEventListeners   []Applyer
-			targetEventListeners []Applyer
-		}{
-			{
-				name: "diff",
-				initEventListeners: []Applyer{
-					&EventListener{Name: "click"},
-					&EventListener{Name: "keydown"},
-				},
-				targetEventListeners: []Applyer{
-					&EventListener{Name: "click"},
-				},
-			},
+		ts := testSuite(t, "TestHTML_reconcile_std__event_listener_diff")
+		defer ts.done()
+
+		initEventListeners := []Applyer{
+			&EventListener{Name: "click"},
+			&EventListener{Name: "keydown"},
 		}
-		for _, tst := range cases {
-			t.Run(tst.name, func(t *testing.T) {
-				addedListeners := map[string]func(*js.Object){}
-				div := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						switch name {
-						case "addEventListener":
-							if len(args) != 2 {
-								panic("addEventListener: len(args) != 2")
-							}
-							addedListeners[args[0].(string)] = args[1].(func(*js.Object))
-						case "removeEventListener":
-							if len(args) != 2 {
-								panic("removeEventListener: len(args) != 2")
-							}
-							delete(addedListeners, args[0].(string))
-						default:
-							panic(fmt.Sprintf("unexpected call to %q", name))
-						}
-						return nil
-					},
-				}
-				document := &mockObject{
-					call: func(name string, args ...interface{}) jsObject {
-						switch name {
-						case "createElement":
-							if len(args) != 1 {
-								panic("len(args) != 1")
-							}
-							if args[0].(string) != "div" {
-								panic(`args[0].(string) != "div"`)
-							}
-							return div
-						default:
-							panic(fmt.Sprintf("unexpected call to %q", name))
-						}
-					},
-				}
-				global = &mockObject{
-					get: map[string]jsObject{
-						"document": document,
-					},
-				}
-				prev := Tag("div", Markup(tst.initEventListeners...))
-				prev.reconcile(nil)
-				for i, m := range tst.initEventListeners {
-					listener := m.(*EventListener)
-					if listener.wrapper == nil {
-						t.Fatalf("listener %d wrapper == nil: %+v", i, listener)
-					}
-					if _, ok := addedListeners[listener.Name]; !ok {
-						t.Fatalf("listener %d for %q not found: %+v", i, listener.Name, listener)
-					}
-				}
-				if len(tst.initEventListeners) != len(addedListeners) {
-					t.Fatalf("listener count mismatch: %d != %d", len(tst.initEventListeners), len(addedListeners))
-				}
-				h := Tag("div", Markup(tst.targetEventListeners...))
-				h.reconcile(prev)
-				for i, m := range tst.targetEventListeners {
-					listener := m.(*EventListener)
-					if listener.wrapper == nil {
-						t.Fatalf("listener %d wrapper == nil: %+v", i, listener)
-					}
-					if _, ok := addedListeners[listener.Name]; !ok {
-						t.Fatalf("listener %d for %q not found: %+v", i, listener.Name, listener)
-					}
-				}
-				if len(tst.targetEventListeners) != len(addedListeners) {
-					t.Fatalf("listener count mismatch: %d != %d", len(tst.targetEventListeners), len(addedListeners))
-				}
-			})
+		prev := Tag("div", Markup(initEventListeners...))
+		prev.reconcile(nil)
+		ts.record("(expected two added event listeners above)")
+		for i, m := range initEventListeners {
+			listener := m.(*EventListener)
+			if listener.wrapper == nil {
+				t.Fatalf("listener %d wrapper == nil: %+v", i, listener)
+			}
+		}
+
+		targetEventListeners := []Applyer{
+			&EventListener{Name: "click"},
+		}
+		h := Tag("div", Markup(targetEventListeners...))
+		h.reconcile(prev)
+		ts.record("(expected two removed, one added event listeners above)")
+		for i, m := range targetEventListeners {
+			listener := m.(*EventListener)
+			if listener.wrapper == nil {
+				t.Fatalf("listener %d wrapper == nil: %+v", i, listener)
+			}
 		}
 	})
 
