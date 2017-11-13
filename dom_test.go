@@ -1281,66 +1281,13 @@ func TestRerender_no_prevRender(t *testing.T) {
 // TestRerender_identical tests the behavior of Rerender when there is a
 // previous render which is identical to the new render.
 func TestRerender_identical(t *testing.T) {
-	// Perform the initial render of the component.
-	body := &mockObject{}
-	bodySet := false
-	document := &mockObject{
-		call: func(name string, args ...interface{}) jsObject {
-			if name != "createElement" {
-				panic(fmt.Sprintf("expected call to createElement, not %q", name))
-			}
-			if len(args) != 1 {
-				panic("len(args) != 1")
-			}
-			if args[0].(string) != "body" {
-				panic(`args[0].(string) != "body"`)
-			}
-			return body
-		},
-		get: map[string]jsObject{
-			"readyState": &mockObject{stringValue: "complete"},
-		},
-		set: func(key string, value interface{}) {
-			if key != "body" {
-				panic(fmt.Sprintf(`expected document.set "body", not %q`, key))
-			}
-			if value != body {
-				panic(fmt.Sprintf(`expected document.set body value, not %T %+v`, value, value))
-			}
-			bodySet = true
-		},
-	}
-	var renderCallback func(float64)
-	global = &mockObject{
-		get: map[string]jsObject{
-			"document": document,
-			"performance": &mockObject{
-				call: func(name string, args ...interface{}) jsObject {
-					if name != "now" {
-						panic(fmt.Sprintf("expected call to now, not %q", name))
-					}
-					if len(args) != 0 {
-						panic("len(args) != 0")
-					}
-					return &mockObject{floatValue: 0}
-				},
-			},
-		},
-		call: func(name string, args ...interface{}) jsObject {
-			if name != "requestAnimationFrame" {
-				panic(fmt.Sprintf("expected call to requestAnimationFrame, not %q", name))
-			}
-			if len(args) != 1 {
-				panic("len(args) != 1")
-			}
-			var ok bool
-			if renderCallback, ok = args[0].(func(float64)); !ok {
-				panic("incorrect argument to requestAnimationFrame")
-			}
-			return &mockObject{intValue: 0}
-		},
-	}
+	ts := testSuite(t, "TestRerender_identical")
+	defer ts.done()
 
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
+
+	// Perform the initial render of the component.
 	render := Tag("body")
 	var renderCalled, skipRenderCalled int
 	comp := &componentFunc{
@@ -1351,9 +1298,6 @@ func TestRerender_identical(t *testing.T) {
 		},
 	}
 	RenderBody(comp)
-	if !bodySet {
-		t.Fatal("!bodySet")
-	}
 	if renderCalled != 1 {
 		t.Fatal("renderCalled != 1")
 	}
@@ -1385,8 +1329,11 @@ func TestRerender_identical(t *testing.T) {
 		return false
 	}
 	Rerender(comp)
-	renderCallback(0)
-	global = nil // Expecting no JS calls past here
+
+	// Invoke the render callback.
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+
 	if renderCalled != 2 {
 		t.Fatal("renderCalled != 2")
 	}
