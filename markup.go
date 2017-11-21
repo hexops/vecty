@@ -2,6 +2,7 @@ package vecty
 
 import (
 	"reflect"
+	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -148,8 +149,9 @@ func Data(key, value string) Applyer {
 
 // Class returns an Applyer which applies the provided classes. Subsequent
 // calls to this function will append additional classes. To toggle classes,
-// use ClassMap instead.
+// use ClassMap instead. Each class name must be passed as a separate argument.
 func Class(class ...string) Applyer {
+	mustValidateClassNames(class)
 	return markupFunc(func(h *HTML) {
 		if h.classes == nil {
 			h.classes = make(map[string]struct{})
@@ -158,6 +160,35 @@ func Class(class ...string) Applyer {
 			h.classes[name] = struct{}{}
 		}
 	})
+}
+
+// mustValidateClassNames ensures no class names have spaces
+// and panics with clear instructions on how to fix this user error.
+func mustValidateClassNames(class []string) {
+	for _, name := range class {
+		if strings.Contains(name, " ") {
+			failClassName(name)
+		}
+	}
+}
+
+// failClassName produces a helpful error message.
+// to fix the spaces in vecty.Class for example:
+// vecty.Class("hello there") will result in the following panic:
+// Spaces are not allowed in class names. Use `vecty.Class("hello", "there")` instead of `vecty.Class("hello there")`
+func failClassName(name string) {
+	names := []string{}
+	// avoids using fmt.Sprintf for bundle size optimization.
+	for _, cn := range strings.Split(name, " ") {
+		cn = "\"" + cn + "\""
+		names = append(names, cn)
+	}
+	correct := strings.Join(names, ", ")
+	incorrect := "\"" + name + "\""
+	panic(
+		"Spaces are not allowed in class names. Use `vecty.Class(" + correct + ")` " +
+			"instead of `vecty.Class(" + incorrect + ")`",
+	)
 }
 
 // ClassMap is markup that specifies classes to be applied to an element if
