@@ -23,14 +23,6 @@ type ItemView struct {
 	input     *vecty.HTML
 }
 
-// Restore implements the vecty.Restorer interface.
-func (p *ItemView) Restore(prev vecty.Component) {
-	if old, ok := prev.(*ItemView); ok {
-		p.editing = old.editing
-		p.editTitle = old.editTitle
-	}
-}
-
 // Key implements the vecty.Keyer interface.
 func (p *ItemView) Key() interface{} {
 	return p.Index
