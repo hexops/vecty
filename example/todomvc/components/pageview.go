@@ -22,13 +22,6 @@ type PageView struct {
 	newItemTitle string
 }
 
-// Restore implements the vecty.Restorer interface.
-func (p *PageView) Restore(prev vecty.Component) {
-	if old, ok := prev.(*PageView); ok {
-		p.newItemTitle = old.newItemTitle
-	}
-}
-
 func (p *PageView) onNewItemTitleInput(event *vecty.Event) {
 	p.newItemTitle = event.Target.Get("value").String()
 	vecty.Rerender(p)
