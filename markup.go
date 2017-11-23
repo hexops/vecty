@@ -2,7 +2,6 @@ package vecty
 
 import (
 	"reflect"
-	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -166,28 +165,27 @@ func Class(class ...string) Applyer {
 // and panics with clear instructions on how to fix this user error.
 func mustValidateClassNames(class []string) {
 	for _, name := range class {
-		if strings.Contains(name, " ") {
+		if containsSpace(name) {
 			failClassName(name)
 		}
 	}
 }
 
-// failClassName produces a helpful error message.
-// to fix the spaces in vecty.Class for example:
-// vecty.Class("hello there") will result in the following panic:
-// Spaces are not allowed in class names. Use `vecty.Class("hello", "there")` instead of `vecty.Class("hello there")`
-func failClassName(name string) {
-	names := []string{}
-	// avoids using fmt.Sprintf for bundle size optimization.
-	for _, cn := range strings.Split(name, " ") {
-		cn = "\"" + cn + "\""
-		names = append(names, cn)
+// containsSpace reports whether s contains a space character.
+func containsSpace(s string) bool {
+	for _, c := range s {
+		if c == ' ' {
+			return true
+		}
 	}
-	correct := strings.Join(names, ", ")
-	incorrect := "\"" + name + "\""
+	return false
+}
+
+// failClassName produces a helpful error message to fix the spaces in vecty.Class.
+func failClassName(name string) {
 	panic(
-		"Spaces are not allowed in class names. Use `vecty.Class(" + correct + ")` " +
-			"instead of `vecty.Class(" + incorrect + ")`",
+		`vecty: invalid class string "` + name + `" with spaces passed to ` + "`vecty.Class` -- " +
+			`you must pass each name as a separate argument`,
 	)
 }
 
