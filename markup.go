@@ -166,10 +166,7 @@ func Class(class ...string) Applyer {
 func mustValidateClassNames(class []string) {
 	for _, name := range class {
 		if containsSpace(name) {
-			panic(
-				`vecty: invalid class string "` + name + `" with spaces passed to ` + "`vecty.Class` -- " +
-					`you must pass each name as a separate argument`,
-			)
+			panic(`vecty: invalid argument to vecty.Class "` + name + `" (string may not contain spaces)`)
 		}
 	}
 }
