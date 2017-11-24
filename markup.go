@@ -166,7 +166,10 @@ func Class(class ...string) Applyer {
 func mustValidateClassNames(class []string) {
 	for _, name := range class {
 		if containsSpace(name) {
-			failClassName(name)
+			panic(
+				`vecty: invalid class string "` + name + `" with spaces passed to ` + "`vecty.Class` -- " +
+					`you must pass each name as a separate argument`,
+			)
 		}
 	}
 }
@@ -179,14 +182,6 @@ func containsSpace(s string) bool {
 		}
 	}
 	return false
-}
-
-// failClassName produces a helpful error message to fix the spaces in vecty.Class.
-func failClassName(name string) {
-	panic(
-		`vecty: invalid class string "` + name + `" with spaces passed to ` + "`vecty.Class` -- " +
-			`you must pass each name as a separate argument`,
-	)
 }
 
 // ClassMap is markup that specifies classes to be applied to an element if
