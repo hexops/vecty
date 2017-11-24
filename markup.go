@@ -148,8 +148,9 @@ func Data(key, value string) Applyer {
 
 // Class returns an Applyer which applies the provided classes. Subsequent
 // calls to this function will append additional classes. To toggle classes,
-// use ClassMap instead.
+// use ClassMap instead. Each class name must be passed as a separate argument.
 func Class(class ...string) Applyer {
+	mustValidateClassNames(class)
 	return markupFunc(func(h *HTML) {
 		if h.classes == nil {
 			h.classes = make(map[string]struct{})
@@ -158,6 +159,26 @@ func Class(class ...string) Applyer {
 			h.classes[name] = struct{}{}
 		}
 	})
+}
+
+// mustValidateClassNames ensures no class names have spaces
+// and panics with clear instructions on how to fix this user error.
+func mustValidateClassNames(class []string) {
+	for _, name := range class {
+		if containsSpace(name) {
+			panic(`vecty: invalid argument to vecty.Class "` + name + `" (string may not contain spaces)`)
+		}
+	}
+}
+
+// containsSpace reports whether s contains a space character.
+func containsSpace(s string) bool {
+	for _, c := range s {
+		if c == ' ' {
+			return true
+		}
+	}
+	return false
 }
 
 // ClassMap is markup that specifies classes to be applied to an element if
