@@ -1185,6 +1185,26 @@ func RenderBody(body Component) {
 	}
 }
 
+// RenderInto renders the given component by replacing the specified DOM node.
+func RenderInto(node interface{}, comp Component) {
+	nextRender, skip, pendingMounts := renderComponent(comp, nil)
+	if skip {
+		panic("vecty: RenderInto Component.SkipRender returned true")
+	}
+	var targetNode jsObject
+	switch n := node.(type) {
+	case jsObject:
+		targetNode = n
+	case *js.Object:
+		targetNode = wrapObject(n)
+	}
+	replaceNode(nextRender.node, targetNode)
+	mount(pendingMounts...)
+	if m, ok := comp.(Mounter); ok {
+		mount(m)
+	}
+}
+
 // SetTitle sets the title of the document.
 func SetTitle(title string) {
 	global.Get("document").Set("title", title)

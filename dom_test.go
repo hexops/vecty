@@ -958,6 +958,22 @@ func TestRenderBody_Nested(t *testing.T) {
 	})
 }
 
+// TestRenderInto tests that RenderInto properly handles the standard case of
+// rendering into the specified node.
+func TestRenderInto(t *testing.T) {
+	ts := testSuite(t, "TestRenderInto")
+	defer ts.done()
+
+	// Create the element that we will render into.
+	div := global.Get("document").Call("createElement", "div")
+
+	RenderInto(div, &componentFunc{
+		render: func() ComponentOrHTML {
+			return Tag("span", Text("Hello World!"))
+		},
+	})
+}
+
 // TestSetTitle tests that the SetTitle function performs the correct DOM
 // operations.
 func TestSetTitle(t *testing.T) {
