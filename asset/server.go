@@ -1,15 +1,15 @@
 // The asset package provides an asset serving HTTP handler with live GopherJS code
 // recompilation.
 //
-// BUGS:
+// BUGS / TODOs:
 //
 // - How do we handle embedded assets ala vfsgendev etc?
-// - Source maps do not work
+// - Add sourcemap support to github.com/shurcooL/gopherjslib
 // - Maybe asset.NewServer is not the best name?
 // - Maybe asset.NewServer should take a dir argument AND options, not just options.
 // - Should github.com/nytimes/gziphandler be internal ? probably
 // - How fast is internal/gopherjs_http ? should there be a production mode where no code recompilation occurs?
-// -
+// - Maybe do a proper / better version of internal/gopherjs_http that is not a hacked together fork of @shurcooL's code
 //
 package asset
 
