@@ -37,26 +37,6 @@ type componentFunc struct {
 func (c *componentFunc) Render() ComponentOrHTML        { return c.render() }
 func (c *componentFunc) SkipRender(prev Component) bool { return c.skipRender(prev) }
 
-type mockObject struct {
-	set         func(key string, value interface{})
-	get         map[string]jsObject
-	delete      func(key string)
-	call        func(name string, args ...interface{}) jsObject
-	stringValue string
-	boolValue   bool
-	intValue    int
-	floatValue  float64
-}
-
-func (w *mockObject) Set(key string, value interface{})              { w.set(key, value) }
-func (w *mockObject) Get(key string) jsObject                        { return w.get[key] }
-func (w *mockObject) Delete(key string)                              { w.delete(key) }
-func (w *mockObject) Call(name string, args ...interface{}) jsObject { return w.call(name, args...) }
-func (w *mockObject) String() string                                 { return w.stringValue }
-func (w *mockObject) Bool() bool                                     { return w.boolValue }
-func (w *mockObject) Int() int                                       { return w.intValue }
-func (w *mockObject) Float() float64                                 { return w.floatValue }
-
 func TestMain(m *testing.M) {
 	// Try to remove all testdata/*.got.txt files now.
 	matches, _ := filepath.Glob("testdata/*.got.txt")
