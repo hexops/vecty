@@ -18,17 +18,6 @@ var _ = func() bool {
 	return true
 }()
 
-// TODO(slimsag): remove
-// sortedMapString returns the map converted to a string, but sorted.
-func sortedMapString(m map[string]interface{}) string {
-	var strs []string
-	for k, v := range m {
-		strs = append(strs, fmt.Sprintf("%v:%v", k, v))
-	}
-	sort.Strings(strs)
-	return strings.Join(strs, " ")
-}
-
 // recoverStr runs f and returns the recovered panic as a string.
 func recoverStr(f func()) (s string) {
 	defer func() {
