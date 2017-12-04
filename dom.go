@@ -1268,3 +1268,15 @@ func (w wrappedObject) Float() float64 {
 }
 
 var isTest bool
+
+func init() {
+	if isTest {
+		return
+	}
+	if global == nil {
+		panic("vecty: only GopherJS compiler is supported")
+	}
+	if global.Get("document") == undefined {
+		panic("vecty: only running inside a browser is supported")
+	}
+}
