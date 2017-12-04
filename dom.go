@@ -150,7 +150,13 @@ type HTML struct {
 }
 
 // Node returns the underlying JavaScript Element or TextNode.
-func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
+//
+// Under GopherJS (the only supported platform currently), this returns an
+// *js.Object from the github.com/gopherjs/gopherjs/js package.
+//
+// In the future, this may return other data types when running on other
+// platforms.
+func (h *HTML) Node() interface{} { return h.node.(wrappedObject).j }
 
 // Key implements the Keyer interface.
 func (h *HTML) Key() interface{} {
