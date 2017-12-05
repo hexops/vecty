@@ -1,0 +1,5 @@
+global.Get("document")
+global.Get("document").Call("createElement", "strong")
+global.Get("document").Call("createElement", "strong").Get("classList")
+global.Get("document").Call("createElement", "strong").Get("dataset")
+global.Get("document").Call("createElement", "strong").Get("style")

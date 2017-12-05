@@ -1,0 +1,7 @@
+global.Get("document")
+global.Get("document").Call("createElement", "div")
+global.Get("document").Call("createElement", "div").Get("classList")
+global.Get("document").Call("createElement", "div").Get("dataset")
+global.Get("document").Call("createElement", "div").Get("style")
+global.Get("document").Call("createElement", "div").Call("addEventListener", "click", func(*js.Object))
+global.Get("document").Call("createElement", "div").Call("addEventListener", "keydown", func(*js.Object))
