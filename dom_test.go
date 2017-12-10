@@ -347,7 +347,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 			h := &HTML{text: "hello", tag: "div"}
 			h.reconcile(nil)
 		})
-		want := "vecty: only one of HTML.tag or HTML.text may be set"
+		want := "vecty: internal error (only one of HTML.tag or HTML.text may be set)"
 		if got != want {
 			t.Fatalf("got panic %q want %q", got, want)
 		}
@@ -891,7 +891,7 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 	got := recoverStr(func() {
 		RenderBody(comp)
 	})
-	want := "vecty: RenderBody Component.SkipRender returned true"
+	want := "vecty: RenderBody Component.SkipRender illegally returned true"
 	if got != want {
 		t.Fatalf("got panic %q want %q", got, want)
 	}
