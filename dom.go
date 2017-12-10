@@ -167,7 +167,7 @@ func (h *HTML) isComponentOrHTML() {}
 func (h *HTML) createNode() {
 	switch {
 	case h.tag != "" && h.text != "":
-		panic("vecty: only one of HTML.tag or HTML.text may be set")
+		panic("vecty: internal error (only one of HTML.tag or HTML.text may be set)")
 	case h.tag == "" && h.innerHTML != "":
 		panic("vecty: only HTML may have UnsafeHTML attribute")
 	case h.tag != "" && h.namespace == "":
@@ -726,7 +726,7 @@ func (l KeyedList) reconcile(parent *HTML, prevChild ComponentOrHTML) (pendingMo
 			pendingMounts = l.html.reconcileChildren(prev)
 		}
 	default:
-		panic("vecty: encountered invalid ComponentOrHTML " + reflect.TypeOf(v).String())
+		panic("vecty: internal error (unexpected ComponentOrHTML type " + reflect.TypeOf(v).String() + ")")
 	}
 
 	// Update the parent insertBeforeNode and lastRenderedChild values to be
@@ -902,7 +902,7 @@ func extractHTML(e ComponentOrHTML) *HTML {
 	case Component:
 		return extractHTML(v.Context().prevRender)
 	default:
-		panic("vecty: encountered invalid ComponentOrHTML " + reflect.TypeOf(e).String())
+		panic("vecty: internal error (unexpected ComponentOrHTML type " + reflect.TypeOf(e).String() + ")")
 	}
 }
 
@@ -915,7 +915,7 @@ func sameType(first, second ComponentOrHTML) bool {
 // copyComponent makes a copy of the given component.
 func copyComponent(c Component) Component {
 	if c == nil {
-		panic("vecty: cannot copy nil Component")
+		panic("vecty: internal error (cannot copy nil Component)")
 	}
 
 	// If the Component implements the Copier interface, then use that to
@@ -923,7 +923,7 @@ func copyComponent(c Component) Component {
 	if copier, ok := c.(Copier); ok {
 		cpy := copier.Copy()
 		if cpy == c {
-			panic("vecty: Component.Copy returned an identical *MyComponent pointer")
+			panic("vecty: Component.Copy illegally returned an identical *MyComponent pointer")
 		}
 		return cpy
 	}
@@ -996,7 +996,7 @@ func render(next, prev ComponentOrHTML) (nextHTML *HTML, skip bool, pendingMount
 	case nil:
 		return nil, false, nil
 	default:
-		panic("vecty: encountered invalid ComponentOrHTML " + reflect.TypeOf(next).String())
+		panic("vecty: internal error (unexpected ComponentOrHTML type " + reflect.TypeOf(next).String() + ")")
 	}
 }
 
@@ -1051,7 +1051,7 @@ func renderComponent(next Component, prev ComponentOrHTML) (nextHTML *HTML, skip
 		// Reconcile the actual rendered HTML.
 		pendingMounts = nextHTML.reconcile(extractHTML(prev))
 	default:
-		panic("vecty: encountered invalid ComponentOrHTML " + reflect.TypeOf(v).String())
+		panic("vecty: internal error (unexpected ComponentOrHTML type " + reflect.TypeOf(v).String() + ")")
 	}
 
 	m := mountUnmount(nextRender, prevRender)
@@ -1162,7 +1162,7 @@ func RenderBody(body Component) {
 	}()
 	nextRender, skip, pendingMounts := renderComponent(body, nil)
 	if skip {
-		panic("vecty: RenderBody Component.SkipRender returned true")
+		panic("vecty: RenderBody Component.SkipRender illegally returned true")
 	}
 	if nextRender.tag != "body" {
 		panic("vecty: RenderBody expected Component.Render to return a body tag, found \"" + nextRender.tag + "\"")
