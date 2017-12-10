@@ -1,0 +1,7 @@
+global.Get("document")
+global.Get("document").Call("createElement", "div")
+global.Get("document").Call("createElement", "div").Set("a", 1)
+global.Get("document").Call("createElement", "div").Set("b", "2foobar")
+global.Get("document").Call("createElement", "div").Get("classList")
+global.Get("document").Call("createElement", "div").Get("dataset")
+global.Get("document").Call("createElement", "div").Get("style")

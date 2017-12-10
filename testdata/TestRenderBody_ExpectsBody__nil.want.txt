@@ -1,0 +1,6 @@
+global.Get("document")
+global.Get("document").Call("createElement", "noscript")
+global.Get("document").Call("createElement", "noscript").Get("classList")
+global.Get("document").Call("createElement", "noscript").Get("dataset")
+global.Get("document").Call("createElement", "noscript").Get("style")
+global.Call("requestAnimationFrame", func(float64))
