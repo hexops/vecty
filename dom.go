@@ -822,7 +822,7 @@ func (b *batchRenderer) add(c Component) {
 	if i, ok := b.idx[c]; ok {
 		// Shift idx for delete.
 		for j, c := range b.batch[i+1:] {
-			b.idx[c] = j - 1
+			b.idx[c] = i + j
 		}
 		// Delete previously queued render.
 		copy(b.batch[i:], b.batch[i+1:])
