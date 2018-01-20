@@ -428,23 +428,8 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 			prevChild = prev.children[i]
 		}
 		// Find previous keyed sibling if exists, and mutate from there.
-		var stableKey bool
 		if hasKeyedChildren {
 			if prevKeyedChild, ok := prev.keyedChildren[nextKey]; ok {
-				// If the previous node rendered at this position matches the
-				// keyed previous render node, we have a stable key, and will
-				// replace later instead of inserting.
-				var prevPositionRender, prevKeyedRender *HTML
-				if _, isList := prevChild.(KeyedList); !isList {
-					prevPositionRender = extractHTML(prevChild)
-				}
-				if _, isList := prevKeyedChild.(KeyedList); !isList {
-					prevKeyedRender = extractHTML(prevKeyedChild)
-				}
-				if prevPositionRender != nil && prevKeyedRender != nil && prevPositionRender.node == prevKeyedRender.node {
-					stableKey = true
-				}
-
 				prevChild = prevKeyedChild
 				// Delete the matched key from the previous index map so that
 				// we can remove any dangling children.
@@ -494,12 +479,16 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 			prevChild = nil
 		}
 
-		// If we're keyed and not stable, find the next DOM node from the
-		// previous render to insert before, for reordering.
-		var insertBeforeKeyedNode jsObject
-		if hasKeyedChildren && !stableKey {
+		// If we're keyed, find the next DOM node from the previous render to
+		// insert before, for reordering.
+		var (
+			insertBeforeKeyedNode jsObject
+			stableKey             bool
+		)
+		if hasKeyedChildren {
 			insertBeforeKeyedNode = h.lastRenderedChild.nextSibling()
-			// If the next node is our old node, mark key as stable.
+			// If the next node is our old node, mark key as stable, to avoid
+			// unnecessary insertion.
 			if prevChildRender != nil && prevChildRender.node == insertBeforeKeyedNode {
 				stableKey = true
 				insertBeforeKeyedNode = nil
@@ -545,19 +534,21 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 			if m := mountUnmount(nextChild, prevChild); m != nil {
 				pendingMounts = append(pendingMounts, m)
 			}
-			if hasKeyedChildren && !stableKey {
-				// Moving keyed children need to be inserted (which moves existing
-				// nodes), rather than replacing the previous child at this
-				// position.
-				if insertBeforeKeyedNode != nil {
-					// Insert before the next sibling, if we have one.
-					h.insertBefore(insertBeforeKeyedNode, nextChildRender)
-					continue
-				}
-				h.insertBefore(h.insertBeforeNode, nextChildRender)
+			// If we do not have keyed siblings, or the key is stable, replace
+			// the previous node (may be NOOP for equivalent nodes).
+			if !hasKeyedChildren || stableKey {
+				replaceNode(nextChildRender.node, prevChildRender.node)
 				continue
 			}
-			replaceNode(nextChildRender.node, prevChildRender.node)
+			// Moving keyed children need to be inserted (which moves existing
+			// nodes), rather than replacing the previous child at this
+			// position.
+			if insertBeforeKeyedNode != nil {
+				// Insert before the next sibling, if we have one.
+				h.insertBefore(insertBeforeKeyedNode, nextChildRender)
+				continue
+			}
+			h.insertBefore(h.insertBeforeNode, nextChildRender)
 		case nextChildRender == nil && prevChildRender != nil:
 			h.removeChild(prevChildRender)
 		case nextChildRender != nil && prevChildRender == nil:
