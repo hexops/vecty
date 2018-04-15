@@ -135,7 +135,7 @@ func main() {
 
 	events := make(map[string]*Event)
 
-	doc.Find(".standard-table").Eq(0).Find("tr").Each(func(i int, s *goquery.Selection) {
+	doc.Find("#Standard_events+p+.standard-table").Eq(0).Find("tr").Each(func(i int, s *goquery.Selection) {
 		cols := s.Find("td")
 		if cols.Length() == 0 || cols.Find(".icon-thumbs-down-alt").Length() != 0 {
 			return
