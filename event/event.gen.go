@@ -45,11 +45,11 @@ func AnimationStart(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "animationstart", Listener: listener}
 }
 
-// Appinstalled is an event fired when a web application is successfully
+// AppInstalled is an event fired when a web application is successfully
 // installed as a progressive web app.
 //
 // https://developer.mozilla.org/docs/Web/Events/appinstalled
-func Appinstalled(listener func(*vecty.Event)) *vecty.EventListener {
+func AppInstalled(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "appinstalled", Listener: listener}
 }
 
@@ -251,6 +251,14 @@ func DOMContentLoaded(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "DOMContentLoaded", Listener: listener}
 }
 
+// DeviceChange is an event fired when a media device such as a camera,
+// microphone, or speaker is connected or removed from the system.
+//
+// https://developer.mozilla.org/docs/Web/Events/devicechange
+func DeviceChange(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "devicechange", Listener: listener}
+}
+
 // DeviceLight is an event fired when fresh data is available from a light
 // sensor.
 //
@@ -282,14 +290,6 @@ func DeviceOrientation(listener func(*vecty.Event)) *vecty.EventListener {
 // https://developer.mozilla.org/docs/Web/Events/deviceproximity
 func DeviceProximity(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "deviceproximity", Listener: listener}
-}
-
-// Devicechange is an event fired when a media device such as a camera,
-// microphone, or speaker is connected or removed from the system.
-//
-// https://developer.mozilla.org/docs/Web/Events/devicechange
-func Devicechange(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "devicechange", Listener: listener}
 }
 
 // DischargingTimeChange is an event fired when the dischargingTime attribute
@@ -600,11 +600,11 @@ func Message(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "message", Listener: listener}
 }
 
-// Messageerror is an event fired when a message error is raised when a message
+// MessageError is an event fired when a message error is raised when a message
 // is received by an object.
 //
 // https://developer.mozilla.org/docs/Web/Events/messageerror
-func Messageerror(listener func(*vecty.Event)) *vecty.EventListener {
+func MessageError(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "messageerror", Listener: listener}
 }
 
@@ -1043,11 +1043,11 @@ func Show(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "show", Listener: listener}
 }
 
-// Slotchange is an event fired when the node contents of a HTMLSlotElement
+// SlotChange is an event fired when the node contents of a HTMLSlotElement
 // (<slot>) have changed.
 //
 // https://developer.mozilla.org/docs/Web/Events/slotchange
-func Slotchange(listener func(*vecty.Event)) *vecty.EventListener {
+func SlotChange(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "slotchange", Listener: listener}
 }
 
