@@ -149,12 +149,13 @@ type HTML struct {
 	lastRenderedChild *HTML
 }
 
-// Node returns the underlying JavaScript Element or TextNode. Node panics
-// when called before the associated component's Mount phase.
+// Node returns the underlying JavaScript Element or TextNode.
+//
+// It panics if it is called before the DOM node has been attached, i.e. before
+// the associated component's Mounter interface would be invoked.
 func (h *HTML) Node() *js.Object {
 	if h.node == nil {
-		panic("(*HTML)Node() called before node creation. " +
-			"The component should be mounted before using Node().")
+		panic("vecty: cannot call (*HTML).Node() before DOM node creation / component mount")
 	}
 	return h.node.(wrappedObject).j
 }
