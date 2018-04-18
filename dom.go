@@ -149,8 +149,15 @@ type HTML struct {
 	lastRenderedChild *HTML
 }
 
-// Node returns the underlying JavaScript Element or TextNode.
-func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
+// Node returns the underlying JavaScript Element or TextNode. Node panics
+// when called before the associated component's Mount phase.
+func (h *HTML) Node() *js.Object {
+	if h.node == nil {
+		panic("(*HTML)Node() called before node creation. " +
+			"The component should be mounted before using Node().")
+	}
+	return h.node.(wrappedObject).j
+}
 
 // Key implements the Keyer interface.
 func (h *HTML) Key() interface{} {
