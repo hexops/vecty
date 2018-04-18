@@ -150,7 +150,15 @@ type HTML struct {
 }
 
 // Node returns the underlying JavaScript Element or TextNode.
-func (h *HTML) Node() *js.Object { return h.node.(wrappedObject).j }
+//
+// It panics if it is called before the DOM node has been attached, i.e. before
+// the associated component's Mounter interface would be invoked.
+func (h *HTML) Node() *js.Object {
+	if h.node == nil {
+		panic("vecty: cannot call (*HTML).Node() before DOM node creation / component mount")
+	}
+	return h.node.(wrappedObject).j
+}
 
 // Key implements the Keyer interface.
 func (h *HTML) Key() interface{} {
