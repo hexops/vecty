@@ -19,7 +19,7 @@ before_script:
   - node-gyp rebuild
   - mkdir -p ~/.node_libraries/
   - cp build/Release/syscall.node ~/.node_libraries/syscall.node
-  - popd
+  - cd $TRAVIS_BUILD_DIR
 script:
   # Fetch dependencies.
   - go get -t -v ./...
