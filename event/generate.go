@@ -30,7 +30,7 @@ func main() {
 		"animationend":             "AnimationEnd",
 		"animationiteration":       "AnimationIteration",
 		"animationstart":           "AnimationStart",
-		"appinstalled":             "AppInstalled",
+		"appinstalled":             "ApplicationInstalled",
 		"audioprocess":             "AudioProcess",
 		"audioend":                 "AudioEnd",
 		"audiostart":               "AudioStart",

@@ -45,11 +45,11 @@ func AnimationStart(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "animationstart", Listener: listener}
 }
 
-// AppInstalled is an event fired when a web application is successfully
-// installed as a progressive web app.
+// ApplicationInstalled is an event fired when a web application is
+// successfully installed as a progressive web app.
 //
 // https://developer.mozilla.org/docs/Web/Events/appinstalled
-func AppInstalled(listener func(*vecty.Event)) *vecty.EventListener {
+func ApplicationInstalled(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "appinstalled", Listener: listener}
 }
 
