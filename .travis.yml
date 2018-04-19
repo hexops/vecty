@@ -9,8 +9,16 @@ install:
   - go get -u github.com/golang/lint/golint
   - go get -u honnef.co/go/tools/cmd/megacheck
   - go get -u github.com/haya14busa/goverage
+  - npm install --global node-gyp
 before_script:
   - export NODE_PATH="/usr/local/lib/node_modules"
+
+  # Set up system calls for gopherjs test (nodejs).
+  # https://github.com/gopherjs/gopherjs/blob/master/doc/syscalls.md
+  - cd $GOPATH/src/github.com/gopherjs/gopherjs/node-syscall/
+  - node-gyp rebuild
+  - mkdir -p ~/.node_libraries/
+  - cp build/Release/syscall.node ~/.node_libraries/syscall.node
 script:
   # Fetch dependencies.
   - go get -t -v ./...
