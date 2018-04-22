@@ -30,6 +30,7 @@ func main() {
 		"animationend":             "AnimationEnd",
 		"animationiteration":       "AnimationIteration",
 		"animationstart":           "AnimationStart",
+		"appinstalled":             "ApplicationInstalled",
 		"audioprocess":             "AudioProcess",
 		"audioend":                 "AudioEnd",
 		"audiostart":               "AudioStart",
@@ -45,6 +46,7 @@ func main() {
 		"compositionupdate":        "CompositionUpdate",
 		"contextmenu":              "ContextMenu",
 		"dblclick":                 "DoubleClick",
+		"devicechange":             "DeviceChange",
 		"devicelight":              "DeviceLight",
 		"devicemotion":             "DeviceMotion",
 		"deviceorientation":        "DeviceOrientation",
@@ -74,6 +76,7 @@ func main() {
 		"loadend":                  "LoadEnd",
 		"loadstart":                "LoadStart",
 		"lostpointercapture":       "LostPointerCapture",
+		"messageerror":             "MessageError",
 		"mousedown":                "MouseDown",
 		"mouseenter":               "MouseEnter",
 		"mouseleave":               "MouseLeave",
@@ -104,6 +107,7 @@ func main() {
 		"resourcetimingbufferfull": "ResourceTimingBufferFull",
 		"selectstart":              "SelectStart",
 		"selectionchange":          "SelectionChange",
+		"slotchange":               "SlotChange",
 		"soundend":                 "SoundEnd",
 		"soundstart":               "SoundStart",
 		"speechend":                "SpeechEnd",
@@ -135,7 +139,7 @@ func main() {
 
 	events := make(map[string]*Event)
 
-	doc.Find(".standard-table").Eq(0).Find("tr").Each(func(i int, s *goquery.Selection) {
+	doc.Find("#Standard_events+p+.standard-table").Eq(0).Find("tr").Each(func(i int, s *goquery.Selection) {
 		cols := s.Find("td")
 		if cols.Length() == 0 || cols.Find(".icon-thumbs-down-alt").Length() != 0 {
 			return

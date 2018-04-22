@@ -45,20 +45,20 @@ func AnimationStart(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "animationstart", Listener: listener}
 }
 
+// ApplicationInstalled is an event fired when a web application is
+// successfully installed as a progressive web app.
+//
+// https://developer.mozilla.org/docs/Web/Events/appinstalled
+func ApplicationInstalled(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "appinstalled", Listener: listener}
+}
+
 // AudioEnd is an event fired when the user agent has finished capturing audio
 // for speech recognition.
 //
 // https://developer.mozilla.org/docs/Web/Events/audioend
 func AudioEnd(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "audioend", Listener: listener}
-}
-
-// AudioProcess is an event fired when the input buffer of a
-// ScriptProcessorNode is ready to be processed.
-//
-// https://developer.mozilla.org/docs/Web/Events/audioprocess
-func AudioProcess(listener func(*vecty.Event)) *vecty.EventListener {
-	return &vecty.EventListener{Name: "audioprocess", Listener: listener}
 }
 
 // AudioStart is an event fired when the user agent has started to capture
@@ -132,9 +132,8 @@ func CanPlay(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "canplay", Listener: listener}
 }
 
-// CanPlayThrough is an event fired when the user agent can play the media, and
-// estimates that enough data has been loaded to play the media up to its end
-// without having to stop for further buffering of content.
+// CanPlayThrough is an event fired when the user agent can play the media up
+// to its end without having to stop for further buffering of content.
 //
 // https://developer.mozilla.org/docs/Web/Events/canplaythrough
 func CanPlayThrough(listener func(*vecty.Event)) *vecty.EventListener {
@@ -188,10 +187,9 @@ func Close(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "close", Listener: listener}
 }
 
-// Complete is an event fired when the rendering of an OfflineAudioContext is
-// terminated.
+// Complete is an event fired when a transaction successfully completed.
 //
-// https://developer.mozilla.org/docs/Web/Events/complete
+// https://developer.mozilla.org/docs/Web/Reference/Events/complete_indexedDB
 func Complete(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "complete", Listener: listener}
 }
@@ -251,6 +249,14 @@ func Cut(listener func(*vecty.Event)) *vecty.EventListener {
 // https://developer.mozilla.org/docs/Web/Events/DOMContentLoaded
 func DOMContentLoaded(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "DOMContentLoaded", Listener: listener}
+}
+
+// DeviceChange is an event fired when a media device such as a camera,
+// microphone, or speaker is connected or removed from the system.
+//
+// https://developer.mozilla.org/docs/Web/Events/devicechange
+func DeviceChange(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "devicechange", Listener: listener}
 }
 
 // DeviceLight is an event fired when fresh data is available from a light
@@ -376,7 +382,7 @@ func DurationChange(listener func(*vecty.Event)) *vecty.EventListener {
 
 // Emptied is an event fired when the media has become empty; for example, this
 // event is sent if the media has already been loaded (or partially loaded),
-// and the load() method is called to reload it.
+// and the load() method is called to reload it.
 //
 // https://developer.mozilla.org/docs/Web/Events/emptied
 func Emptied(listener func(*vecty.Event)) *vecty.EventListener {
@@ -592,6 +598,14 @@ func Mark(listener func(*vecty.Event)) *vecty.EventListener {
 // https://developer.mozilla.org/docs/Web/Events/message_(ServiceWorker)
 func Message(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "message", Listener: listener}
+}
+
+// MessageError is an event fired when a message error is raised when a message
+// is received by an object.
+//
+// https://developer.mozilla.org/docs/Web/Events/messageerror
+func MessageError(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "messageerror", Listener: listener}
 }
 
 // MouseDown is an event fired when a pointing device button (usually a mouse)
@@ -1027,6 +1041,14 @@ func SelectionChange(listener func(*vecty.Event)) *vecty.EventListener {
 // https://developer.mozilla.org/docs/Web/Events/show
 func Show(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "show", Listener: listener}
+}
+
+// SlotChange is an event fired when the node contents of a HTMLSlotElement
+// (<slot>) have changed.
+//
+// https://developer.mozilla.org/docs/Web/Events/slotchange
+func SlotChange(listener func(*vecty.Event)) *vecty.EventListener {
+	return &vecty.EventListener{Name: "slotchange", Listener: listener}
 }
 
 // SoundEnd is an event fired when any sound — recognisable speech or not —
