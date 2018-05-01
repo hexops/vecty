@@ -1043,6 +1043,9 @@ func renderComponent(next Component, prev ComponentOrHTML) (nextHTML *HTML, skip
 		if skip {
 			return nextHTML, skip, pendingMounts
 		}
+		if prevComponent, ok := prevRender.(Component); ok && sameType(v, prevComponent) {
+			nextRender = prevRender
+		}
 	case *HTML:
 		if v == nil {
 			// nil renders are translated into noscript tags.
