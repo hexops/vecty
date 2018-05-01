@@ -12,8 +12,8 @@ var batch = &batchRenderer{idx: make(map[Component]int)}
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
 type Core struct {
-	prevRenderComponent Component
-	prevRender          ComponentOrHTML
+	prevRenderComponent Component       // A shallow copy of the component at the time of the last render.
+	prevRender          ComponentOrHTML // The return value of the Render() method at the time of the last render.
 	mounted, unmounted  bool
 }
 
