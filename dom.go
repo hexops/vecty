@@ -939,7 +939,7 @@ func copyComponent(c Component) Component {
 }
 
 // copyProps copies all struct fields from src to dst that are tagged with
-// `vecty:"prop"`, then sets *src = *dst.
+// `vecty:"prop"`.
 //
 // If src and dst are different types or non-pointers, copyProps panics.
 func copyProps(src, dst Component) {
@@ -964,11 +964,6 @@ func copyProps(src, dst Component) {
 			df.Set(sf)
 		}
 	}
-	// Effectively set *src = *dst. This allows the replacement to propagate out of
-	// the calling function, which is needed for components which themselves return
-	// components (see how renderComponent works for components that return
-	// components).
-	s.Elem().Set(d.Elem())
 }
 
 // render handles rendering the next child into HTML. If skip is returned,
