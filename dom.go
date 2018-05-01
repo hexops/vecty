@@ -1011,6 +1011,8 @@ func renderComponent(next Component, prev ComponentOrHTML) (nextHTML *HTML, skip
 		// what properties the parent has specified during SkipRender/Render
 		// below.
 		copyProps(next, prevComponent)
+		// Persist the previous component across renders.
+		next = prevComponent
 	}
 
 	// Before rendering, consult the Component's SkipRender method to see if we
