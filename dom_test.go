@@ -817,6 +817,139 @@ func TestRerender_Nested(t *testing.T) {
 	}
 }
 
+type persistentComponentBody struct {
+	Core
+}
+
+func (c *persistentComponentBody) Render() ComponentOrHTML {
+	return Tag(
+		"body",
+		&persistentComponent{},
+	)
+}
+
+var lastRenderedComponent Component
+var renderCount int
+
+type persistentComponent struct {
+	Core
+}
+
+func (c *persistentComponent) Render() ComponentOrHTML {
+	if lastRenderedComponent == nil {
+		lastRenderedComponent = c
+	} else if lastRenderedComponent != c {
+		panic("unexpected last rendered component")
+	}
+	renderCount++
+	return Tag("div")
+}
+
+// TestRerender_persistent tests the behavior of rendering persistent
+// components.
+func TestRerender_persistent(t *testing.T) {
+	ts := testSuite(t, "TestRerender_persistent")
+	defer ts.done()
+
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
+
+	lastRenderedComponent = nil
+	renderCount = 0
+
+	comp := &persistentComponentBody{}
+	// Perform the initial render of the component.
+	RenderBody(comp)
+
+	if renderCount != 1 {
+		t.Fatal("renderCount != 1")
+	}
+
+	// Perform a re-render.
+	Rerender(comp)
+
+	// Invoke the render callback.
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+
+	if renderCount != 2 {
+		t.Fatal("renderCount != 2")
+	}
+
+	// Perform a re-render.
+	Rerender(comp)
+
+	// Invoke the render callback.
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+
+	if renderCount != 3 {
+		t.Fatal("renderCount != 3")
+	}
+}
+
+type persistentComponentBody2 struct {
+	Core
+}
+
+func (c *persistentComponentBody2) Render() ComponentOrHTML {
+	return Tag(
+		"body",
+		&persistentWrapperComponent{},
+	)
+}
+
+type persistentWrapperComponent struct {
+	Core
+}
+
+func (c *persistentWrapperComponent) Render() ComponentOrHTML {
+	return &persistentComponent{}
+}
+
+// TestRerender_persistent_direct tests the behavior of rendering persistent
+// components that are directly returned by Render().
+func TestRerender_persistent_direct(t *testing.T) {
+	ts := testSuite(t, "TestRerender_persistent_direct")
+	defer ts.done()
+
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
+
+	lastRenderedComponent = nil
+	renderCount = 0
+
+	comp := &persistentComponentBody2{}
+	// Perform the initial render of the component.
+	RenderBody(comp)
+
+	if renderCount != 1 {
+		t.Fatal("renderCount != 1")
+	}
+
+	// Perform a re-render.
+	Rerender(comp)
+
+	// Invoke the render callback.
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+
+	if renderCount != 2 {
+		t.Fatal("renderCount != 2")
+	}
+
+	// Perform a re-render.
+	Rerender(comp)
+
+	// Invoke the render callback.
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+
+	if renderCount != 3 {
+		t.Fatal("renderCount != 3")
+	}
+}
+
 // TestRenderBody_ExpectsBody tests that RenderBody panics when something other
 // than a "body" tag is rendered by the component.
 func TestRenderBody_ExpectsBody(t *testing.T) {
