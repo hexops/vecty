@@ -104,6 +104,18 @@ func Key(key interface{}) Applyer {
 	})
 }
 
+func OnMount(cb func(h *HTML)) Applyer {
+	return markupFunc(func(h *HTML) {
+		h.mounters = append(h.mounters, cb)
+	})
+}
+
+func OnUnmount(cb func(h *HTML)) Applyer {
+	return markupFunc(func(h *HTML) {
+		h.unmounters = append(h.unmounters, cb)
+	})
+}
+
 // Property returns an Applyer which applies the given JavaScript property to an
 // HTML element or text node. Generally, this function is not used directly but
 // rather the prop and style subpackages (which are type safe) should be used instead.

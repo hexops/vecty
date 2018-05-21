@@ -147,6 +147,9 @@ type HTML struct {
 	// lastRendered child tracks the last child that was rendered, across List
 	// boundaries.
 	lastRenderedChild *HTML
+
+	mounters   []func(h *HTML)
+	unmounters []func(h *HTML)
 }
 
 // Node returns the underlying JavaScript Element or TextNode.
@@ -158,6 +161,26 @@ func (h *HTML) Node() *js.Object {
 		panic("vecty: cannot call (*HTML).Node() before DOM node creation / component mount")
 	}
 	return h.node.(wrappedObject).j
+}
+
+func (h *HTML) Mount() {
+	if h.mounters == nil {
+		return
+	}
+
+	for _, m := range h.mounters {
+		m(h)
+	}
+}
+
+func (h *HTML) Unmount() {
+	if h.unmounters == nil {
+		return
+	}
+
+	for _, u := range h.unmounters {
+		u(h)
+	}
 }
 
 // Key implements the Keyer interface.
@@ -1071,6 +1094,15 @@ func renderComponent(next Component, prev ComponentOrHTML) (nextHTML *HTML, skip
 func mountUnmount(next, prev ComponentOrHTML) Mounter {
 	if next == prev {
 		return nil
+	}
+	// If both elements are HTML, only call mount/umount if they reused the
+	// same underlying DOM node.
+	if next, ok := next.(*HTML); ok {
+		if prev, ok := prev.(*HTML); ok {
+			if next.node == prev.node {
+				return nil
+			}
+		}
 	}
 	if !sameType(next, prev) {
 		if prev != nil {
