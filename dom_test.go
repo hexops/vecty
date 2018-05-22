@@ -1108,3 +1108,46 @@ func TestAddStylesheet(t *testing.T) {
 
 	AddStylesheet("https://google.com/foobar.css")
 }
+
+func TestKeyedChild_DifferentType(t *testing.T) {
+	ts := testSuite(t, "TestKeyedChild_DifferentType")
+	defer ts.done()
+
+	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
+
+	comp := &componentFunc{
+		render: func() ComponentOrHTML {
+			return Tag(
+				"body",
+				Tag(
+					"tag1",
+					Markup(Key("key")),
+				),
+			)
+		},
+	}
+
+	RenderBody(comp)
+
+	rerender := func() {
+		Rerender(comp)
+		ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+		ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+	}
+
+	// Re-render
+	rerender()
+
+	comp.render = func() ComponentOrHTML {
+		return Tag(
+			"body",
+			Tag(
+				"tag2",
+				Markup(Key("key")),
+			),
+		)
+	}
+
+	rerender()
+}
