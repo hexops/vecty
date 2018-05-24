@@ -164,7 +164,6 @@ func writeElem(w io.Writer, name, desc, link string) {
 	// Reword the description so it is a proper Go comment sentence.
 	switch name {
 	case "h1", "h2", "h3", "h4", "h5", "h6":
-		println(name)
 		n, err := strconv.Atoi(string(name[1]))
 		if err != nil {
 			log.Fatalf("elem: Failed to parse heading number from \"%s\"", name)
