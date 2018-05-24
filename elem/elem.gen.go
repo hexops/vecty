@@ -326,48 +326,48 @@ func Form(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("form", markup...)
 }
 
-// The HTML <h1>–<h6> elements represent six levels of section headings. <h1>
-// is the highest section level and <h6> is the lowest.
+// Heading1 represents a level 1 section heading. <h1> is the highest section
+// level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Heading1(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h1", markup...)
 }
 
-// The HTML <h1>–<h6> elements represent six levels of section headings. <h1>
-// is the highest section level and <h6> is the lowest.
+// Heading2 represents a level 2 section heading. <h1> is the highest section
+// level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Heading2(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h2", markup...)
 }
 
-// The HTML <h1>–<h6> elements represent six levels of section headings. <h1>
-// is the highest section level and <h6> is the lowest.
+// Heading3 represents a level 3 section heading. <h1> is the highest section
+// level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Heading3(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h3", markup...)
 }
 
-// The HTML <h1>–<h6> elements represent six levels of section headings. <h1>
-// is the highest section level and <h6> is the lowest.
+// Heading4 represents a level 4 section heading. <h1> is the highest section
+// level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Heading4(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h4", markup...)
 }
 
-// The HTML <h1>–<h6> elements represent six levels of section headings. <h1>
-// is the highest section level and <h6> is the lowest.
+// Heading5 represents a level 5 section heading. <h1> is the highest section
+// level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Heading5(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h5", markup...)
 }
 
-// The HTML <h1>–<h6> elements represent six levels of section headings. <h1>
-// is the highest section level and <h6> is the lowest.
+// Heading6 represents a level 6 section heading. <h1> is the highest section
+// level and <h6> is the lowest.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
 func Heading6(markup ...vecty.MarkupOrChild) *vecty.HTML {

@@ -5,7 +5,9 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -158,8 +160,22 @@ func writeElem(w io.Writer, name, desc, link string) {
 	// Replace a number of 'no-break space' unicode characters which exist in
 	// the descriptions with normal spaces.
 	desc = strings.Replace(desc, "\u00a0", " ", -1)
-	if l := len(generalLowercase); len(desc) > l && strings.HasPrefix(strings.ToLower(desc), generalLowercase) {
-		desc = fmt.Sprintf("%s%s", funName, desc[l:])
+
+	// Reword the description so it is a proper Go comment sentence.
+	switch name {
+	case "h1", "h2", "h3", "h4", "h5", "h6":
+		println(name)
+		n, err := strconv.Atoi(string(name[1]))
+		if err != nil {
+			log.Fatalf("elem: Failed to parse heading number from \"%s\"", name)
+		}
+		old := "The HTML <h1>–<h6> elements represent six levels of section headings"
+		new := fmt.Sprintf("%s represents a level %v section heading", funName, n)
+		desc = strings.Replace(desc, old, new, 1)
+	default:
+		if l := len(generalLowercase); len(desc) > l && strings.HasPrefix(strings.ToLower(desc), generalLowercase) {
+			desc = fmt.Sprintf("%s%s", funName, desc[l:])
+		}
 	}
 
 	fmt.Fprintf(w, `%s
