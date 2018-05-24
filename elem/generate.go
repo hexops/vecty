@@ -191,12 +191,12 @@ func writeElem(w io.Writer, name, desc, link string) {
 				break
 			}
 		}
+		// Suffix fixups
+		desc = strings.TrimSpace(desc)
+		if !strings.HasSuffix(desc, ".") {
+			desc = desc[:len(desc)-1] + "."
+		}
 	}
-
-	// Some descriptions do not end with a period.
-	// if !strings.HasSuffix(desc, ".") {
-	// 	desc = desc + "."
-	// }
 
 	fmt.Fprintf(w, `%s
 //

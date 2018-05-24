@@ -711,7 +711,7 @@ func Section(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("section", markup...)
 }
 
-// Select represents a control that provides a menu of options:
+// Select represents a control that provides a menu of options.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
 func Select(markup ...vecty.MarkupOrChild) *vecty.HTML {
