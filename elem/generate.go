@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -120,6 +121,8 @@ import "github.com/gopherjs/vecty"
 		desc, _ := s.Attr("title")
 
 		text := s.Text()
+		// Headings are grouped into one description so we generate them
+		// individually here.
 		if text == "<h1>" {
 			writeElem(file, "h1", desc, link)
 			writeElem(file, "h2", desc, link)
@@ -140,23 +143,10 @@ import "github.com/gopherjs/vecty"
 }
 
 func writeElem(w io.Writer, name, desc, link string) {
-	println(name)
 	funName := elemNameMap[name]
 	if funName == "" {
 		funName = capitalize(name)
 	}
-
-	// Descriptions for elements generally read as:
-	//
-	//  The HTML <foobar> element ...
-	//
-	// Because these are consistent (sometimes with varying captalization,
-	// however) we can exploit that fact to reword the documentation in proper
-	// Go style:
-	//
-	//  Foobar ...
-	//
-	generalLowercase := fmt.Sprintf("the html <%s> element", strings.ToLower(name))
 
 	// Replace a number of 'no-break space' unicode characters which exist in
 	// the descriptions with normal spaces.
@@ -164,7 +154,11 @@ func writeElem(w io.Writer, name, desc, link string) {
 
 	// Reword the description so it is a proper Go comment sentence.
 	switch name {
+	case "audio":
+		// MDN has no description for audio at the time of writing this.
+		desc = `Audio is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.`
 	case "h1", "h2", "h3", "h4", "h5", "h6":
+		// Headings are grouped into one description
 		n, err := strconv.Atoi(string(name[1]))
 		if err != nil {
 			log.Fatalf("elem: Failed to parse heading number from \"%s\"", name)
@@ -173,8 +167,29 @@ func writeElem(w io.Writer, name, desc, link string) {
 		new := fmt.Sprintf("%s represents a level %v section heading", funName, n)
 		desc = strings.Replace(desc, old, new, 1)
 	default:
-		if l := len(generalLowercase); len(desc) > l && strings.HasPrefix(strings.ToLower(desc), generalLowercase) {
-			desc = fmt.Sprintf("%s%s", funName, desc[l:])
+		// Descriptions for elements generally read as one of:
+		//
+		//  The HTML <foobar> element ...
+		//  The HTML Full Name element (<foobar>) ...
+		//
+		// Because these are consistent (sometimes with varying captalization,
+		// however) we can exploit that fact to reword the documentation in proper
+		// Go style:
+		//
+		//  Foobar ...
+		//
+		s := strings.Split(desc, "<"+name+">")
+		desc = s[1]
+		exprs := []string{
+			`^\s*element\s*`,
+			`^\s*\)?\s*`,
+		}
+		for _, expr := range exprs {
+			re := regexp.MustCompile(expr)
+			if re.MatchString(desc) {
+				desc = re.ReplaceAllString(desc, funName+" ")
+				break
+			}
 		}
 	}
 

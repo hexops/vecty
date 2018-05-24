@@ -17,9 +17,8 @@ func Anchor(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("a", markup...)
 }
 
-// The HTML Abbreviation element (<abbr>) represents an abbreviation or
-// acronym; the optional title attribute can provide an expansion or
-// description for the abbreviation.
+// Abbreviation represents an abbreviation or acronym; the optional title
+// attribute can provide an expansion or description for the abbreviation.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr
 func Abbreviation(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -60,15 +59,18 @@ func Aside(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("aside", markup...)
 }
 
+// Audio is used to embed sound content in documents. It may contain one or
+// more audio sources, represented using the src attribute or the <source>
+// element: the browser will choose the most suitable one. It can also be the
+// destination for streamed media, using a MediaStream.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
 func Audio(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("audio", markup...)
 }
 
-// The HTML Bring Attention To element (<b>) is used to draw the reader's
-// attention to the element's contents, which are not otherwise granted special
-// importance.
+// Bold is used to draw the reader's attention to the element's contents, which
+// are not otherwise granted special importance.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b
 func Bold(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -76,34 +78,32 @@ func Bold(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // Base specifies the base URL to use for all relative URLs contained within a
-// document. There can be only one <base> element in a document.
+// document. There can be only one
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
 func Base(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("base", markup...)
 }
 
-// The HTML BiDirectional Isolation element (<bdi>) is used to indicate spans
-// of text which might need to be rendered in the opposite direction than the
-// surrounding text.
+// BidirectionalIsolation is used to indicate spans of text which might need to
+// be rendered in the opposite direction than the surrounding text.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi
 func BidirectionalIsolation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("bdi", markup...)
 }
 
-// The HTML Bidirectional Text Override element (<bdo>) overrides the current
-// directionality of text, so that the text within is rendered in a different
-// direction.
+// BidirectionalOverride overrides the current directionality of text, so that
+// the text within is rendered in a different direction.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo
 func BidirectionalOverride(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("bdo", markup...)
 }
 
-// BlockQuote (or HTML Block Quotation Element) indicates that the enclosed
-// text is an extended quotation. Usually, this is rendered visually by
-// indentation (see Notes for how to change it). A URL for the source of the
+// BlockQuote Element (or HTML Block Quotation Element) indicates that the
+// enclosed text is an extended quotation. Usually, this is rendered visually
+// by indentation (see Notes for how to change it). A URL for the source of the
 // quotation may be given using the cite attribute, while a text representation
 // of the source can be given using the <cite> element.
 //
@@ -112,8 +112,8 @@ func BlockQuote(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("blockquote", markup...)
 }
 
-// Body represents the content of an HTML document. There can be only one
-// <body> element in a document.
+// Body Element represents the content of an HTML document. There can be only
+// one
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body
 func Body(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -136,25 +136,24 @@ func Button(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("button", markup...)
 }
 
-// Use the HTML <canvas> element with either the canvas scripting API or the
-// WebGL API to draw graphics and animations.
+// Canvas with either the canvas scripting API or the WebGL API to draw
+// graphics and animations.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas
 func Canvas(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("canvas", markup...)
 }
 
-// The HTML Table Caption element (<caption>) specifies the caption (or title)
-// of a table, and if used is always the first child of a <table>.
+// Caption specifies the caption (or title) of a table, and if used is always
+// the first child of a <table>.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption
 func Caption(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("caption", markup...)
 }
 
-// The HTML Citation element (<cite>) is used to describe a reference to a
-// cited creative work, and must include either the title or the URL of that
-// work.
+// Citation is used to describe a reference to a cited creative work, and must
+// include either the title or the URL of that work.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite
 func Citation(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -217,16 +216,16 @@ func DeletedText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("del", markup...)
 }
 
-// The HTML Details Element (<details>) creates a disclosure widget in which
-// information is visible only when the widget is toggled into an "open" state.
+// Details creates a disclosure widget in which information is visible only
+// when the widget is toggled into an "open" state.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
 func Details(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("details", markup...)
 }
 
-// The HTML Definition element (<dfn>) is used to indicate the term being
-// defined within the context of a definition phrase or sentence.
+// Definition is used to indicate the term being defined within the context of
+// a definition phrase or sentence.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
 func Definition(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -241,8 +240,8 @@ func Dialog(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dialog", markup...)
 }
 
-// The HTML Content Division element (<div>) is the generic container for flow
-// content. It has no effect on the content or layout until styled using CSS.
+// Div is the generic container for flow content. It has no effect on the
+// content or layout until styled using CSS.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div
 func Div(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -267,8 +266,7 @@ func DefinitionTerm(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dt", markup...)
 }
 
-// Emphasis marks text that has stress emphasis. The <em> element can be
-// nested, with each level of nesting indicating a greater degree of emphasis.
+// Emphasis marks text that has stress emphasis. The
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
 func Emphasis(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -411,8 +409,8 @@ func Italic(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("i", markup...)
 }
 
-// The HTML Inline Frame element (<iframe>) represents a nested browsing
-// context, effectively embedding another HTML page into the current page.
+// InlineFrame represents a nested browsing context, effectively embedding
+// another HTML page into the current page.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
 func InlineFrame(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -441,9 +439,8 @@ func InsertedText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("ins", markup...)
 }
 
-// The HTML Keyboard Input element (<kbd>) represents a span of inline text
-// denoting textual user input from a keyboard, voice input, or any other text
-// entry device.
+// KeyboardInput represents a span of inline text denoting textual user input
+// from a keyboard, voice input, or any other text entry device.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd
 func KeyboardInput(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -502,9 +499,9 @@ func Map(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("map", markup...)
 }
 
-// The HTML Mark Text element (<mark>) represents text which is marked or
-// highlighted for reference or notation purposes, due to the marked passage's
-// relevance or importance in the enclosing context.
+// Mark represents text which is marked or highlighted for reference or
+// notation purposes, due to the marked passage's relevance or importance in
+// the enclosing context.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark
 func Mark(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -579,17 +576,15 @@ func OptionsGroup(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // Option is used to define an item contained in a <select>, an <optgroup>, or
-// a <datalist> element. As such, <option> can represent menu items in popups
-// and other lists of items in an HTML document.
+// a <datalist> element. As such,
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option
 func Option(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("option", markup...)
 }
 
-// The HTML Output element (<output>) is a container element into which a site
-// or app can inject the results of a calculation or the outcome of a user
-// action.
+// Output is a container element into which a site or app can inject the
+// results of a calculation or the outcome of a user action.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output
 func Output(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -643,29 +638,27 @@ func Quote(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("q", markup...)
 }
 
-// The HTML Ruby Fallback Parenthesis (<rp>) element is used to provide
-// fall-back parentheses for browsers that do not support display of ruby
-// annotations using the <ruby> element.
+// RubyParenthesis element is used to provide fall-back parentheses for
+// browsers that do not support display of ruby annotations using the <ruby>
+// element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp
 func RubyParenthesis(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rp", markup...)
 }
 
-// The HTML Ruby Text (<rt>) element specifies the ruby text component of a
-// ruby annotation, which is used to provide pronunciation, translation, or
-// transliteration information for East Asian typography. The <rt> element must
-// always be contained within a <ruby> element.
+// RubyText element specifies the ruby text component of a ruby annotation,
+// which is used to provide pronunciation, translation, or transliteration
+// information for East Asian typography. The
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt
 func RubyText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rt", markup...)
 }
 
-// The HTML Ruby Text Container (<rtc>) element embraces semantic annotations
-// of characters presented in a ruby of <rb> elements used inside of <ruby>
-// element. <rb> elements can have both pronunciation (<rt>) and semantic
-// (<rtc>) annotations.
+// RubyTextContainer element embraces semantic annotations of characters
+// presented in a ruby of <rb> elements used inside of <ruby> element. <rb>
+// elements can have both pronunciation (<rt>) and semantic (
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc
 func RubyTextContainer(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -681,17 +674,15 @@ func Ruby(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // Strikethrough renders text with a strikethrough, or a line through it. Use
-// the <s> element to represent things that are no longer relevant or no longer
-// accurate. However, <s> is not appropriate when indicating document edits;
-// for that, use the <del> and <ins> elements, as appropriate.
+// the
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
 func Strikethrough(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("s", markup...)
 }
 
-// The HTML Sample Element (<samp>) is used to enclose inline text which
-// represents sample (or quoted) output from a computer program.
+// Sample is used to enclose inline text which represents sample (or quoted)
+// output from a computer program.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp
 func Sample(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -722,9 +713,9 @@ func Select(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("select", markup...)
 }
 
-// Slot—part of the Web Components technology suite—is a placeholder inside
-// a web component that you can fill with your own markup, which lets you
-// create separate DOM trees and present them together.
+// Slot —part of the Web Components technology suite—is a placeholder
+// inside a web component that you can fill with your own markup, which lets
+// you create separate DOM trees and present them together.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot
 func Slot(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -762,9 +753,8 @@ func Span(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("span", markup...)
 }
 
-// The HTML Strong Importance Element (<strong>) indicates that its contents
-// have strong importance, seriousness, or urgency. Browsers typically render
-// the contents in bold type.
+// Strong indicates that its contents have strong importance, seriousness, or
+// urgency. Browsers typically render the contents in bold type.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong
 func Strong(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -778,24 +768,24 @@ func Style(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("style", markup...)
 }
 
-// The HTML Subscript element (<sub>) specifies inline text which should be
-// displayed as subscript for solely typographical reasons.
+// Subscript specifies inline text which should be displayed as subscript for
+// solely typographical reasons.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub
 func Subscript(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("sub", markup...)
 }
 
-// The HTML Disclosure Summary element (<summary>) element specifies a summary,
-// caption, or legend for a <details> element's disclosure box.
+// Summary element specifies a summary, caption, or legend for a <details>
+// element's disclosure box.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary
 func Summary(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("summary", markup...)
 }
 
-// The HTML Superscript element (<sup>) specifies inline text which is to be
-// displayed as superscript for solely typographical reasons.
+// Superscript specifies inline text which is to be displayed as superscript
+// for solely typographical reasons.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup
 func Superscript(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -811,8 +801,8 @@ func Table(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("table", markup...)
 }
 
-// The HTML Table Body element (<tbody>) encapsulates a set of table row (<tr>
-// elements, indicating that they comprise the body of the table (<table>).
+// TableBody encapsulates a set of table row (<tr> elements, indicating that
+// they comprise the body of the table (<table>).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody
 func TableBody(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -827,9 +817,9 @@ func TableData(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("td", markup...)
 }
 
-// The HTML Content Template (<template>) element is a mechanism for holding
-// client-side content that is not to be rendered when a page is loaded but may
-// subsequently be instantiated during runtime using JavaScript.
+// Template element is a mechanism for holding client-side content that is not
+// to be rendered when a page is loaded but may subsequently be instantiated
+// during runtime using JavaScript.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
 func Template(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -875,8 +865,8 @@ func Time(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("time", markup...)
 }
 
-// The HTML Title element (<title>) defines the title of the document, shown in
-// a browser's title bar or on the page's tab.
+// Title defines the title of the document, shown in a browser's title bar or
+// on the page's tab.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
 func Title(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -901,9 +891,8 @@ func Track(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("track", markup...)
 }
 
-// The HTML Unarticulated Annotation element (<u>) represents a span of inline
-// text which should be rendered in a way that indicates that it has a
-// non-textual annotation.
+// Underline represents a span of inline text which should be rendered in a way
+// that indicates that it has a non-textual annotation.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u
 func Underline(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -918,16 +907,15 @@ func UnorderedList(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("ul", markup...)
 }
 
-// The HTML Variable element (<var>) represents the name of a variable in a
-// mathematical expression or a programming context.
+// Variable represents the name of a variable in a mathematical expression or a
+// programming context.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var
 func Variable(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("var", markup...)
 }
 
-// The HTML Video element (<video>) embeds a media player which supports video
-// playback into the document.
+// Video embeds a media player which supports video playback into the document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video
 func Video(markup ...vecty.MarkupOrChild) *vecty.HTML {
