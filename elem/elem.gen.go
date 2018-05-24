@@ -78,7 +78,7 @@ func Bold(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // Base specifies the base URL to use for all relative URLs contained within a
-// document. There can be only one
+// document. There can be only one element in a document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
 func Base(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -113,6 +113,7 @@ func BlockQuote(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // Body represents the content of an HTML document. There can be only one
+// element in a document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body
 func Body(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -265,7 +266,8 @@ func DefinitionTerm(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dt", markup...)
 }
 
-// Emphasis marks text that has stress emphasis. The
+// Emphasis marks text that has stress emphasis. The element can be nested,
+// with each level of nesting indicating a greater degree of emphasis.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
 func Emphasis(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -575,7 +577,8 @@ func OptionsGroup(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // Option is used to define an item contained in a <select>, an <optgroup>, or
-// a <datalist> element. As such,
+// a <datalist> element. As such, can represent menu items in popups and other
+// lists of items in an HTML document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option
 func Option(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -648,7 +651,8 @@ func RubyParenthesis(markup ...vecty.MarkupOrChild) *vecty.HTML {
 
 // RubyText element specifies the ruby text component of a ruby annotation,
 // which is used to provide pronunciation, translation, or transliteration
-// information for East Asian typography. The
+// information for East Asian typography. The element must always be contained
+// within a <ruby> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt
 func RubyText(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -657,7 +661,7 @@ func RubyText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 
 // RubyTextContainer element embraces semantic annotations of characters
 // presented in a ruby of <rb> elements used inside of <ruby> element. <rb>
-// elements can have both pronunciation (<rt>) and semantic (
+// elements can have both pronunciation (<rt>) and semantic () annotations.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc
 func RubyTextContainer(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -673,7 +677,9 @@ func Ruby(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // Strikethrough renders text with a strikethrough, or a line through it. Use
-// the
+// the element to represent things that are no longer relevant or no longer
+// accurate. However, is not appropriate when indicating document edits; for
+// that, use the <del> and <ins> elements, as appropriate.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
 func Strikethrough(markup ...vecty.MarkupOrChild) *vecty.HTML {

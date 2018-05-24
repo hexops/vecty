@@ -178,8 +178,8 @@ func writeElem(w io.Writer, name, desc, link string) {
 		//
 		//  Foobar ...
 		//
-		s := strings.Split(desc, "<"+name+">")
-		desc = s[1]
+		s := strings.Split(desc, "<"+name+">")[1:]
+		desc = strings.Join(s, "")
 		exprs := []string{
 			`^\s*(e|E)lement\s*`,
 			`^\s*\)?\s*`,
@@ -192,6 +192,11 @@ func writeElem(w io.Writer, name, desc, link string) {
 			}
 		}
 	}
+
+	// Some descriptions do not end with a period.
+	// if !strings.HasSuffix(desc, ".") {
+	// 	desc = desc + "."
+	// }
 
 	fmt.Fprintf(w, `%s
 //
