@@ -131,7 +131,7 @@ import "github.com/gopherjs/vecty"
 		}
 
 		name := text[1 : len(text)-1]
-		if name == "html" || name == "head" {
+		if name == "html" || name == "head" || len(strings.Fields(name)) > 1 {
 			return
 		}
 
@@ -140,6 +140,7 @@ import "github.com/gopherjs/vecty"
 }
 
 func writeElem(w io.Writer, name, desc, link string) {
+	println(name)
 	funName := elemNameMap[name]
 	if funName == "" {
 		funName = capitalize(name)
