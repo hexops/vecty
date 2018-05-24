@@ -181,7 +181,7 @@ func writeElem(w io.Writer, name, desc, link string) {
 		s := strings.Split(desc, "<"+name+">")[1:]
 		desc = strings.Join(s, "<"+name+">")
 		exprs := []string{
-			`^\s*(e|E)lement\s*`,
+			`^\s*\)?\s*(e|E)lement\s*`,
 			`^\s*\)?\s*`,
 		}
 		for _, expr := range exprs {

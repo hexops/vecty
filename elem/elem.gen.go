@@ -640,29 +640,27 @@ func Quote(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("q", markup...)
 }
 
-// RubyParenthesis element is used to provide fall-back parentheses for
-// browsers that do not support display of ruby annotations using the <ruby>
-// element.
+// RubyParenthesis is used to provide fall-back parentheses for browsers that
+// do not support display of ruby annotations using the <ruby> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp
 func RubyParenthesis(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rp", markup...)
 }
 
-// RubyText element specifies the ruby text component of a ruby annotation,
-// which is used to provide pronunciation, translation, or transliteration
-// information for East Asian typography. The <rt> element must always be
-// contained within a <ruby> element.
+// RubyText specifies the ruby text component of a ruby annotation, which is
+// used to provide pronunciation, translation, or transliteration information
+// for East Asian typography. The <rt> element must always be contained within
+// a <ruby> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt
 func RubyText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rt", markup...)
 }
 
-// RubyTextContainer element embraces semantic annotations of characters
-// presented in a ruby of <rb> elements used inside of <ruby> element. <rb>
-// elements can have both pronunciation (<rt>) and semantic (<rtc>)
-// annotations.
+// RubyTextContainer embraces semantic annotations of characters presented in a
+// ruby of <rb> elements used inside of <ruby> element. <rb> elements can have
+// both pronunciation (<rt>) and semantic (<rtc>) annotations.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc
 func RubyTextContainer(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -782,8 +780,8 @@ func Subscript(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("sub", markup...)
 }
 
-// Summary element specifies a summary, caption, or legend for a <details>
-// element's disclosure box.
+// Summary specifies a summary, caption, or legend for a <details> element's
+// disclosure box.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary
 func Summary(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -823,9 +821,9 @@ func TableData(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("td", markup...)
 }
 
-// Template element is a mechanism for holding client-side content that is not
-// to be rendered when a page is loaded but may subsequently be instantiated
-// during runtime using JavaScript.
+// Template is a mechanism for holding client-side content that is not to be
+// rendered when a page is loaded but may subsequently be instantiated during
+// runtime using JavaScript.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
 func Template(markup ...vecty.MarkupOrChild) *vecty.HTML {
