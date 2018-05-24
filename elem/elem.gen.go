@@ -17,17 +17,17 @@ func Anchor(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("a", markup...)
 }
 
-// Abbreviation represents an abbreviation and optionally provides a full
-// description for it. If present, the title attribute must contain this full
-// description and nothing else.
+// The HTML Abbreviation element (<abbr>) represents an abbreviation or
+// acronym; the optional title attribute can provide an expansion or
+// description for the abbreviation.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr
 func Abbreviation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("abbr", markup...)
 }
 
-// Address supplies contact information for its nearest <article> or <body>
-// ancestor; in the latter case, it applies to the whole document.
+// Address indicates that the enclosed HTML provides contact information for a
+// person or people, or for an organization.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address
 func Address(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -52,27 +52,23 @@ func Article(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("article", markup...)
 }
 
-// Aside represents a section of a document with content connected tangentially
-// to the main content of the document (often presented as a sidebar).
+// Aside represents a portion of a document whose content is only indirectly
+// related to the document's main content.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside
 func Aside(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("aside", markup...)
 }
 
-// Audio is used to embed sound content in documents. It may contain one or
-// more audio sources, represented using the src attribute or the <source>
-// element: the browser will choose the most suitable one. It can also be the
-// destination for streamed media, using a MediaStream.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
 func Audio(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("audio", markup...)
 }
 
-// Bold represents a span of text stylistically different from normal text,
-// without conveying any special importance or relevance, and that is typically
-// rendered in boldface.
+// The HTML Bring Attention To element (<b>) is used to draw the reader's
+// attention to the element's contents, which are not otherwise granted special
+// importance.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b
 func Bold(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -87,17 +83,18 @@ func Base(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("base", markup...)
 }
 
-// BidirectionalIsolation (bidirectional isolation) isolates a span of text
-// that might be formatted in a different direction from other text outside it.
+// The HTML BiDirectional Isolation element (<bdi>) is used to indicate spans
+// of text which might need to be rendered in the opposite direction than the
+// surrounding text.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi
 func BidirectionalIsolation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("bdi", markup...)
 }
 
-// BidirectionalOverride (bidirectional override) is used to override the
-// current directionality of text. It causes the directionality of the
-// characters to be ignored in favor of the specified directionality.
+// The HTML Bidirectional Text Override element (<bdo>) overrides the current
+// directionality of text, so that the text within is rendered in a different
+// direction.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo
 func BidirectionalOverride(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -131,41 +128,41 @@ func Break(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("br", markup...)
 }
 
-// Button represents a clickable button.
+// Button represents a clickable button, which can be used in forms, or
+// anywhere in a document that needs simple, standard button functionality.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button
 func Button(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("button", markup...)
 }
 
-// Use the HTML <canvas> element with the canvas scripting API to draw graphics
-// and animations.
+// Use the HTML <canvas> element with either the canvas scripting API or the
+// WebGL API to draw graphics and animations.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas
 func Canvas(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("canvas", markup...)
 }
 
-// Caption represents the title of a table. Though it is always the first
-// descendant of a <table>, its styling, using CSS, may place it elsewhere,
-// relative to the table.
+// The HTML Table Caption element (<caption>) specifies the caption (or title)
+// of a table, and if used is always the first child of a <table>.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption
 func Caption(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("caption", markup...)
 }
 
-// Citation represents a reference to a creative work. It must include the
-// title of a work or a URL reference, which may be in an abbreviated form
-// according to the conventions used for the addition of citation metadata.
+// The HTML Citation element (<cite>) is used to describe a reference to a
+// cited creative work, and must include either the title or the URL of that
+// work.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite
 func Citation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("cite", markup...)
 }
 
-// Code represents a fragment of computer code. By default, it is displayed in
-// the browser's default monospace font.
+// Code displays its contents styled in a fashion intended to indicate that the
+// text is a short fragment of computer code.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code
 func Code(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -204,8 +201,8 @@ func DataList(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("datalist", markup...)
 }
 
-// Description indicates the description of a term in a description list
-// (<dl>).
+// Description provides the details about or the definition of the preceding
+// term (<dt>) in a description list (<dl>).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd
 func Description(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -213,23 +210,23 @@ func Description(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // DeletedText represents a range of text that has been deleted from a
-// document. This element is often (but need not be) rendered with
-// strike-through text.
+// document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
 func DeletedText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("del", markup...)
 }
 
-// Details is used as a disclosure widget from which the user can retrieve
-// additional information.
+// The HTML Details Element (<details>) creates a disclosure widget in which
+// information is visible only when the widget is toggled into an "open" state.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
 func Details(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("details", markup...)
 }
 
-// Definition represents the defining instance of a term.
+// The HTML Definition element (<dfn>) is used to indicate the term being
+// defined within the context of a definition phrase or sentence.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn
 func Definition(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -244,10 +241,8 @@ func Dialog(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dialog", markup...)
 }
 
-// Div is the generic container for flow content and does not inherently
-// represent anything. Use it to group elements for purposes such as styling
-// (using the class or id attributes), marking a section of a document in a
-// different language (using the lang attribute), and so on.
+// The HTML Content Division element (<div>) is the generic container for flow
+// content. It has no effect on the content or layout until styled using CSS.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div
 func Div(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -255,18 +250,17 @@ func Div(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // DescriptionList represents a description list. The element encloses a list
-// of groups of terms and descriptions. Common uses for this element are to
-// implement a glossary or to display metadata (a list of key-value pairs).
+// of groups of terms (specified using the <dt> element) and descriptions
+// (provided by <dd> elements). Common uses for this element are to implement a
+// glossary or to display metadata (a list of key-value pairs).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl
 func DescriptionList(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("dl", markup...)
 }
 
-// DefinitionTerm identifies a term in a description list. This element can
-// occur only as a child element of a <dl>. It is usually followed by a <dd>
-// element; however, multiple <dt> elements in a row indicate several terms
-// that are all defined by the immediate next <dd> element.
+// DefinitionTerm specifies a term in a description or definition list, and as
+// such must be used inside a <dl> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt
 func DefinitionTerm(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -281,8 +275,9 @@ func Emphasis(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("em", markup...)
 }
 
-// Embed represents an integration point for an external application or
-// interactive content (in other words, a plug-in).
+// Embed embeds external content at the specified point in the document. This
+// content is provided by an external application or other source of
+// interactive content such as a browser plug-in.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed
 func Embed(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -323,8 +318,8 @@ func Footer(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("footer", markup...)
 }
 
-// Form represents a document section that contains interactive controls to
-// submit information to a web server.
+// Form represents a document section that contains interactive controls for
+// submitting information to a web server.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form
 func Form(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -379,9 +374,9 @@ func Heading6(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("h6", markup...)
 }
 
-// Header represents a group of introductory or navigational aids. It may
-// contain some heading elements but also other elements like a logo, a search
-// form, and so on.
+// Header represents introductory content, typically a group of introductory or
+// navigational aids. It may contain some heading elements but also other
+// elements like a logo, a search form, an author name, and so on.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header
 func Header(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -398,9 +393,8 @@ func HeadingsGroup(markup ...vecty.MarkupOrChild) *vecty.HTML {
 
 // HorizontalRule represents a thematic break between paragraph-level elements
 // (for example, a change of scene in a story, or a shift of topic with a
-// section). In previous versions of HTML, it represented a horizontal rule. It
-// may still be displayed as a horizontal rule in visual browsers, but is now
-// defined in semantic terms, rather than presentational terms.
+// section); historically, this has been presented as a horizontal rule or
+// line.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr
 func HorizontalRule(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -408,29 +402,24 @@ func HorizontalRule(markup ...vecty.MarkupOrChild) *vecty.HTML {
 }
 
 // Italic represents a range of text that is set off from the normal text for
-// some reason, for example, technical terms, foreign language phrases, or
-// fictional character thoughts. It is typically displayed in italic type.
+// some reason. Some examples include technical terms, foreign language
+// phrases, or fictional character thoughts. It is typically displayed in
+// italic type.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i
 func Italic(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("i", markup...)
 }
 
-// InlineFrame represents a nested browsing context, effectively embedding
-// another HTML page into the current page. In HTML 4.01, a document may
-// contain a head and a body or a head and a frameset, but not both a body and
-// a frameset. However, an <iframe> can be used within a normal document body.
-// Each browsing context has its own session history and active document. The
-// browsing context that contains the embedded content is called the parent
-// browsing context. The top-level browsing context (which has no parent) is
-// typically the browser window.
+// The HTML Inline Frame element (<iframe>) represents a nested browsing
+// context, effectively embedding another HTML page into the current page.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
 func InlineFrame(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("iframe", markup...)
 }
 
-// Image represents an image in the document.
+// Image embeds an image into the document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
 func Image(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -452,8 +441,9 @@ func InsertedText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("ins", markup...)
 }
 
-// KeyboardInput represents user input and produces an inline element displayed
-// in the browser's default monospace font.
+// The HTML Keyboard Input element (<kbd>) represents a span of inline text
+// denoting textual user input from a keyboard, voice input, or any other text
+// entry device.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd
 func KeyboardInput(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -494,9 +484,9 @@ func Link(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("link", markup...)
 }
 
-// Main represents the main content of the <body> of a document, portion of a
-// document, or application. The main content area consists of content that is
-// directly related to, or expands upon the central topic of, a document or the
+// Main represents the dominant content of the <body> of a document, portion of
+// a document or application. The main content area consists of content that is
+// directly related to or expands upon the central topic of a document, or the
 // central functionality of an application.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main
@@ -512,8 +502,9 @@ func Map(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("map", markup...)
 }
 
-// Mark represents highlighted text, i.e., a run of text marked for reference
-// purpose, due to its relevance in a particular context.
+// The HTML Mark Text element (<mark>) represents text which is marked or
+// highlighted for reference or notation purposes, due to the marked passage's
+// relevance or importance in the enclosing context.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark
 func Mark(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -528,15 +519,6 @@ func Mark(markup ...vecty.MarkupOrChild) *vecty.HTML {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu
 func Menu(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("menu", markup...)
-}
-
-// MenuItem represents a command that a user is able to invoke through a popup
-// menu. This includes context menus, as well as menus that might be attached
-// to a menu button.
-//
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem
-func MenuItem(markup ...vecty.MarkupOrChild) *vecty.HTML {
-	return vecty.Tag("menuitem", markup...)
 }
 
 // Meta represents metadata that cannot be represented by other HTML
@@ -563,14 +545,6 @@ func Meter(markup ...vecty.MarkupOrChild) *vecty.HTML {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav
 func Navigation(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("nav", markup...)
-}
-
-// <noframes> is an HTML element which is used to support browsers which are
-// not able to support <frame> elements or configured to do so.
-//
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noframes
-func NoFrames(markup ...vecty.MarkupOrChild) *vecty.HTML {
-	return vecty.Tag("noframes", markup...)
 }
 
 // NoScript defines a section of HTML to be inserted if a script type on the
@@ -613,7 +587,9 @@ func Option(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("option", markup...)
 }
 
-// Output represents the result of a calculation or user action.
+// The HTML Output element (<output>) is a container element into which a site
+// or app can inject the results of a calculation or the outcome of a user
+// action.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output
 func Output(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -634,64 +610,62 @@ func Parameter(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("param", markup...)
 }
 
-// Picture is a container used to specify multiple <source> elements for a
-// specific <img> contained in it. The browser will choose the most suitable
-// source according to the current layout of the page (the constraints of the
-// box the image will appear in) and the device it will be displayed on (e.g. a
-// normal or hiDPI device.)
+// Picture serves as a container for zero or more <source> elements and one
+// <img> element to provide versions of an image for different display device
+// scenarios.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture
 func Picture(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("picture", markup...)
 }
 
-// Preformatted represents preformatted text. Text within this element is
-// typically displayed in a non-proportional ("monospace") font exactly as it
-// is laid out in the file. Whitespace inside this element is displayed as
-// typed.
+// Preformatted represents preformatted text which is to be presented exactly
+// as written in the HTML file.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre
 func Preformatted(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("pre", markup...)
 }
 
-// Progress represents the completion progress of a task, typically displayed
-// as a progress bar.
+// Progress displays an indicator showing the completion progress of a task,
+// typically displayed as a progress bar.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress
 func Progress(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("progress", markup...)
 }
 
-// Quote indicates that the enclosed text is a short inline quotation. This
-// element is intended for short quotations that don't require paragraph
-// breaks; for long quotations use the <blockquote> element.
+// Quote indicates that the enclosed text is a short inline quotation. Most
+// modern browsers implement this by surrounding the text in quotation marks.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q
 func Quote(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("q", markup...)
 }
 
-// RubyParenthesis is used to provide fall-back parentheses for browsers that
-// do not support display of ruby annotations using the <ruby> element.
+// The HTML Ruby Fallback Parenthesis (<rp>) element is used to provide
+// fall-back parentheses for browsers that do not support display of ruby
+// annotations using the <ruby> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp
 func RubyParenthesis(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rp", markup...)
 }
 
-// RubyText embraces pronunciation of characters presented in a ruby
-// annotations, which are used to describe the pronunciation of East Asian
-// characters. This element is always used inside a <ruby> element.
+// The HTML Ruby Text (<rt>) element specifies the ruby text component of a
+// ruby annotation, which is used to provide pronunciation, translation, or
+// transliteration information for East Asian typography. The <rt> element must
+// always be contained within a <ruby> element.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt
 func RubyText(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("rt", markup...)
 }
 
-// RubyTextContainer embraces semantic annotations of characters presented in a
-// ruby of <rb> elements used inside of <ruby> element. <rb> elements can have
-// both pronunciation (<rt>) and semantic (<rtc>) annotations.
+// The HTML Ruby Text Container (<rtc>) element embraces semantic annotations
+// of characters presented in a ruby of <rb> elements used inside of <ruby>
+// element. <rb> elements can have both pronunciation (<rt>) and semantic
+// (<rtc>) annotations.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc
 func RubyTextContainer(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -716,25 +690,25 @@ func Strikethrough(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("s", markup...)
 }
 
-// Sample is an element intended to identify sample output from a computer
-// program. It is usually displayed in the browser's default monotype font
-// (such as Lucida Console).
+// The HTML Sample Element (<samp>) is used to enclose inline text which
+// represents sample (or quoted) output from a computer program.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp
 func Sample(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("samp", markup...)
 }
 
-// Script is used to embed or reference an executable script.
+// Script is used to embed or reference executable code; this is typically used
+// to embed or refer to JavaScript code.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script
 func Script(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("script", markup...)
 }
 
-// Section represents a standalone section of functionality contained within an
-// HTML document, typically with a heading, which doesn't have a more specific
-// semantic element to represent it.
+// Section represents a standalone section — which doesn't have a more
+// specific semantic element to represent it — contained within an HTML
+// document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section
 func Section(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -768,8 +742,8 @@ func Small(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("small", markup...)
 }
 
-// Source specifies multiple media resources for either the <picture>, the
-// <audio> or the <video> element. It is an empty element. It is commonly used
+// Source specifies multiple media resources for the <picture>, the <audio>
+// element, or the <video> element. It is an empty element. It is commonly used
 // to serve the same media content in multiple formats supported by different
 // browsers.
 //
@@ -788,55 +762,57 @@ func Span(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("span", markup...)
 }
 
-// Strong gives text strong importance, and is typically displayed in bold.
+// The HTML Strong Importance Element (<strong>) indicates that its contents
+// have strong importance, seriousness, or urgency. Browsers typically render
+// the contents in bold type.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong
 func Strong(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("strong", markup...)
 }
 
-// Style contains style information for a document, or part of a document. By
-// default, the style instructions written inside that element are expected to
-// be CSS.
+// Style contains style information for a document, or part of a document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
 func Style(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("style", markup...)
 }
 
-// Subscript defines a span of text that should be displayed, for typographic
-// reasons, lower, and often smaller, than the main span of text.
+// The HTML Subscript element (<sub>) specifies inline text which should be
+// displayed as subscript for solely typographical reasons.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub
 func Subscript(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("sub", markup...)
 }
 
-// Summary is used as a summary, caption, or legend for the content of a
-// <details> element.
+// The HTML Disclosure Summary element (<summary>) element specifies a summary,
+// caption, or legend for a <details> element's disclosure box.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary
 func Summary(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("summary", markup...)
 }
 
-// Superscript defines a span of text that should be displayed, for typographic
-// reasons, higher, and often smaller, than the main span of text.
+// The HTML Superscript element (<sup>) specifies inline text which is to be
+// displayed as superscript for solely typographical reasons.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup
 func Superscript(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("sup", markup...)
 }
 
-// Table represents tabular data — that is, information expressed via a
-// two-dimensional data table.
+// Table represents tabular data — that is, information presented in a
+// two-dimensional table comprised of rows and columns of cells containing
+// data.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
 func Table(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("table", markup...)
 }
 
-// TableBody groups one or more <tr> elements as the body of a <table> element.
+// The HTML Table Body element (<tbody>) encapsulates a set of table row (<tr>
+// elements, indicating that they comprise the body of the table (<table>).
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody
 func TableBody(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -851,9 +827,9 @@ func TableData(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("td", markup...)
 }
 
-// Template is a mechanism for holding client-side content that is not to be
-// rendered when a page is loaded but may subsequently be instantiated during
-// runtime using JavaScript.
+// The HTML Content Template (<template>) element is a mechanism for holding
+// client-side content that is not to be rendered when a page is loaded but may
+// subsequently be instantiated during runtime using JavaScript.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
 func Template(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -890,25 +866,25 @@ func TableHead(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("thead", markup...)
 }
 
-// Time represents either a time on a 24-hour clock or a precise date in the
-// Gregorian calendar (with optional time and timezone information).
+// Time represents a specific period in time. It may include the datetime
+// attribute to translate dates into machine-readable format, allowing for
+// better search engine results or custom features such as reminders.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time
 func Time(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("time", markup...)
 }
 
-// Title defines the title of the document, shown in a browser's title bar or
-// on the page's tab. It can only contain text, and any contained tags are
-// ignored.
+// The HTML Title element (<title>) defines the title of the document, shown in
+// a browser's title bar or on the page's tab.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
 func Title(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("title", markup...)
 }
 
-// TableRow defines a row of cells in a table. Those can be a mix of <td> and
-// <th> elements.
+// TableRow defines a row of cells in a table. The row's cells can then be
+// established using a mix of <td> (data cell) and <th> (header cell) elements.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr
 func TableRow(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -925,11 +901,9 @@ func Track(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("track", markup...)
 }
 
-// Underline renders text with an underline, a line under the baseline of its
-// content. In HTML5, this element represents a span of text with an
-// unarticulated, though explicitly rendered, non-textual annotation, such as
-// labeling the text as being a proper name in Chinese text (a Chinese proper
-// name mark), or labeling the text as being misspelled.
+// The HTML Unarticulated Annotation element (<u>) represents a span of inline
+// text which should be rendered in a way that indicates that it has a
+// non-textual annotation.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u
 func Underline(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -944,15 +918,16 @@ func UnorderedList(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("ul", markup...)
 }
 
-// Variable represents a variable in a mathematical expression or a programming
-// context.
+// The HTML Variable element (<var>) represents the name of a variable in a
+// mathematical expression or a programming context.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var
 func Variable(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("var", markup...)
 }
 
-// Use the HTML <video> element to embed video content in a document.
+// The HTML Video element (<video>) embeds a media player which supports video
+// playback into the document.
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video
 func Video(markup ...vecty.MarkupOrChild) *vecty.HTML {
@@ -966,4 +941,211 @@ func Video(markup ...vecty.MarkupOrChild) *vecty.HTML {
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr
 func WordBreakOpportunity(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("wbr", markup...)
+}
+
+// <input> elements of type "button" are rendered as simple push buttons, which
+// can be programmed to control custom functionality anywhere on a webpage as
+// required when assigned an event handler function (typically for the click
+// event).
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/button
+func Input type="button"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="button"", markup...)
+}
+
+// <input> elements of type checkbox are rendered by default as square boxes
+// that are checked (ticked) when activated, like you might see in an official
+// government paper form. They allow you to select single values for submission
+// in a form (or not).
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
+func Input type="checkbox"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="checkbox"", markup...)
+}
+
+// <input> elements of type "color" provide a user interface element that lets
+// a user specify a color, either by using a visual color picker interface or
+// by entering the color into a text field in "#rrggbb" hexadecimal format.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/color
+func Input type="color"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="color"", markup...)
+}
+
+// <input> elements of type date create input fields that let the user enter a
+// date, either using a text box that automatically validates the content, or
+// using a special date picker interface. The resulting value includes the
+// year, month, and day, but not the time. The time and datetime-local input
+// types support time and date/time inputs.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date
+func Input type="date"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="date"", markup...)
+}
+
+// <input> elements of type datetime-local create input controls that let the
+// user easily enter both a date and a time, including the year, month, and day
+// as well as the time in hours and minutes. The user's local time zone is
+// used.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
+func Input type="datetime-local"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="datetime-local"", markup...)
+}
+
+// <input> elements of type "email" are used to let the user enter and edit an
+// email address, or, if the multiple attribute is specified, a list of email
+// addresses. The input value is automatically validated to ensure that it's
+// either empty or a properly-formatted email address (or list of addresses)
+// before the form can be submitted.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email
+func Input type="email"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="email"", markup...)
+}
+
+// <input> elements with type="file" let the user choose one or more files from
+// their device storage. Once chosen, the files can be uploaded to a server
+// using form submission, or manipulated using JavaScript code and the File
+// API.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
+func Input type="file"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="file"", markup...)
+}
+
+// <input> elements of type "hidden" let web developers include data that
+// cannot be seen or modified by users when a form is submitted. For example,
+// the ID of the content that is currently being ordered or edited, or a unique
+// security token. Hidden inputs are completely invisible in the rendered page,
+// and there is no way to make it visible in the page's content.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/hidden
+func Input type="hidden"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="hidden"", markup...)
+}
+
+// <input> elements of type "image" are used to create graphical submit
+// buttons, i.e. submit buttons that take the form of an image rather than
+// text.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/image
+func Input type="image"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="image"", markup...)
+}
+
+// <input> elements of type month create input fields that let the user enter a
+// month and year allowing a month and year to be easily entered. The value is
+// a string whose value is in the format "YYYY-MM", where YYYY is the
+// four-digit year and MM is the month number.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/month
+func Input type="month"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="month"", markup...)
+}
+
+// <input> elements of type "number" are used to let the user enter a number.
+// They include built-in validation to reject non-numerical entries.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/number
+func Input type="number"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="number"", markup...)
+}
+
+// <input> elements of type "password" provide a way for the user to securely
+// enter a password.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/password
+func Input type="password"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="password"", markup...)
+}
+
+// <input> elements of type radio are generally used in radio
+// groups—collections of radio buttons describing a set of related options.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio
+func Input type="radio"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="radio"", markup...)
+}
+
+// <input> elements of type "range" let the user specify a numeric value which
+// must be no less than a given value, and no more than another given value.
+// The precise value, however, is not considered important. This is typically
+// represented using a slider or dial control rather than a text entry box like
+// the "number" input type.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range
+func Input type="range"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="range"", markup...)
+}
+
+// <input> elements of type "reset" are rendered as buttons, with a default
+// click event handler that resets all of the inputs in the form to their
+// initial values.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/reset
+func Input type="reset"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="reset"", markup...)
+}
+
+// <input> elements of type "search" are text fields designed for the user to
+// enter search queries into. These are functionally identical to text inputs,
+// but may be styled differently by the user agent.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/search
+func Input type="search"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="search"", markup...)
+}
+
+// <input> elements of type "submit" are rendered as buttons. When the click
+// event occurs (typically because the user clicked the button), the user agent
+// attempts to submit the form to the server.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/submit
+func Input type="submit"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="submit"", markup...)
+}
+
+// <input> elements of type "tel" are used to let the user enter and edit a
+// telephone number. Unlike <input type="email"> and <input type="url"> , the
+// input value is not automatically validated to a particular format before the
+// form can be submitted, because formats for telephone numbers vary so much
+// around the world.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/tel
+func Input type="tel"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="tel"", markup...)
+}
+
+// <input> elements of type "text" create basic single-line text fields.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/text
+func Input type="text"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="text"", markup...)
+}
+
+// <input> elements of type time create input fields designed to let the user
+// easily enter a time (hours and minutes, and optionally seconds).
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/time
+func Input type="time"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="time"", markup...)
+}
+
+// <input> elements of type "url" are used to let the user enter and edit a
+// URL. The input value is automatically validated to ensure that it's either
+// empty or a properly-formatted URL before the form can be submitted.
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/url
+func Input type="url"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="url"", markup...)
+}
+
+// <input> elements of type "week" create input fields allowing easy entry of a
+// year plus the ISO 8601 week number during that year (i.e., week 1 to 52 or
+// 53).
+//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/week
+func Input type="week"(markup ...vecty.MarkupOrChild) *vecty.HTML {
+	return vecty.Tag("input type="week"", markup...)
 }
