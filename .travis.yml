@@ -3,7 +3,7 @@ language: go
 go:
   - 1.10.x
 install:
-  - nvm install node
+  - nvm install 9.11
   - npm install -g source-map-support
   - go get -u github.com/gopherjs/gopherjs
   - go get -u github.com/golang/lint/golint
