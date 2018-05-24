@@ -101,9 +101,9 @@ func BidirectionalOverride(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("bdo", markup...)
 }
 
-// BlockQuote Element (or HTML Block Quotation Element) indicates that the
-// enclosed text is an extended quotation. Usually, this is rendered visually
-// by indentation (see Notes for how to change it). A URL for the source of the
+// BlockQuote (or HTML Block Quotation Element) indicates that the enclosed
+// text is an extended quotation. Usually, this is rendered visually by
+// indentation (see Notes for how to change it). A URL for the source of the
 // quotation may be given using the cite attribute, while a text representation
 // of the source can be given using the <cite> element.
 //
@@ -112,8 +112,7 @@ func BlockQuote(markup ...vecty.MarkupOrChild) *vecty.HTML {
 	return vecty.Tag("blockquote", markup...)
 }
 
-// Body Element represents the content of an HTML document. There can be only
-// one
+// Body represents the content of an HTML document. There can be only one
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body
 func Body(markup ...vecty.MarkupOrChild) *vecty.HTML {
