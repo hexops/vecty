@@ -5,7 +5,7 @@ import (
 	"github.com/gopherjs/vecty/elem"
 	"github.com/gopherjs/vecty/event"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday"
+	"gopkg.in/russross/blackfriday.v2"
 )
 
 func main() {
@@ -64,7 +64,7 @@ type Markdown struct {
 // Render implements the vecty.Component interface.
 func (m *Markdown) Render() vecty.ComponentOrHTML {
 	// Render the markdown input into HTML using Blackfriday.
-	unsafeHTML := blackfriday.MarkdownCommon([]byte(m.Input))
+	unsafeHTML := blackfriday.Run([]byte(m.Input))
 
 	// Sanitize the HTML.
 	safeHTML := string(bluemonday.UGCPolicy().SanitizeBytes(unsafeHTML))
