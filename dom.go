@@ -3,11 +3,13 @@ package vecty
 import (
 	"reflect"
 
-	"github.com/gopherjs/gopherjs/js"
+	"github.com/gopherjs/gopherwasm/js"
 )
 
 // batch renderer singleton
-var batch = &batchRenderer{idx: make(map[Component]int)}
+var batch = &batchRenderer{
+	idx: make(map[Component]int),
+}
 
 // Core implements the Context method of the Component interface, and is the
 // core/central struct which all Component implementations should embed.
@@ -153,7 +155,7 @@ type HTML struct {
 //
 // It panics if it is called before the DOM node has been attached, i.e. before
 // the associated component's Mounter interface would be invoked.
-func (h *HTML) Node() *js.Object {
+func (h *HTML) Node() js.Value {
 	if h.node == nil {
 		panic("vecty: cannot call (*HTML).Node() before DOM node creation / component mount")
 	}
@@ -235,16 +237,16 @@ func (h *HTML) reconcileProperties(prev *HTML) {
 
 	// Wrap event listeners
 	for _, l := range h.eventListeners {
-		l := l
-		l.wrapper = func(jsEvent *js.Object) {
-			if l.callPreventDefault {
-				jsEvent.Call("preventDefault")
-			}
-			if l.callStopPropagation {
-				jsEvent.Call("stopPropagation")
-			}
-			l.Listener(&Event{Object: jsEvent, Target: jsEvent.Get("target")})
+		var flags js.EventCallbackFlag
+		if l.callPreventDefault {
+			flags = flags + js.PreventDefault
 		}
+		if l.callStopPropagation {
+			flags = flags + js.StopPropagation
+		}
+		l.wrapper = js.NewEventCallback(flags, func(jsEvent js.Value) {
+			l.Listener(&Event{Object: jsEvent, Target: jsEvent.Get("target")})
+		})
 	}
 
 	// Properties
@@ -350,6 +352,7 @@ func (h *HTML) removeProperties(prev *HTML) {
 	// Event listeners
 	for _, l := range prev.eventListeners {
 		h.node.Call("removeEventListener", l.Name, l.wrapper)
+		l.wrapper.Release()
 	}
 }
 
@@ -814,6 +817,8 @@ type batchRenderer struct {
 	idx map[Component]int
 	// scheduled tracks whether a batch has been scheduled for processing.
 	scheduled bool
+	// the javascript callback for the render method
+	renderCallback js.Callback
 }
 
 // add a Component to the pending batch.
@@ -835,13 +840,14 @@ func (b *batchRenderer) add(c Component) {
 	// the next frame.
 	if !b.scheduled {
 		b.scheduled = true
-		requestAnimationFrame(b.render)
+		b.requestAnimationFrame()
 	}
 }
 
 // render the pending batch.
 // TODO(pdf): Add tests for time budget and multi-pass renders.
-func (b *batchRenderer) render(startTime float64) {
+func (b *batchRenderer) render(values []js.Value) {
+	startTime := values[0].Float()
 	// If the batch is empty, mark as unscheduled, and stop render cycle.
 	if len(b.batch) == 0 {
 		b.scheduled = false
@@ -888,7 +894,14 @@ func (b *batchRenderer) render(startTime float64) {
 	}
 
 	// Schedule next frame.
-	requestAnimationFrame(b.render)
+	b.requestAnimationFrame()
+}
+
+func (b *batchRenderer) requestAnimationFrame() {
+	if b.renderCallback == emptyCallback {
+		b.renderCallback = js.NewCallback(b.render)
+	}
+	global.Call("requestAnimationFrame", b.renderCallback).Int()
 }
 
 // extractHTML returns the *HTML from a ComponentOrHTML.
@@ -1146,19 +1159,12 @@ func unmount(e ComponentOrHTML) {
 	}
 }
 
-// requestAnimationFrame calls the native JS function of the same name.
-func requestAnimationFrame(callback func(float64)) int {
-	return global.Call("requestAnimationFrame", callback).Int()
-}
-
 // RenderBody renders the given component as the document body. The given
 // Component's Render method must return a "body" element.
 func RenderBody(body Component) {
 	// block batch until we're done
 	batch.scheduled = true
-	defer func() {
-		requestAnimationFrame(batch.render)
-	}()
+	defer batch.requestAnimationFrame()
 	nextRender, skip, pendingMounts := renderComponent(body, nil)
 	if skip {
 		panic("vecty: RenderBody Component.SkipRender illegally returned true")
@@ -1168,13 +1174,16 @@ func RenderBody(body Component) {
 	}
 	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {
-		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
+		var cb js.Callback
+		cb = js.NewCallback(func(values []js.Value) { // avoid duplicate body
 			doc.Set("body", nextRender.node)
 			mount(pendingMounts...)
 			if m, ok := body.(Mounter); ok {
 				mount(m)
 			}
+			cb.Release()
 		})
+		doc.Call("addEventListener", "DOMContentLoaded", cb)
 		return
 	}
 	doc.Set("body", nextRender.node)
@@ -1198,8 +1207,9 @@ func AddStylesheet(url string) {
 }
 
 var (
-	global    = wrapObject(js.Global)
-	undefined = wrappedObject{js.Undefined}
+	global        = wrapObject(js.Global())
+	undefined     = wrappedObject{js.Undefined()}
+	emptyCallback js.Callback
 )
 
 type jsObject interface {
@@ -1213,18 +1223,18 @@ type jsObject interface {
 	Float() float64
 }
 
-func wrapObject(j *js.Object) jsObject {
-	if j == nil {
+func wrapObject(j js.Value) jsObject {
+	if j == js.Null() {
 		return nil
 	}
-	if j == js.Undefined {
+	if j == js.Undefined() {
 		return undefined
 	}
 	return wrappedObject{j}
 }
 
 type wrappedObject struct {
-	j *js.Object
+	j js.Value
 }
 
 func (w wrappedObject) Set(key string, value interface{}) {
@@ -1239,7 +1249,7 @@ func (w wrappedObject) Get(key string) jsObject {
 }
 
 func (w wrappedObject) Delete(key string) {
-	w.j.Delete(key)
+	w.j.Call("delete", key)
 }
 
 func (w wrappedObject) Call(name string, args ...interface{}) jsObject {

@@ -11,6 +11,9 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/gopherjs/gopherwasm/js"
 )
 
 var _ = func() bool {
@@ -51,7 +54,7 @@ func testSuite(t *testing.T, testName string) *testSuiteT {
 	ts := &testSuiteT{
 		t:         t,
 		testName:  testName,
-		callbacks: make(map[string]interface{}),
+		callbacks: make(map[string]js.Callback),
 		strings:   &valueMocker{},
 		bools:     &valueMocker{},
 		floats:    &valueMocker{},
@@ -97,7 +100,7 @@ func (v *valueMocker) get(invocation string) interface{} {
 type testSuiteT struct {
 	t                            *testing.T
 	testName                     string
-	callbacks                    map[string]interface{}
+	callbacks                    map[string]js.Callback
 	strings, bools, floats, ints *valueMocker
 
 	got    string
@@ -201,8 +204,8 @@ func (ts *testSuiteT) record(invocation string) string {
 // addCallbacks adds the first function in args to ts.callbacks[invocation], if there is one.
 func (ts *testSuiteT) addCallbacks(invocation string, args ...interface{}) {
 	for _, a := range args {
-		if reflect.TypeOf(a).Kind() == reflect.Func {
-			ts.callbacks[invocation] = a
+		if cb, ok := a.(js.Callback); ok {
+			ts.callbacks[invocation] = cb
 			return
 		}
 	}
@@ -269,9 +272,21 @@ func stringify(args ...interface{}) string {
 			s = append(s, fmt.Sprintf("%q", v))
 		case *objectRecorder:
 			s = append(s, fmt.Sprintf("jsObject(%s)", v.name))
+		case js.Callback:
+			s = append(s, "<callback>")
 		default:
 			s = append(s, fmt.Sprintf("%v", v))
 		}
 	}
 	return strings.Join(s, ", ")
+}
+
+func forceRender(ts *testSuiteT) {
+	ts.callbacks[`global.Call("requestAnimationFrame", <callback>)`].Value.Invoke(0)
+	// TODO: there is no interface for executing callbacks synchronously. Yield.
+	yield(ts)
+}
+
+func yield(ts *testSuiteT) {
+	time.Sleep(10 * time.Millisecond)
 }

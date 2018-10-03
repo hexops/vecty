@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 
-	"github.com/gopherjs/gopherjs/js"
+	"github.com/gopherjs/gopherwasm/js"
 	"github.com/gopherjs/vecty"
 	"github.com/gopherjs/vecty/example/todomvc/actions"
 	"github.com/gopherjs/vecty/example/todomvc/components"

@@ -3,7 +3,7 @@ package vecty
 import (
 	"reflect"
 
-	"github.com/gopherjs/gopherjs/js"
+	"github.com/gopherjs/gopherwasm/js"
 )
 
 // EventListener is markup that specifies a callback function to be invoked when
@@ -13,7 +13,7 @@ type EventListener struct {
 	Listener            func(*Event)
 	callPreventDefault  bool
 	callStopPropagation bool
-	wrapper             func(jsEvent *js.Object)
+	wrapper             js.Callback
 }
 
 // PreventDefault prevents the default behavior of the event from occurring.
@@ -40,8 +40,8 @@ func (l *EventListener) Apply(h *HTML) {
 
 // Event represents a DOM event.
 type Event struct {
-	*js.Object
-	Target *js.Object
+	Object js.Value
+	Target js.Value
 }
 
 // MarkupOrChild represents one of:
