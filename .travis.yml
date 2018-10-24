@@ -6,7 +6,7 @@ install:
   - nvm install 9.11
   - npm install -g source-map-support
   - go get -u github.com/gopherjs/gopherjs
-  - go get -u github.com/golang/lint/golint
+  - go get -u golang.org/x/lint/golint
   - go get -u honnef.co/go/tools/cmd/megacheck
   - go get -u github.com/haya14busa/goverage
   - npm install --global node-gyp
