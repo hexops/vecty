@@ -1,7 +1,7 @@
 sudo: false
 language: go
 go:
-  - 1.10.x
+  - 1.11.x
 install:
   - nvm install 9.11
   - npm install -g source-map-support
