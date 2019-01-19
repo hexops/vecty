@@ -122,7 +122,7 @@ type RenderSkipper interface {
 	// component will be skipped.
 	//
 	// The previous component may be of a different type than this
-	// RenderSkipper itself, thus a type assertion should be used no action
+	// RenderSkipper itself, thus a type assertion should be used and no action
 	// taken if the type does not match.
 	SkipRender(prev Component) bool
 }
