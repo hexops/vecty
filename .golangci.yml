@@ -1,0 +1,30 @@
+# This file contains our configuration for golangci-lint; see https://github.com/golangci/golangci-lint
+# for more information.
+
+linters:
+  enable:
+    - golint
+
+issues:
+  # We do not use golangci-lint's default list of exclusions because some of
+  # them are not good for us (we prefer strictness):
+  #
+  # - Not requiring published functions to have comments.
+  # - Not warning about ineffective break statements.
+  # - And more that don't effect Vecty itself.
+  #
+  exclude-use-default: false
+
+  # List of regexps of issue texts to exclude, empty list by default.
+  exclude:
+    # https://github.com/gopherjs/vecty/issues/224
+    - "const TypeUrl should be TypeURL"
+
+    # https://github.com/gopherjs/vecty/issues/226
+    - "comment on exported function Timeout should be of the form"
+
+    # errcheck: Almost all programs ignore errors on these functions and in most cases it's ok
+    - Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+
+    # golint: False positive when tests are defined in package 'test'
+    - func name will be used as test\.Test.* by other packages, and that stutters; consider calling this
