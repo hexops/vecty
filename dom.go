@@ -1,10 +1,6 @@
 package vecty
 
-import (
-	"reflect"
-
-	"github.com/gopherjs/gopherjs/js"
-)
+import "reflect"
 
 // batch renderer singleton
 var batch = &batchRenderer{idx: make(map[Component]int)}
@@ -149,17 +145,6 @@ type HTML struct {
 	lastRenderedChild *HTML
 }
 
-// Node returns the underlying JavaScript Element or TextNode.
-//
-// It panics if it is called before the DOM node has been attached, i.e. before
-// the associated component's Mounter interface would be invoked.
-func (h *HTML) Node() *js.Object {
-	if h.node == nil {
-		panic("vecty: cannot call (*HTML).Node() before DOM node creation / component mount")
-	}
-	return h.node.(wrappedObject).j
-}
-
 // Key implements the Keyer interface.
 func (h *HTML) Key() interface{} {
 	return h.key
@@ -236,15 +221,17 @@ func (h *HTML) reconcileProperties(prev *HTML) {
 	// Wrap event listeners
 	for _, l := range h.eventListeners {
 		l := l
-		l.wrapper = func(jsEvent *js.Object) {
+		l.wrapper = funcOf(func(this jsObject, args []jsObject) interface{} {
+			jsEvent := args[0]
 			if l.callPreventDefault {
 				jsEvent.Call("preventDefault")
 			}
 			if l.callStopPropagation {
 				jsEvent.Call("stopPropagation")
 			}
-			l.Listener(&Event{Object: jsEvent, Target: jsEvent.Get("target")})
-		}
+			l.Listener(newEvent(jsEvent, jsEvent.Get("target")))
+			return undefined
+		})
 	}
 
 	// Properties
@@ -1153,7 +1140,10 @@ func unmount(e ComponentOrHTML) {
 
 // requestAnimationFrame calls the native JS function of the same name.
 func requestAnimationFrame(callback func(float64)) int {
-	return global.Call("requestAnimationFrame", callback).Int()
+	return global.Call("requestAnimationFrame", funcOf(func(this jsObject, args []jsObject) interface{} {
+		callback(args[0].Float())
+		return undefined
+	})).Int()
 }
 
 // RenderBody renders the given component as the document body. The given
@@ -1161,9 +1151,6 @@ func requestAnimationFrame(callback func(float64)) int {
 func RenderBody(body Component) {
 	// block batch until we're done
 	batch.scheduled = true
-	defer func() {
-		requestAnimationFrame(batch.render)
-	}()
 	nextRender, skip, pendingMounts := renderComponent(body, nil)
 	if skip {
 		panic("vecty: RenderBody Component.SkipRender illegally returned true")
@@ -1173,13 +1160,16 @@ func RenderBody(body Component) {
 	}
 	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {
-		doc.Call("addEventListener", "DOMContentLoaded", func() { // avoid duplicate body
+		// avoid duplicate body
+		doc.Call("addEventListener", "DOMContentLoaded", funcOf(func(this jsObject, args []jsObject) interface{} {
 			doc.Set("body", nextRender.node)
 			mount(pendingMounts...)
 			if m, ok := body.(Mounter); ok {
 				mount(m)
 			}
-		})
+			requestAnimationFrame(batch.render)
+			return undefined
+		}))
 		return
 	}
 	doc.Set("body", nextRender.node)
@@ -1187,6 +1177,8 @@ func RenderBody(body Component) {
 	if m, ok := body.(Mounter); ok {
 		mount(m)
 	}
+	requestAnimationFrame(batch.render)
+	runGoForever()
 }
 
 // SetTitle sets the title of the document.
@@ -1202,10 +1194,10 @@ func AddStylesheet(url string) {
 	global.Get("document").Get("head").Call("appendChild", link)
 }
 
-var (
-	global    = wrapObject(js.Global)
-	undefined = wrappedObject{js.Undefined}
-)
+type jsFunc interface {
+	Object() jsObject
+	Release()
+}
 
 type jsObject interface {
 	Set(key string, value interface{})
@@ -1218,59 +1210,6 @@ type jsObject interface {
 	Float() float64
 }
 
-func wrapObject(j *js.Object) jsObject {
-	if j == nil {
-		return nil
-	}
-	if j == js.Undefined {
-		return undefined
-	}
-	return wrappedObject{j}
-}
-
-type wrappedObject struct {
-	j *js.Object
-}
-
-func (w wrappedObject) Set(key string, value interface{}) {
-	if v, ok := value.(wrappedObject); ok {
-		value = v.j
-	}
-	w.j.Set(key, value)
-}
-
-func (w wrappedObject) Get(key string) jsObject {
-	return wrapObject(w.j.Get(key))
-}
-
-func (w wrappedObject) Delete(key string) {
-	w.j.Delete(key)
-}
-
-func (w wrappedObject) Call(name string, args ...interface{}) jsObject {
-	for i, arg := range args {
-		if v, ok := arg.(wrappedObject); ok {
-			args[i] = v.j
-		}
-	}
-	return wrapObject(w.j.Call(name, args...))
-}
-
-func (w wrappedObject) String() string {
-	return w.j.String()
-}
-func (w wrappedObject) Bool() bool {
-	return w.j.Bool()
-}
-
-func (w wrappedObject) Int() int {
-	return w.j.Int()
-}
-
-func (w wrappedObject) Float() float64 {
-	return w.j.Float()
-}
-
 var isTest bool
 
 func init() {
@@ -1278,7 +1217,7 @@ func init() {
 		return
 	}
 	if global == nil {
-		panic("vecty: only GopherJS compiler is supported")
+		panic("vecty: only GopherJS and WebAssembly compilation is supported")
 	}
 	if global.Get("document") == undefined {
 		panic("vecty: only running inside a browser is supported")
