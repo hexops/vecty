@@ -6,8 +6,7 @@ install:
   - nvm install 9.11
   - npm install -g source-map-support
   - go get -u github.com/gopherjs/gopherjs
-  - go get -u github.com/golang/lint/golint
-  - go get -u honnef.co/go/tools/cmd/megacheck
+  - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.12.5
   - go get -u github.com/haya14busa/goverage
   - npm install --global node-gyp
 before_script:
@@ -24,13 +23,14 @@ script:
   # Fetch dependencies.
   - go get -t -v ./...
 
-  # Consult Go fmt, vet, lint, megacheck tools.
+  # Consult Go fmt to ensure consistent code style.
   - diff -u <(echo -n) <(gofmt -d -s .)
-  - go tool vet .
-  - golint -set_exit_status . ./example/...
-  - golint ./elem/... ./event/... ./prop/... # TODO(slimsag): address these linter errors
-  - megacheck ./...
-  - megacheck -tags=js ./...
+
+  # Consult golangci-lint (multiple Go linting tools).
+  - golangci-lint run . ./elem/... ./event/... ./example/...
+  - golangci-lint run --exclude 'exported .* should have comment .*or be unexported' ./prop/... ./style/... # https://github.com/gopherjs/vecty/issues/227
+  - GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' . ./elem/... ./event/... ./example/...
+  - GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' --exclude 'exported .* should have comment .*or be unexported' ./prop/... ./style/... # https://github.com/gopherjs/vecty/issues/227
 
   # Test with Go compiler and GopherJS compiler.
   - go test -v -race ./...
