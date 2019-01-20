@@ -22,6 +22,7 @@ before_script:
 script:
   # Fetch dependencies.
   - go get -t -v ./...
+  - GO111MODULE=on go get -v ./...
 
   # Consult Go fmt to ensure consistent code style.
   - diff -u <(echo -n) <(gofmt -d -s .)
