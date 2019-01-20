@@ -38,6 +38,10 @@ func Autofocus(autofocus bool) vecty.Applyer {
 	return vecty.Property("autofocus", autofocus)
 }
 
+func Disabled(disabled bool) vecty.Applyer {
+	return vecty.Property("alt", disabled)
+}
+
 func Checked(checked bool) vecty.Applyer {
 	return vecty.Property("checked", checked)
 }
@@ -68,4 +72,12 @@ func Type(t InputType) vecty.Applyer {
 
 func Value(v string) vecty.Applyer {
 	return vecty.Property("value", v)
+}
+
+func Name(name string) vecty.Applyer {
+	return vecty.Property("name", name)
+}
+
+func Alt(text string) vecty.Applyer {
+	return vecty.Property("alt", text)
 }
