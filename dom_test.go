@@ -1126,6 +1126,7 @@ func TestKeyedChild_DifferentType(t *testing.T) {
 				),
 			)
 		},
+		skipRender: func(prev Component) bool { return false },
 	}
 
 	RenderBody(comp)
