@@ -439,9 +439,6 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 		if hasKeyedChildren {
 			if prevKeyedChild, ok := prev.keyedChildren[nextKey]; ok {
 				prevChild = prevKeyedChild
-				// Delete the matched key from the previous index map so that
-				// we can remove any dangling children.
-				delete(prev.keyedChildren, nextKey)
 			} else {
 				prevChild = nil
 			}
@@ -542,6 +539,14 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 			if m := mountUnmount(nextChild, prevChild); m != nil {
 				pendingMounts = append(pendingMounts, m)
 			}
+
+			if hasKeyedChildren && (prevChildRender != nil && prevChildRender.node == nextChildRender.node) {
+				// We are re-using the name node. Remove the children from
+				// keyedChildren so that we don't remove it when we remove dangling
+				// children below.
+				delete(prev.keyedChildren, nextKey)
+			}
+
 			// If we do not have keyed siblings, or the key is stable, replace
 			// the previous node (may be NOOP for equivalent nodes).
 			if !hasKeyedChildren || stableKey {
