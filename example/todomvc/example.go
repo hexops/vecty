@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 
-	"github.com/gopherjs/gopherjs/js"
+	"github.com/gopherjs/gopherwasm/js"
 	"github.com/gopherjs/vecty"
 	"github.com/gopherjs/vecty/example/todomvc/actions"
 	"github.com/gopherjs/vecty/example/todomvc/components"
@@ -16,8 +16,8 @@ func main() {
 	attachLocalStorage()
 
 	vecty.SetTitle("GopherJS • TodoMVC")
-	vecty.AddStylesheet("node_modules/todomvc-common/base.css")
-	vecty.AddStylesheet("node_modules/todomvc-app-css/index.css")
+	vecty.AddStylesheet("https://rawgit.com/tastejs/todomvc-common/master/base.css")
+	vecty.AddStylesheet("https://rawgit.com/tastejs/todomvc-app-css/master/index.css")
 	p := &components.PageView{}
 	store.Listeners.Add(p, func() {
 		p.Items = store.Items
@@ -32,10 +32,10 @@ func attachLocalStorage() {
 		if err != nil {
 			println("failed to store items: " + err.Error())
 		}
-		js.Global.Get("localStorage").Set("items", string(data))
+		js.Global().Get("localStorage").Set("items", string(data))
 	})
 
-	if data := js.Global.Get("localStorage").Get("items"); data != js.Undefined {
+	if data := js.Global().Get("localStorage").Get("items"); data != js.Undefined() {
 		var items []*model.Item
 		if err := json.Unmarshal([]byte(data.String()), &items); err != nil {
 			println("failed to load items: " + err.Error())
