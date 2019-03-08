@@ -17,9 +17,6 @@ issues:
 
   # List of regexps of issue texts to exclude, empty list by default.
   exclude:
-    # https://github.com/gopherjs/vecty/issues/224
-    - "const TypeUrl should be TypeURL"
-
     # https://github.com/gopherjs/vecty/issues/226
     - "comment on exported function Timeout should be of the form"
 

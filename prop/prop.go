@@ -30,7 +30,7 @@ const (
 	TypeTel           InputType = "tel"
 	TypeText          InputType = "text"
 	TypeTime          InputType = "time"
-	TypeUrl           InputType = "url"
+	TypeURL           InputType = "url"
 	TypeWeek          InputType = "week"
 )
 
