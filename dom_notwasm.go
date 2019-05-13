@@ -46,7 +46,7 @@ var (
 )
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
-	return jsFuncImpl(wrapObject(js.MakeFunc(func(this *js.Object, args []*js.Object) interface{} {
+	return jsFuncImpl(wrappedObject{js.MakeFunc(func(this *js.Object, args []*js.Object) interface{} {
 		wrappedArgs := make([]jsObject, len(args))
 		for i, arg := range args {
 			wrappedArgs[i] = wrapObject(arg)
@@ -56,7 +56,7 @@ func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
 			return wrapped.j
 		}
 		return result
-	})))
+	})})
 }
 
 type jsFuncImpl wrappedObject
