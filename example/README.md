@@ -1,19 +1,19 @@
-# WebAssembly
+# Building examples
 
-## WebAssembly: Go 1.12+ requirement
+Vecty fully supports all three major Go <-> Web compilers thanks to its minimal dependencies:
 
-Vecty makes use of Go [synchronous callback support](https://go-review.googlesource.com/c/go/+/142004) which is only present in Go 1.12+.
+- Go 1.12+ WebAssembly support
+- [GopherJS](https://github.com/gopherjs/gopherjs) (Go to JavaScript transpiler)
+- [TinyGo](https://github.com/tinygo-org/tinygo) WebAssembly support (produces tiny binaries, but with tradeoffs)
 
-**Go 1.12 is not yet released, so you must use Go tip until then**
+If you are just getting started, we suggest using the Go 1.12+ WebAssembly support.
 
-Mac:
 
-```
-brew unlink go
-brew install go --HEAD
-```
+## Go 1.12+ WebAssembly support
 
-## WebAssembly: Running examples
+Vecty requires Go 1.12+ as it makes use of [synchronous callback support](https://go-review.googlesource.com/c/go/+/142004) which is not present in earlier versions of Go. **Ensure you are running Go 1.12 or higher.**
+
+### Running examples
 
 The easiest way to run the examples as WebAssembly is via [`wasmserve`](https://github.com/hajimehoshi/wasmserve).
 
@@ -27,7 +27,26 @@ Then run an example:
 
 ```bash
 cd markdown/
-wasm-server
+wasmserve
 ```
 
 And navigate to http://localhost:8080/
+
+# GopherJS
+
+### Running examples
+
+Install [GopherJS](https://github.com/gopherjs/gopherjs#installation-and-usage) then run an example:
+
+```bash
+cd markdown
+gopherjs serve
+```
+
+And navigate to http://localhost:8080/
+
+## TinyGo WebAssembly support
+
+(Not recommended for beginners.)
+
+TODO(slimsag)
