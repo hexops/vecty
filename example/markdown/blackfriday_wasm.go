@@ -1,4 +1,4 @@
-// +build js,!wasm
+// +build wasm
 
 // Please ignore this file it is not a useful part of the example. It works
 // around some nasty import path stuff where GopherJS does not have
@@ -15,6 +15,6 @@
 
 package main
 
-import "gopkg.in/russross/blackfriday.v2"
+import "github.com/russross/blackfriday/v2"
 
 var blackfridayRun = blackfriday.Run

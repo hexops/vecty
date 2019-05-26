@@ -1,4 +1,4 @@
-// +build wasm
+// +build !js,!wasm
 
 // Please ignore this file it is not a useful part of the example. It works
 // around some nasty import path stuff where GopherJS does not have
@@ -11,6 +11,7 @@
 //
 // GopherJS: GOARCH=js GOOS=<host OS>
 // WebAssembly: GOOS=js GOARCH=wasm
+// 'go' (test, get, etc): GOOS=<native> GOARCH=<native>
 
 package main
 
