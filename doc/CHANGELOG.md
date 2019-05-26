@@ -6,6 +6,10 @@ Although v1.0.0 [is not yet out](https://github.com/gopherjs/vecty/milestone/1),
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## May 25, 2019 ([PR #235](https://github.com/gopherjs/vecty/pull/235)): minor breaking change
+
+- `prop.TypeUrl` has been renamed to `prop.TypeURL`.
+
 ## Nov 4, 2017 ([PR #158](https://github.com/gopherjs/vecty/pull/158)): major breaking change
 
 All `Component`s must now have a `Render` method which returns `vecty.ComponentOrHTML` instead of the prior `*vecty.HTML` type.
