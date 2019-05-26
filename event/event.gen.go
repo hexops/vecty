@@ -1135,7 +1135,7 @@ func TimeUpdate(listener func(*vecty.Event)) *vecty.EventListener {
 	return &vecty.EventListener{Name: "timeupdate", Listener: listener}
 }
 
-// (no documentation)
+// Timeout event is fired when Progression is terminated due to preset time expiring.
 //
 // https://developer.mozilla.org/docs/Web/Events/timeout
 func Timeout(listener func(*vecty.Event)) *vecty.EventListener {
