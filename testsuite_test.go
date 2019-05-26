@@ -47,10 +47,9 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func testSuite(t *testing.T, testName string) *testSuiteT {
+func testSuite(t *testing.T) *testSuiteT {
 	ts := &testSuiteT{
 		t:         t,
-		testName:  testName,
 		callbacks: make(map[string]interface{}),
 		strings:   &valueMocker{},
 		bools:     &valueMocker{},
@@ -96,7 +95,6 @@ func (v *valueMocker) get(invocation string) interface{} {
 
 type testSuiteT struct {
 	t                            *testing.T
-	testName                     string
 	callbacks                    map[string]interface{}
 	strings, bools, floats, ints *valueMocker
 
@@ -105,22 +103,26 @@ type testSuiteT struct {
 }
 
 func (ts *testSuiteT) done() {
+	ts.t.Helper()
 	ts.multiSortedDone()
 }
 
 // sortedDone is just like done(), except it sorts the specified line range first.
 func (ts *testSuiteT) sortedDone(sortStartLine, sortEndLine int) {
+	ts.t.Helper()
 	ts.multiSortedDone([2]int{sortStartLine, sortEndLine})
 }
 
 // multiSortedDone is just like done(), except it sorts the specified line range first.
 func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
+	ts.t.Helper()
 	if ts.isDone {
 		panic("testSuite done methods called multiple times")
 	}
 	ts.isDone = true
 	// Read the want file or create it if it does not exist.
-	wantFileName := path.Join("testdata", ts.testName+".want.txt")
+	testName := strings.Replace(ts.t.Name(), "/", "__", -1)
+	wantFileName := path.Join("testdata", testName+".want.txt")
 	wantBytes, err := ioutil.ReadFile(wantFileName)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -177,7 +179,7 @@ func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
 	}
 
 	// Write what we got to disk.
-	gotFileName := path.Join("testdata", ts.testName+".got.txt")
+	gotFileName := path.Join("testdata", testName+".got.txt")
 	err = ioutil.WriteFile(gotFileName, []byte(got), 0777)
 	if err != nil {
 		ts.t.Fatal(err)

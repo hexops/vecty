@@ -92,7 +92,7 @@ func TestHTML_Node(t *testing.T) {
 // works as expected (i.e. that it updates nodes correctly).
 func TestHTML_reconcile_std(t *testing.T) {
 	t.Run("text_identical", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_std__text_identical")
+		ts := testSuite(t)
 		defer ts.done()
 
 		init := Text("foobar")
@@ -102,7 +102,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 		target.reconcile(init)
 	})
 	t.Run("text_diff", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_std__text_diff")
+		ts := testSuite(t)
 		defer ts.done()
 
 		init := Text("bar")
@@ -145,7 +145,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				ts := testSuite(t, "TestHTML_reconcile_std__properties__"+tst.name)
+				ts := testSuite(t)
 				defer ts.multiSortedDone(tst.sortedLines...)
 
 				tst.initHTML.reconcile(nil)
@@ -176,7 +176,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				ts := testSuite(t, "TestHTML_reconcile_std__attributes__"+tst.name)
+				ts := testSuite(t)
 				defer ts.multiSortedDone(tst.sortedLines...)
 
 				tst.initHTML.reconcile(nil)
@@ -231,7 +231,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				ts := testSuite(t, "TestHTML_reconcile_std__class__"+tst.name)
+				ts := testSuite(t)
 				defer ts.multiSortedDone(tst.sortedLines...)
 
 				tst.initHTML.reconcile(nil)
@@ -262,7 +262,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				ts := testSuite(t, "TestHTML_reconcile_std__dataset__"+tst.name)
+				ts := testSuite(t)
 				defer ts.multiSortedDone(tst.sortedLines...)
 
 				tst.initHTML.reconcile(nil)
@@ -293,7 +293,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 		}
 		for _, tst := range cases {
 			t.Run(tst.name, func(t *testing.T) {
-				ts := testSuite(t, "TestHTML_reconcile_std__style__"+tst.name)
+				ts := testSuite(t)
 				defer ts.multiSortedDone(tst.sortedLines...)
 
 				tst.initHTML.reconcile(nil)
@@ -304,7 +304,7 @@ func TestHTML_reconcile_std(t *testing.T) {
 	})
 	t.Run("event_listener", func(t *testing.T) {
 		// TODO(pdf): Mock listener functions for equality testing
-		ts := testSuite(t, "TestHTML_reconcile_std__event_listener_diff")
+		ts := testSuite(t)
 		defer ts.done()
 
 		initEventListeners := []Applyer{
@@ -363,63 +363,63 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		}
 	})
 	t.Run("create_element", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__create_element")
+		ts := testSuite(t)
 		defer ts.done()
 
 		h := Tag("strong")
 		h.reconcile(nil)
 	})
 	t.Run("create_element_ns", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__create_element_ns")
+		ts := testSuite(t)
 		defer ts.done()
 
 		h := Tag("strong", Markup(Namespace("foobar")))
 		h.reconcile(nil)
 	})
 	t.Run("create_text_node", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__create_text_node")
+		ts := testSuite(t)
 		defer ts.done()
 
 		h := Text("hello")
 		h.reconcile(nil)
 	})
 	t.Run("inner_html", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__inner_html")
+		ts := testSuite(t)
 		defer ts.done()
 
 		h := Tag("div", Markup(UnsafeHTML("<p>hello</p>")))
 		h.reconcile(nil)
 	})
 	t.Run("properties", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__properties")
+		ts := testSuite(t)
 		defer ts.sortedDone(3, 4)
 
 		h := Tag("div", Markup(Property("a", 1), Property("b", "2foobar")))
 		h.reconcile(nil)
 	})
 	t.Run("attributes", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__attributes")
+		ts := testSuite(t)
 		defer ts.sortedDone(3, 4)
 
 		h := Tag("div", Markup(Attribute("a", 1), Attribute("b", "2foobar")))
 		h.reconcile(nil)
 	})
 	t.Run("dataset", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__dataset")
+		ts := testSuite(t)
 		defer ts.sortedDone(5, 6)
 
 		h := Tag("div", Markup(Data("a", "1"), Data("b", "2foobar")))
 		h.reconcile(nil)
 	})
 	t.Run("style", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__style")
+		ts := testSuite(t)
 		defer ts.sortedDone(6, 7)
 
 		h := Tag("div", Markup(Style("a", "1"), Style("b", "2foobar")))
 		h.reconcile(nil)
 	})
 	t.Run("add_event_listener", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__add_event_listener")
+		ts := testSuite(t)
 		defer ts.done()
 
 		e0 := &EventListener{Name: "click"}
@@ -434,7 +434,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		}
 	})
 	t.Run("children", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__children")
+		ts := testSuite(t)
 		defer ts.done()
 
 		var compRenderCalls int
@@ -459,7 +459,7 @@ func TestHTML_reconcile_nil(t *testing.T) {
 		}
 	})
 	t.Run("children_render_nil", func(t *testing.T) {
-		ts := testSuite(t, "TestHTML_reconcile_nil__children_render_nil")
+		ts := testSuite(t)
 		defer ts.done()
 
 		var compRenderCalls int
@@ -540,7 +540,7 @@ func TestRerender_nil(t *testing.T) {
 // TestRerender_no_prevRender tests the behavior of Rerender when there is no
 // previous render.
 func TestRerender_no_prevRender(t *testing.T) {
-	ts := testSuite(t, "TestRerender_no_prevRender")
+	ts := testSuite(t)
 	defer ts.done()
 
 	got := recoverStr(func() {
@@ -562,7 +562,7 @@ func TestRerender_no_prevRender(t *testing.T) {
 // TestRerender_identical tests the behavior of Rerender when there is a
 // previous render which is identical to the new render.
 func TestRerender_identical(t *testing.T) {
-	ts := testSuite(t, "TestRerender_identical")
+	ts := testSuite(t)
 	defer ts.done()
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
@@ -649,7 +649,7 @@ func TestRerender_change(t *testing.T) {
 	}
 	for _, tst := range cases {
 		t.Run(tst.name, func(t *testing.T) {
-			ts := testSuite(t, "TestRerender_change__"+tst.name)
+			ts := testSuite(t)
 			defer ts.done()
 
 			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
@@ -752,7 +752,7 @@ func TestRerender_Nested(t *testing.T) {
 	}
 	for _, tst := range cases {
 		t.Run(tst.name, func(t *testing.T) {
-			ts := testSuite(t, "TestRerender_Nested__"+tst.name)
+			ts := testSuite(t)
 			defer ts.done()
 
 			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
@@ -848,7 +848,7 @@ func (c *persistentComponent) Render() ComponentOrHTML {
 // TestRerender_persistent tests the behavior of rendering persistent
 // components.
 func TestRerender_persistent(t *testing.T) {
-	ts := testSuite(t, "TestRerender_persistent")
+	ts := testSuite(t)
 	defer ts.done()
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
@@ -910,7 +910,7 @@ func (c *persistentWrapperComponent) Render() ComponentOrHTML {
 // TestRerender_persistent_direct tests the behavior of rendering persistent
 // components that are directly returned by Render().
 func TestRerender_persistent_direct(t *testing.T) {
-	ts := testSuite(t, "TestRerender_persistent_direct")
+	ts := testSuite(t)
 	defer ts.done()
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
@@ -976,7 +976,7 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			ts := testSuite(t, "TestRenderBody_ExpectsBody__"+c.name)
+			ts := testSuite(t)
 			defer ts.done()
 
 			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
@@ -1006,7 +1006,7 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 // TestRenderBody_RenderSkipper_Skip tests that RenderBody panics when the
 // component's SkipRender method returns skip == true.
 func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
-	ts := testSuite(t, "TestRenderBody_RenderSkipper_Skip")
+	ts := testSuite(t)
 	defer ts.done()
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
@@ -1034,7 +1034,7 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 // standard case of rendering into the "body" tag when the DOM is in a loaded
 // state.
 func TestRenderBody_Standard_loaded(t *testing.T) {
-	ts := testSuite(t, "TestRenderBody_Standard_loaded")
+	ts := testSuite(t)
 	defer ts.done()
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "loaded")
@@ -1051,7 +1051,7 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 // standard case of rendering into the "body" tag when the DOM is in a loading
 // state.
 func TestRenderBody_Standard_loading(t *testing.T) {
-	ts := testSuite(t, "TestRenderBody_Standard_loading")
+	ts := testSuite(t)
 	defer ts.done()
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "loading")
@@ -1070,7 +1070,7 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 // TestRenderBody_Nested tests that RenderBody properly handles nested
 // Components.
 func TestRenderBody_Nested(t *testing.T) {
-	ts := testSuite(t, "TestRenderBody_Nested")
+	ts := testSuite(t)
 	defer ts.done()
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
@@ -1094,7 +1094,7 @@ func TestRenderBody_Nested(t *testing.T) {
 // TestSetTitle tests that the SetTitle function performs the correct DOM
 // operations.
 func TestSetTitle(t *testing.T) {
-	ts := testSuite(t, "TestSetTitle")
+	ts := testSuite(t)
 	defer ts.done()
 
 	SetTitle("foobartitle")
@@ -1103,14 +1103,14 @@ func TestSetTitle(t *testing.T) {
 // TestAddStylesheet tests that the AddStylesheet performs the correct DOM
 // operations.
 func TestAddStylesheet(t *testing.T) {
-	ts := testSuite(t, "TestAddStylesheet")
+	ts := testSuite(t)
 	defer ts.done()
 
 	AddStylesheet("https://google.com/foobar.css")
 }
 
 func TestKeyedChild_DifferentType(t *testing.T) {
-	ts := testSuite(t, "TestKeyedChild_DifferentType")
+	ts := testSuite(t)
 	defer ts.done()
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
