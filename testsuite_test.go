@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -186,9 +185,12 @@ func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
 	}
 
 	// Print a nice diff for easy comparison.
-	cmd := exec.Command("git", "-c", "color.ui=always", "diff", "--no-index", wantFileName, gotFileName)
-	out, _ := cmd.CombinedOutput()
-	ts.t.Log("\n" + string(out))
+	out, err := commandOutput("git", "-c", "color.ui=always", "diff", "--no-index", wantFileName, gotFileName)
+	if err != nil {
+		ts.t.Log("running git diff", err)
+	} else {
+		ts.t.Log("\n" + out)
+	}
 
 	ts.t.Fatalf("to accept these changes:\n\n$ mv %s %s", gotFileName, wantFileName)
 }
