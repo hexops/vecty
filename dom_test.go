@@ -3,8 +3,6 @@ package vecty
 import (
 	"fmt"
 	"testing"
-
-	"syscall/js"
 )
 
 type testCore struct{ Core }
@@ -76,9 +74,12 @@ func TestCore(t *testing.T) {
 // TODO(slimsag): TestUnmounter; Unmounter.Unmount
 
 func TestHTML_Node(t *testing.T) {
-	x := js.Global()
-	h := &HTML{node: wrapObject(x)}
-	if h.Node() != x {
+	ts := testSuite(t)
+	defer ts.done()
+
+	x := undefined
+	h := &HTML{node: x}
+	if h.Node() != x.j {
 		t.Fatal("h.Node() != x")
 	}
 }
