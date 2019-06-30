@@ -18,12 +18,17 @@ func runGoForever() {
 	select {}
 }
 
-type jsValue jsObject
+// SyscallJSValue is an actual syscall/js.Value type under WebAssembly and
+// GopherJS compilation.
+//
+// It is declared here just for purposes of testing Vecty under native
+// 'go test', linting, and serving documentation under godoc.org.
+type SyscallJSValue jsObject
 
 // Event represents a DOM event.
 type Event struct {
-	Value  jsValue
-	Target jsValue
+	Value  SyscallJSValue
+	Target SyscallJSValue
 }
 
 func newEvent(object, target jsObject) *Event {
@@ -37,7 +42,7 @@ func newEvent(object, target jsObject) *Event {
 //
 // It panics if it is called before the DOM node has been attached, i.e. before
 // the associated component's Mounter interface would be invoked.
-func (h *HTML) Node() jsValue {
+func (h *HTML) Node() SyscallJSValue {
 	if h.node == nil {
 		panic("vecty: cannot call (*HTML).Node() before DOM node creation / component mount")
 	}
