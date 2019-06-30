@@ -608,7 +608,7 @@ func TestRerender_identical(t *testing.T) {
 
 	// Invoke the render callback.
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(float64))(0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCalled != 2 {
 		t.Fatal("renderCalled != 2")
@@ -695,7 +695,7 @@ func TestRerender_change(t *testing.T) {
 
 			// Invoke the render callback.
 			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-			ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(float64))(0)
+			ts.invokeCallbackRequestAnimationFrame(0)
 
 			if renderCalled != 2 {
 				t.Fatal("renderCalled != 2")
@@ -797,7 +797,7 @@ func TestRerender_Nested(t *testing.T) {
 
 			// Invoke the render callback.
 			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-			ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(float64))(0)
+			ts.invokeCallbackRequestAnimationFrame(0)
 
 			if skipRenderCalled != 1 {
 				t.Fatal("skipRenderCalled != 1")
@@ -865,7 +865,7 @@ func TestRerender_persistent(t *testing.T) {
 
 	// Invoke the render callback.
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(float64))(0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCount != 2 {
 		t.Fatal("renderCount != 2")
@@ -876,7 +876,7 @@ func TestRerender_persistent(t *testing.T) {
 
 	// Invoke the render callback.
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(float64))(0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCount != 3 {
 		t.Fatal("renderCount != 3")
@@ -927,7 +927,7 @@ func TestRerender_persistent_direct(t *testing.T) {
 
 	// Invoke the render callback.
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(float64))(0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCount != 2 {
 		t.Fatal("renderCount != 2")
@@ -938,7 +938,7 @@ func TestRerender_persistent_direct(t *testing.T) {
 
 	// Invoke the render callback.
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(float64))(0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCount != 3 {
 		t.Fatal("renderCount != 3")
@@ -1004,8 +1004,6 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-
 	comp := &componentFunc{
 		render: func() ComponentOrHTML {
 			return Tag("body")
@@ -1059,7 +1057,7 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 	})
 
 	ts.record("(invoking DOMContentLoaded event listener)")
-	ts.callbacks[`global.Get("document").Call("addEventListener", "DOMContentLoaded", func())`].(func())()
+	ts.invokeCallbackDOMContentLoaded()
 }
 
 // TestRenderBody_Nested tests that RenderBody properly handles nested
@@ -1129,7 +1127,7 @@ func TestKeyedChild_DifferentType(t *testing.T) {
 	rerender := func() {
 		Rerender(comp)
 		ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-		ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(float64))(0)
+		ts.invokeCallbackRequestAnimationFrame(0)
 	}
 
 	// Re-render

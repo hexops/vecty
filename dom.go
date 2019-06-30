@@ -1,6 +1,8 @@
 package vecty
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // batch renderer singleton
 var batch = &batchRenderer{idx: make(map[Component]int)}
@@ -1178,7 +1180,9 @@ func RenderBody(body Component) {
 		mount(m)
 	}
 	requestAnimationFrame(batch.render)
-	runGoForever()
+	if !isTest {
+		runGoForever()
+	}
 }
 
 // SetTitle sets the title of the document.
@@ -1195,7 +1199,6 @@ func AddStylesheet(url string) {
 }
 
 type jsFunc interface {
-	Object() jsObject
 	Release()
 }
 

@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -205,11 +204,21 @@ func (ts *testSuiteT) record(invocation string) string {
 // addCallbacks adds the first function in args to ts.callbacks[invocation], if there is one.
 func (ts *testSuiteT) addCallbacks(invocation string, args ...interface{}) {
 	for _, a := range args {
-		if reflect.TypeOf(a).Kind() == reflect.Func {
-			ts.callbacks[invocation] = a
+		if fi, ok := a.(jsFuncImpl); ok {
+			ts.callbacks[invocation] = fi.goFunc
 			return
 		}
 	}
+}
+
+func (ts *testSuiteT) invokeCallbackRequestAnimationFrame(v float64) {
+	cb := ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(this jsObject, args []jsObject) interface{})
+	cb(undefined, []jsObject{valueOf(v)})
+}
+
+func (ts *testSuiteT) invokeCallbackDOMContentLoaded() {
+	cb := ts.callbacks[`global.Get("document").Call("addEventListener", "DOMContentLoaded", func)`].(func(this jsObject, args []jsObject) interface{})
+	cb(undefined, nil)
 }
 
 // objectRecorder implements the jsObject interface by recording method
@@ -264,10 +273,6 @@ func (r *objectRecorder) Float() float64 { return r.ts.floats.get(r.name).(float
 func stringify(args ...interface{}) string {
 	var s []string
 	for _, a := range args {
-		if reflect.TypeOf(a).Kind() == reflect.Func {
-			s = append(s, reflect.TypeOf(a).String())
-			continue
-		}
 		switch v := a.(type) {
 		case string:
 			s = append(s, fmt.Sprintf("%q", v))

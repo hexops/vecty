@@ -46,20 +46,22 @@ var (
 )
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
-	return jsFuncImpl(js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		wrappedArgs := make([]jsObject, len(args))
-		for i, arg := range args {
-			wrappedArgs[i] = wrapObject(arg)
-		}
-		result := fn(wrapObject(this), wrappedArgs)
-		if wrapped, ok := result.(wrappedObject); ok {
-			return wrapped.j
-		}
-		return result
-	}))
+	return jsFuncImpl{
+		f: js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+			wrappedArgs := make([]jsObject, len(args))
+			for i, arg := range args {
+				wrappedArgs[i] = wrapObject(arg)
+			}
+			return unwrap(fn(wrapObject(this), wrappedArgs))
+		}),
+		goFunc: fn,
+	}
 }
 
-type jsFuncImpl js.Func
+type jsFuncImpl struct {
+	f      js.Func
+	goFunc func(this jsObject, args []jsObject) interface{}
+}
 
 func (j jsFuncImpl) String() string {
 	// fmt.Sprint(j) would produce the actual implementation of the function in
@@ -67,8 +69,11 @@ func (j jsFuncImpl) String() string {
 	// return an opaque string for testing purposes.
 	return "func"
 }
-func (j jsFuncImpl) Object() jsObject { return wrapObject(j.Value) }
-func (j jsFuncImpl) Release()         { j.Release() }
+func (j jsFuncImpl) Release() { j.Release() }
+
+func valueOf(v interface{}) jsObject {
+	return wrapObject(js.ValueOf(v))
+}
 
 func wrapObject(j js.Value) jsObject {
 	if j == js.Null() {
@@ -77,7 +82,17 @@ func wrapObject(j js.Value) jsObject {
 	if j == js.Undefined() {
 		return undefined
 	}
-	return wrappedObject{j}
+	return wrappedObject{j: j}
+}
+
+func unwrap(value interface{}) interface{} {
+	if v, ok := value.(wrappedObject); ok {
+		return v.j
+	}
+	if v, ok := value.(jsFuncImpl); ok {
+		return v.f
+	}
+	return value
 }
 
 type wrappedObject struct {
@@ -85,10 +100,7 @@ type wrappedObject struct {
 }
 
 func (w wrappedObject) Set(key string, value interface{}) {
-	if v, ok := value.(wrappedObject); ok {
-		value = v.j
-	}
-	w.j.Set(key, value)
+	w.j.Set(key, unwrap(value))
 }
 
 func (w wrappedObject) Get(key string) jsObject {
@@ -101,9 +113,7 @@ func (w wrappedObject) Delete(key string) {
 
 func (w wrappedObject) Call(name string, args ...interface{}) jsObject {
 	for i, arg := range args {
-		if v, ok := arg.(wrappedObject); ok {
-			args[i] = v.j
-		}
+		args[i] = unwrap(arg)
 	}
 	return wrapObject(w.j.Call(name, args...))
 }
