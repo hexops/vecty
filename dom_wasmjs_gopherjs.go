@@ -9,10 +9,6 @@ func runGoForever() {
 }
 
 // Event represents a DOM event.
-//
-// When compiling under WebAssembly, these values will have syscall/js.Value types.
-//
-// When compiling under GopherJS, these values will have *gopherjs/js.Object types.
 type Event struct {
 	js.Value
 	Target js.Value
@@ -29,10 +25,6 @@ func newEvent(object, target jsObject) *Event {
 //
 // It panics if it is called before the DOM node has been attached, i.e. before
 // the associated component's Mounter interface would be invoked.
-//
-// When compiling under WebAssembly, the return type will be syscall/js.Value.
-//
-// When compiling under GopherJS, the return type will be *gopherjs/js.Object.
 func (h *HTML) Node() js.Value {
 	if h.node == nil {
 		panic("vecty: cannot call (*HTML).Node() before DOM node creation / component mount")
