@@ -974,8 +974,6 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 			ts := testSuite(t)
 			defer ts.done()
 
-			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-
 			var gotPanic string
 			func() {
 				defer func() {
