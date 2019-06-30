@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"syscall/js"
 
 	"github.com/gopherjs/vecty"
 	"github.com/gopherjs/vecty/example/todomvc/actions"
@@ -9,7 +10,6 @@ import (
 	"github.com/gopherjs/vecty/example/todomvc/dispatcher"
 	"github.com/gopherjs/vecty/example/todomvc/store"
 	"github.com/gopherjs/vecty/example/todomvc/store/model"
-	"syscall/js"
 )
 
 func main() {
