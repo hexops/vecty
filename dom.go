@@ -1,8 +1,6 @@
 package vecty
 
-import (
-	"reflect"
-)
+import "reflect"
 
 // batch renderer singleton
 var batch = &batchRenderer{idx: make(map[Component]int)}
