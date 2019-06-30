@@ -113,6 +113,7 @@ func (w wrappedObject) Call(name string, args ...interface{}) jsObject {
 func (w wrappedObject) String() string {
 	return w.j.String()
 }
+
 func (w wrappedObject) Bool() bool {
 	return w.j.Bool()
 }

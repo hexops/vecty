@@ -94,7 +94,7 @@ func (p *PageView) renderHeader() *vecty.HTML {
 
 func (p *PageView) renderFooter() *vecty.HTML {
 	count := store.ActiveItemCount()
-	var itemsLeftText = " items left"
+	itemsLeftText := " items left"
 	if count == 1 {
 		itemsLeftText = " item left"
 	}

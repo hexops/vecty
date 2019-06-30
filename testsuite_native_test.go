@@ -3,8 +3,8 @@
 package vecty
 
 import (
-	"os/exec"
 	"fmt"
+	"os/exec"
 	"reflect"
 )
 
@@ -22,7 +22,7 @@ type jsValue jsObject
 
 // Event represents a DOM event.
 type Event struct {
-	Value jsValue
+	Value  jsValue
 	Target jsValue
 }
 
@@ -60,7 +60,7 @@ type jsFuncImpl struct {
 }
 
 func (j jsFuncImpl) String() string { return "func" }
-func (j jsFuncImpl) Release() { }
+func (j jsFuncImpl) Release()       {}
 
 func valueOf(v interface{}) jsObject {
 	ts := global.(*objectRecorder).ts
