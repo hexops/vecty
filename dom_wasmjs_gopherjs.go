@@ -69,7 +69,7 @@ func (j jsFuncImpl) String() string {
 	// return an opaque string for testing purposes.
 	return "func"
 }
-func (j jsFuncImpl) Release() { j.Release() }
+func (j jsFuncImpl) Release() { j.f.Release() }
 
 func valueOf(v interface{}) jsObject {
 	return wrapObject(js.ValueOf(v))
