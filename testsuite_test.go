@@ -128,10 +128,12 @@ func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
 			f, err := os.Create(wantFileName)
 			f.Close()
 			if err != nil {
-				ts.t.Fatal(err)
+				ts.t.Error(err)
+				return
 			}
 		} else {
-			ts.t.Fatal(err)
+			ts.t.Error(err)
+			return
 		}
 	}
 	want := strings.TrimSpace(string(wantBytes))
@@ -180,7 +182,8 @@ func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
 	gotFileName := path.Join("testdata", testName+".got.txt")
 	err = ioutil.WriteFile(gotFileName, []byte(got), 0777)
 	if err != nil {
-		ts.t.Fatal(err)
+		ts.t.Error(err)
+		return
 	}
 
 	// Print a nice diff for easy comparison.
@@ -191,7 +194,7 @@ func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
 		ts.t.Log("\n" + out)
 	}
 
-	ts.t.Fatalf("to accept these changes:\n\n$ mv %s %s", gotFileName, wantFileName)
+	ts.t.Errorf("to accept these changes:\n\n$ mv %s %s", gotFileName, wantFileName)
 }
 
 // record records the invocation to the test suite and returns the string
