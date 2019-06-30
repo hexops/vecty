@@ -61,6 +61,12 @@ func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
 
 type jsFuncImpl js.Func
 
+func (j jsFuncImpl) String() string {
+	// fmt.Sprint(j) would produce the actual implementation of the function in
+	// JS code which differs across WASM/GopherJS/TinyGo so we instead just
+	// return an opaque string for testing purposes.
+	return "func"
+}
 func (j jsFuncImpl) Object() jsObject { return wrapObject(j.Value) }
 func (j jsFuncImpl) Release()         { j.Release() }
 
