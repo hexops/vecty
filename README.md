@@ -1,41 +1,69 @@
 <p align="center">
-	<img src="https://github.com/vecty/vecty-logo/raw/master/horizontal_color.png" />
+	<img src="https://github.com/vecty/vecty-logo/raw/master/horizontal_color_tagline.png" />
 </p>
 
-Vecty is a [React](https://facebook.github.io/react/)-like library for [GopherJS](https://github.com/gopherjs/gopherjs) so that you can do frontend development in Go instead of writing JavaScript/HTML/CSS.
+Vecty is a library for building responsive and dynamic web frontends in Go instead of in JavaScript, HTML & CSS. It competes with modern web frameworks like React & VueJS, and supports compilation to both WebAssembly and vanilla JavaScript.
 
 [![Build Status](https://travis-ci.org/gopherjs/vecty.svg?branch=master)](https://travis-ci.org/gopherjs/vecty) [![GoDoc](https://godoc.org/github.com/gopherjs/vecty?status.svg)](https://godoc.org/github.com/gopherjs/vecty) [![codecov](https://img.shields.io/codecov/c/github/gopherjs/vecty/master.svg)](https://codecov.io/gh/gopherjs/vecty)
 
-Features
+Benefits
 ========
 
--	Share frontend and backend code.
--	Write everything in Go -- not JS/HTML/CSS!
--	XSS protection: unsafe HTML must be explicitly denoted as such.
--	Reusability: share components by making Go packages that others can import!
+- Go developers can be competitive frontend developers.
+- Share Go code between your frontend & backend.
+- Reusability by sharing components via Go packages so that others can simply import them.
 
 Goals
 =====
 
--	Simplicity
-	-	Keep things as simple as possible to understand *for newcomers*.
-	-	Designed from the ground up to be easily mastered (like Go)!
--	Performance
-	-	As efficient as possible, make it clear what each operation in your webpage will do.
-	-	Same performance as just using plain JS/HTML/CSS.
--	Composability
-	-	Nest components to form your entire user interface, seperate them logically as you would any normal Go package.
+- _Simple_
+	- Designed from the ground up to be easily mastered _by newcomers_ (like Go).
+- _Performant_
+	- Efficient & understandable performance, small bundle sizes, same performance as raw JS/HTML/CSS.
+- _Composable_
+	- Nest components to form your entire user interface, seperating them logically as you would any normal Go package.
+- _Designed for Go (implicit)_
+	- Written from the ground up asking the question _"What is the best way to solve this problem in Go?"_, not simply asking _"How do we translate $POPULAR_LIBRARY to Go?"_
+
+Features
+========
+
+- Compiles to WebAssembly (via standard Go compiler) and vanilla JavaScript (via [GopherJS](https://github.com/gopherjs/gopherjs)).
+- Small bundle sizes: 0.5 KB hello world (see section below).
+- Fast expectation-based browser DOM diffing ('virtual DOM', but less resource usage).
 
 Current Status
 ==============
 
-**Vecty is currently considered to be an experimental work-in-progress.**
+**Vecty is currently considered to be an experimental work-in-progress.** Prior to widespread production use, we must meet our [v1.0.0 milestone](https://github.com/gopherjs/vecty/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.0.0) goals, which are being completed slowly and steadily as contributors have time (Vecty is over 4 years in the making!).
 
--	APIs will change.
--	The scope of Vecty is only ~80% defined currently.
--	There are a number of important [open issues](https://github.com/gopherjs/vecty/issues).
+Early adopters may make use of it for real applications today as long as they are understanding and accepting of the fact that:
+
+- APIs will change (maybe extensively).
+- A number of important things are not ready:
+	- Extensive documentation, examples and tutorials
+	- URL-based component routing
+	- Ready-to-use component libraries (e.g. material UI)
+	- Server-side rendering
+	- And more, see [milestone: v1.0.0 ](https://github.com/gopherjs/vecty/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.0.0)
+- The scope of Vecty is only ~80% defined currently.
+- There are a number of important [open issues](https://github.com/gopherjs/vecty/issues).
 
 For a list of projects currently using Vecty, see the [doc/projects-using-vecty.md](doc/projects-using-vecty.md) file.
+
+Small bundle sizes
+==================
+
+Vecty uses extremely minimal dependencies and prides itself on producing very small bundle sizes (mostly limited by the compiler), making it suitable for modern web development:
+
+| Example      | Compiler                | Bundle size | Compressed (gzip) |
+|--------------|-------------------------|-------------|-------------------|
+| `hellovecty` | Go + WebAssembly        | 2.3 KB      | 0.5 KB            |
+| `markdown`   | Go + WebAssembly        | 4.2 KB      | 0.9 KB            |
+| `todomvc`    | Go + WebAssembly        | 3.4 KB      | 0.7 KB            |
+| `hellovecty` | GopherJS                | 0.5 KB      | 0.1 KB            |
+| `markdown`   | GopherJS                | 2.6 KB      | 0.4 KB            |
+| `todomvc`    | GopherJS                | 1.7 KB      | 0.3 KB            |
 
 Community
 =========

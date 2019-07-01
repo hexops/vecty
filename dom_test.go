@@ -3,8 +3,6 @@ package vecty
 import (
 	"fmt"
 	"testing"
-
-	"github.com/gopherjs/gopherjs/js"
 )
 
 type testCore struct{ Core }
@@ -76,14 +74,12 @@ func TestCore(t *testing.T) {
 // TODO(slimsag): TestUnmounter; Unmounter.Unmount
 
 func TestHTML_Node(t *testing.T) {
-	// Create a non-nil *js.Object. For 'gopherjs test', &js.Object{} == nil
-	// because it is special-cased; but for 'go test' js.Global == nil.
-	x := js.Global // used for 'gopherjs test'
-	if x == nil {
-		x = &js.Object{} // used for 'go test'
-	}
-	h := &HTML{node: wrapObject(x)}
-	if h.Node() != x {
+	ts := testSuite(t)
+	defer ts.done()
+
+	x := undefined
+	h := &HTML{node: x}
+	if h.Node() != x.j {
 		t.Fatal("h.Node() != x")
 	}
 }
@@ -565,7 +561,7 @@ func TestRerender_identical(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
 
 	// Perform the initial render of the component.
@@ -612,8 +608,8 @@ func TestRerender_identical(t *testing.T) {
 	Rerender(comp)
 
 	// Invoke the render callback.
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCalled != 2 {
 		t.Fatal("renderCalled != 2")
@@ -652,7 +648,7 @@ func TestRerender_change(t *testing.T) {
 			ts := testSuite(t)
 			defer ts.done()
 
-			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 			ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
 
 			// Perform the initial render of the component.
@@ -699,8 +695,8 @@ func TestRerender_change(t *testing.T) {
 			Rerender(comp)
 
 			// Invoke the render callback.
-			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-			ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
+			ts.invokeCallbackRequestAnimationFrame(0)
 
 			if renderCalled != 2 {
 				t.Fatal("renderCalled != 2")
@@ -755,7 +751,7 @@ func TestRerender_Nested(t *testing.T) {
 			ts := testSuite(t)
 			defer ts.done()
 
-			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 			ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
 
 			// Perform the initial render of the component.
@@ -801,8 +797,8 @@ func TestRerender_Nested(t *testing.T) {
 			Rerender(comp)
 
 			// Invoke the render callback.
-			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-			ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
+			ts.invokeCallbackRequestAnimationFrame(0)
 
 			if skipRenderCalled != 1 {
 				t.Fatal("skipRenderCalled != 1")
@@ -851,7 +847,7 @@ func TestRerender_persistent(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
 
 	lastRenderedComponent = nil
@@ -869,8 +865,8 @@ func TestRerender_persistent(t *testing.T) {
 	Rerender(comp)
 
 	// Invoke the render callback.
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCount != 2 {
 		t.Fatal("renderCount != 2")
@@ -880,8 +876,8 @@ func TestRerender_persistent(t *testing.T) {
 	Rerender(comp)
 
 	// Invoke the render callback.
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCount != 3 {
 		t.Fatal("renderCount != 3")
@@ -913,7 +909,7 @@ func TestRerender_persistent_direct(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
 
 	lastRenderedComponent = nil
@@ -931,8 +927,8 @@ func TestRerender_persistent_direct(t *testing.T) {
 	Rerender(comp)
 
 	// Invoke the render callback.
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCount != 2 {
 		t.Fatal("renderCount != 2")
@@ -942,8 +938,8 @@ func TestRerender_persistent_direct(t *testing.T) {
 	Rerender(comp)
 
 	// Invoke the render callback.
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-	ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
+	ts.invokeCallbackRequestAnimationFrame(0)
 
 	if renderCount != 3 {
 		t.Fatal("renderCount != 3")
@@ -979,8 +975,6 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 			ts := testSuite(t)
 			defer ts.done()
 
-			ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-
 			var gotPanic string
 			func() {
 				defer func() {
@@ -1009,8 +1003,6 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-
 	comp := &componentFunc{
 		render: func() ComponentOrHTML {
 			return Tag("body")
@@ -1038,7 +1030,7 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 	defer ts.done()
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "loaded")
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 
 	RenderBody(&componentFunc{
 		render: func() ComponentOrHTML {
@@ -1055,7 +1047,7 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 	defer ts.done()
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "loading")
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 
 	RenderBody(&componentFunc{
 		render: func() ComponentOrHTML {
@@ -1064,7 +1056,7 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 	})
 
 	ts.record("(invoking DOMContentLoaded event listener)")
-	ts.callbacks[`global.Get("document").Call("addEventListener", "DOMContentLoaded", func())`].(func())()
+	ts.invokeCallbackDOMContentLoaded()
 }
 
 // TestRenderBody_Nested tests that RenderBody properly handles nested
@@ -1074,7 +1066,7 @@ func TestRenderBody_Nested(t *testing.T) {
 	defer ts.done()
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 
 	RenderBody(&componentFunc{
 		render: func() ComponentOrHTML {
@@ -1113,7 +1105,7 @@ func TestKeyedChild_DifferentType(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
+	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
 
 	comp := &componentFunc{
@@ -1133,8 +1125,8 @@ func TestKeyedChild_DifferentType(t *testing.T) {
 
 	rerender := func() {
 		Rerender(comp)
-		ts.ints.mock(`global.Call("requestAnimationFrame", func(float64))`, 0)
-		ts.callbacks[`global.Call("requestAnimationFrame", func(float64))`].(func(float64))(0)
+		ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
+		ts.invokeCallbackRequestAnimationFrame(0)
 	}
 
 	// Re-render

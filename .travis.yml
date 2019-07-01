@@ -1,14 +1,30 @@
 sudo: false
-language: go
-go:
-  - 1.11.x
 install:
-  - nvm install 9.11
+  # Manually download and install Go 1.12 because the Travis / gimme version
+  # is broken (see https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6)
+  - wget -O go.tar.gz https://dl.google.com/go/go1.12.linux-amd64.tar.gz
+  - tar -C ~ -xzf go.tar.gz
+  - rm go.tar.gz
+  - export GOROOT=~/go
+  - export GOPATH=/home/travis/gopath
+  - export PATH=$GOROOT/bin:$PATH
+  - go version
+  - go env
+
+  # Install NodeJS 10 (GopherJS, WebAssembly)
+  - nvm install 10.10.0
+
+  # GopherJS and support tooling
+  # source-map-support for GopherJS
+  - cd / && go get -u github.com/gopherjs/gopherjs
   - npm install -g source-map-support
-  - go get -u github.com/gopherjs/gopherjs
-  - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.12.5
-  - go get -u github.com/haya14busa/goverage
   - npm install --global node-gyp
+
+  # Linters, etc.
+  - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.17.1
+  - go get -u github.com/haya14busa/goverage
+  - go get -u mvdan.cc/gofumpt
+  - go get -u mvdan.cc/gofumpt/gofumports
 before_script:
   - export NODE_PATH="/usr/local/lib/node_modules"
 
@@ -21,21 +37,27 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 script:
   # Fetch dependencies.
-  - go get -t -v ./...
-  - GO111MODULE=on go get -v ./...
+  - GO111MODULE=off go get -d .
+  - GO111MODULE=on go get -d .
+  - GOOS=js GOARCH=wasm GO111MODULE=off go get -d ./...
+  - GOOS=js GOARCH=wasm GO111MODULE=on go get -d ./...
 
-  # Consult Go fmt to ensure consistent code style.
-  - diff -u <(echo -n) <(gofmt -d -s .)
+  # Ensure consistent code style.
+  - diff -u <(echo -n) <(gofumpt -d -s .)
+  - diff -u <(echo -n) <(gofumports -d .)
 
   # Consult golangci-lint (multiple Go linting tools).
-  - golangci-lint run . ./elem/... ./event/... ./example/...
+  - golangci-lint run . ./elem/... ./event/...
   - golangci-lint run --exclude 'exported .* should have comment .*or be unexported' ./prop/... ./style/... # https://github.com/gopherjs/vecty/issues/227
-  - GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' . ./elem/... ./event/... ./example/...
+  - GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' . ./elem/... ./event/...
   - GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' --exclude 'exported .* should have comment .*or be unexported' ./prop/... ./style/... # https://github.com/gopherjs/vecty/issues/227
+  - bash -c 'cd example && golangci-lint run ./markdown'
+  - bash -c 'cd example && GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' ./...'
 
-  # Test with Go compiler and GopherJS compiler.
-  - go test -v -race ./...
-  - gopherjs test -v ./...
+  # Test with Go compiler (under amd64 and wasm architectures) and GopherJS compiler.
+  - go test -race ./...
+  - GO111MODULE=on GOOS=js GOARCH=wasm go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" ./...
+  - gopherjs test ./...
 
   # Generate and upload coverage to codecov.io
   - goverage -covermode=atomic -coverprofile=coverage.out $(go list ./... | grep -v -e vecty/elem -e vecty/event -e vecty/example -e vecty/prop -e vecty/style)

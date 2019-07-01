@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -130,10 +128,12 @@ func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
 			f, err := os.Create(wantFileName)
 			f.Close()
 			if err != nil {
-				ts.t.Fatal(err)
+				ts.t.Error(err)
+				return
 			}
 		} else {
-			ts.t.Fatal(err)
+			ts.t.Error(err)
+			return
 		}
 	}
 	want := strings.TrimSpace(string(wantBytes))
@@ -182,15 +182,19 @@ func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
 	gotFileName := path.Join("testdata", testName+".got.txt")
 	err = ioutil.WriteFile(gotFileName, []byte(got), 0777)
 	if err != nil {
-		ts.t.Fatal(err)
+		ts.t.Error(err)
+		return
 	}
 
 	// Print a nice diff for easy comparison.
-	cmd := exec.Command("git", "-c", "color.ui=always", "diff", "--no-index", wantFileName, gotFileName)
-	out, _ := cmd.CombinedOutput()
-	ts.t.Log("\n" + string(out))
+	out, err := commandOutput("git", "-c", "color.ui=always", "diff", "--no-index", wantFileName, gotFileName)
+	if err != nil {
+		ts.t.Log("running git diff", err)
+	} else {
+		ts.t.Log("\n" + out)
+	}
 
-	ts.t.Fatalf("to accept these changes:\n\n$ mv %s %s", gotFileName, wantFileName)
+	ts.t.Errorf("to accept these changes:\n\n$ mv %s %s", gotFileName, wantFileName)
 }
 
 // record records the invocation to the test suite and returns the string
@@ -203,11 +207,21 @@ func (ts *testSuiteT) record(invocation string) string {
 // addCallbacks adds the first function in args to ts.callbacks[invocation], if there is one.
 func (ts *testSuiteT) addCallbacks(invocation string, args ...interface{}) {
 	for _, a := range args {
-		if reflect.TypeOf(a).Kind() == reflect.Func {
-			ts.callbacks[invocation] = a
+		if fi, ok := a.(jsFuncImpl); ok {
+			ts.callbacks[invocation] = fi.goFunc
 			return
 		}
 	}
+}
+
+func (ts *testSuiteT) invokeCallbackRequestAnimationFrame(v float64) {
+	cb := ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(this jsObject, args []jsObject) interface{})
+	cb(undefined, []jsObject{valueOf(v)})
+}
+
+func (ts *testSuiteT) invokeCallbackDOMContentLoaded() {
+	cb := ts.callbacks[`global.Get("document").Call("addEventListener", "DOMContentLoaded", func)`].(func(this jsObject, args []jsObject) interface{})
+	cb(undefined, nil)
 }
 
 // objectRecorder implements the jsObject interface by recording method
@@ -262,10 +276,6 @@ func (r *objectRecorder) Float() float64 { return r.ts.floats.get(r.name).(float
 func stringify(args ...interface{}) string {
 	var s []string
 	for _, a := range args {
-		if reflect.TypeOf(a).Kind() == reflect.Func {
-			s = append(s, reflect.TypeOf(a).String())
-			continue
-		}
 		switch v := a.(type) {
 		case string:
 			s = append(s, fmt.Sprintf("%q", v))

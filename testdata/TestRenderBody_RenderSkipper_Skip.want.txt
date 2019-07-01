@@ -1,1 +1,0 @@
-global.Call("requestAnimationFrame", func(float64))

@@ -1,10 +1,6 @@
 package vecty
 
-import (
-	"reflect"
-
-	"github.com/gopherjs/gopherjs/js"
-)
+import "reflect"
 
 // EventListener is markup that specifies a callback function to be invoked when
 // the named DOM event is fired.
@@ -13,7 +9,7 @@ type EventListener struct {
 	Listener            func(*Event)
 	callPreventDefault  bool
 	callStopPropagation bool
-	wrapper             func(jsEvent *js.Object)
+	wrapper             jsFunc
 }
 
 // PreventDefault prevents the default behavior of the event from occurring.
@@ -36,12 +32,6 @@ func (l *EventListener) StopPropagation() *EventListener {
 // Apply implements the Applyer interface.
 func (l *EventListener) Apply(h *HTML) {
 	h.eventListeners = append(h.eventListeners, l)
-}
-
-// Event represents a DOM event.
-type Event struct {
-	*js.Object
-	Target *js.Object
 }
 
 // MarkupOrChild represents one of:
