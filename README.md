@@ -58,12 +58,12 @@ Vecty uses extremely minimal dependencies and prides itself on producing very sm
 
 | Example      | Compiler                | Bundle size | Compressed (gzip) |
 |--------------|-------------------------|-------------|-------------------|
-| `hellovecty` | Go + WebAssembly        | 2.3 KB      | 0.5 KB            |
-| `markdown`   | Go + WebAssembly        | 4.2 KB      | 0.9 KB            |
-| `todomvc`    | Go + WebAssembly        | 3.4 KB      | 0.7 KB            |
-| `hellovecty` | GopherJS                | 0.5 KB      | 0.1 KB            |
-| `markdown`   | GopherJS                | 2.6 KB      | 0.4 KB            |
-| `todomvc`    | GopherJS                | 1.7 KB      | 0.3 KB            |
+| `hellovecty` | Go + WebAssembly        | 2.3 MB      | 0.5 MB            |
+| `markdown`   | Go + WebAssembly        | 4.2 MB      | 0.9 MB            |
+| `todomvc`    | Go + WebAssembly        | 3.4 MB      | 0.7 MB            |
+| `hellovecty` | GopherJS                | 0.5 MB      | 0.1 MB            |
+| `markdown`   | GopherJS                | 2.6 MB      | 0.4 MB            |
+| `todomvc`    | GopherJS                | 1.7 MB      | 0.3 MB            |
 
 Community
 =========
