@@ -29,7 +29,7 @@ Features
 ========
 
 - Compiles to WebAssembly (via standard Go compiler) and vanilla JavaScript (via [GopherJS](https://github.com/gopherjs/gopherjs)).
-- Small bundle sizes: 0.5 KB hello world (see section below).
+- Small bundle sizes: 0.5 MB hello world (see section below).
 - Fast expectation-based browser DOM diffing ('virtual DOM', but less resource usage).
 
 Current Status
