@@ -1,13 +1,11 @@
 # Building examples
 
-Vecty fully supports all three major Go <-> Web compilers thanks to its minimal dependencies:
+Vecty fully supports two major Go <-> Web compilers thanks to its minimal dependencies:
 
 - Go 1.12+ WebAssembly support
 - [GopherJS](https://github.com/gopherjs/gopherjs) (Go to JavaScript transpiler)
-- [TinyGo](https://github.com/tinygo-org/tinygo) WebAssembly support (produces tiny binaries, but with tradeoffs)
 
 If you are just getting started, we suggest using the Go 1.12+ WebAssembly support.
-
 
 ## Go 1.12+ WebAssembly support
 
@@ -47,6 +45,4 @@ And navigate to http://localhost:8080/
 
 ## TinyGo WebAssembly support
 
-(Not recommended for beginners.)
-
-TODO(slimsag)
+[TinyGo](https://github.com/tinygo-org/tinygo) WebAssembly support is [being actively worked on](https://github.com/tinygo-org/tinygo/issues/93).
