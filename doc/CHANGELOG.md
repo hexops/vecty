@@ -6,6 +6,11 @@ Although v1.0.0 [is not yet out](https://github.com/gopherjs/vecty/milestone/1),
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## June 30, 2019 ([PR #232](https://github.com/gopherjs/vecty/pull/232)): major breaking change
+
+- `(*HTML).Node` now returns a `syscall/js.Value` instead of `*gopherjs/js.Object`. Users will need to update to the new `syscall/js` API in their applications.
+- Go 1.12+ is now required by Vecty, as we make use of [synchronous callback support](https://go-review.googlesource.com/c/go/+/142004) not present in earlier versions.
+
 ## May 25, 2019 ([PR #235](https://github.com/gopherjs/vecty/pull/235)): minor breaking change
 
 - `prop.TypeUrl` has been renamed to `prop.TypeURL`.
