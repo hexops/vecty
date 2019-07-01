@@ -340,6 +340,7 @@ func (h *HTML) removeProperties(prev *HTML) {
 	// Event listeners
 	for _, l := range prev.eventListeners {
 		h.node.Call("removeEventListener", l.Name, l.wrapper)
+		l.wrapper.Release()
 	}
 }
 
@@ -1143,10 +1144,14 @@ func unmount(e ComponentOrHTML) {
 
 // requestAnimationFrame calls the native JS function of the same name.
 func requestAnimationFrame(callback func(float64)) int {
-	return global.Call("requestAnimationFrame", funcOf(func(this jsObject, args []jsObject) interface{} {
+	var cb jsFunc
+	cb = funcOf(func(this jsObject, args []jsObject) interface{} {
+		cb.Release()
+
 		callback(args[0].Float())
 		return undefined
-	})).Int()
+	})
+	return global.Call("requestAnimationFrame", cb).Int()
 }
 
 // RenderBody renders the given component as the document body. The given
@@ -1164,7 +1169,10 @@ func RenderBody(body Component) {
 	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {
 		// avoid duplicate body
-		doc.Call("addEventListener", "DOMContentLoaded", funcOf(func(this jsObject, args []jsObject) interface{} {
+		var cb jsFunc
+		cb = funcOf(func(this jsObject, args []jsObject) interface{} {
+			cb.Release()
+
 			doc.Set("body", nextRender.node)
 			mount(pendingMounts...)
 			if m, ok := body.(Mounter); ok {
@@ -1172,7 +1180,8 @@ func RenderBody(body Component) {
 			}
 			requestAnimationFrame(batch.render)
 			return undefined
-		}))
+		})
+		doc.Call("addEventListener", "DOMContentLoaded", cb)
 		return
 	}
 	doc.Set("body", nextRender.node)
