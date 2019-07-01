@@ -229,7 +229,10 @@ func (h *HTML) reconcileProperties(prev *HTML) {
 			if l.callStopPropagation {
 				jsEvent.Call("stopPropagation")
 			}
-			l.Listener(newEvent(jsEvent, jsEvent.Get("target")))
+			l.Listener(&Event{
+				Value:  jsEvent.(wrappedObject).j,
+				Target: jsEvent.Get("target").(wrappedObject).j,
+			})
 			return undefined
 		})
 	}
@@ -1179,7 +1182,8 @@ func RenderBody(body Component) {
 	}
 	requestAnimationFrame(batch.render)
 	if !isTest {
-		runGoForever()
+		// run Go forever
+		select {}
 	}
 }
 

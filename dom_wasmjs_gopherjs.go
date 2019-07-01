@@ -4,21 +4,10 @@ package vecty
 
 import "syscall/js"
 
-func runGoForever() {
-	select {}
-}
-
 // Event represents a DOM event.
 type Event struct {
 	js.Value
 	Target js.Value
-}
-
-func newEvent(object, target jsObject) *Event {
-	return &Event{
-		Value:  object.(wrappedObject).j,
-		Target: target.(wrappedObject).j,
-	}
 }
 
 // Node returns the underlying JavaScript Element or TextNode.
