@@ -26,6 +26,10 @@ var (
 	undefined = wrappedObject{js.Undefined()}
 )
 
+func init() {
+	js.Global().Call("eval", "$vectyDelete = function(obj, key) { delete(obj[key])}")
+}
+
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
 	return jsFuncImpl{
 		f: js.FuncOf(func(this js.Value, args []js.Value) interface{} {
@@ -89,7 +93,7 @@ func (w wrappedObject) Get(key string) jsObject {
 }
 
 func (w wrappedObject) Delete(key string) {
-	w.j.Call("delete", key)
+	js.Global().Call("$vectyDelete", w.j, key)
 }
 
 func (w wrappedObject) Call(name string, args ...interface{}) jsObject {
