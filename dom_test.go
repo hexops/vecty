@@ -824,8 +824,10 @@ func (c *persistentComponentBody) Render() ComponentOrHTML {
 	)
 }
 
-var lastRenderedComponent Component
-var renderCount int
+var (
+	lastRenderedComponent Component
+	renderCount           int
+)
 
 type persistentComponent struct {
 	Core
