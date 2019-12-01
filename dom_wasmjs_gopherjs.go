@@ -30,6 +30,13 @@ func RenderIntoNode(node js.Value, c Component) error {
 	return renderIntoNode("RenderIntoNode", wrapObject(node), c)
 }
 
+func toLower(s string) string {
+	// We must call the prototype method here to workaround a limitation of
+	// syscall/js in both Go and GopherJS where we cannot call the
+	// `toLowerCase` string method. See https://github.com/golang/go/issues/35917
+	return js.Global().Get("String").Get("prototype").Get("toLowerCase").Call("call", js.ValueOf(s)).String()
+}
+
 var (
 	global    = wrapObject(js.Global())
 	undefined = wrappedObject{js.Undefined()}

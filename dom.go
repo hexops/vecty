@@ -1225,7 +1225,7 @@ func renderIntoNode(methodName string, node jsObject, c Component) error {
 	if skip {
 		panic("vecty: " + methodName + ": Component.SkipRender illegally returned true")
 	}
-	expectTag := node.Get("nodeName").String()
+	expectTag := toLower(node.Get("nodeName").String())
 	if nextRender.tag != expectTag {
 		return ElementMismatchError{method: methodName, got: nextRender.tag, want: expectTag}
 	}
