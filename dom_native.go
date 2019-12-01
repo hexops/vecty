@@ -28,6 +28,15 @@ func (h *HTML) Node() SyscallJSValue {
 	return htmlNodeImpl(h)
 }
 
+// RenderIntoNode renders the given component into the existing HTML element by
+// replacing it.
+//
+// If the Component's Render method does not return an element of the same type,
+// an error of type ElementMismatchError is returned.
+func RenderIntoNode(node SyscallJSValue, c Component) error {
+	return renderIntoNode("RenderIntoNode", node, c)
+}
+
 var (
 	global    jsObject
 	undefined wrappedObject

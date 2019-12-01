@@ -21,6 +21,15 @@ func (h *HTML) Node() js.Value {
 	return h.node.(wrappedObject).j
 }
 
+// RenderIntoNode renders the given component into the existing HTML element by
+// replacing it.
+//
+// If the Component's Render method does not return an element of the same type,
+// an error of type ElementMismatchError is returned.
+func RenderIntoNode(node js.Value, c Component) error {
+	return renderIntoNode("RenderIntoNode", wrapObject(node), c)
+}
+
 var (
 	global    = wrapObject(js.Global())
 	undefined = wrappedObject{js.Undefined()}
@@ -101,6 +110,10 @@ func (w wrappedObject) Call(name string, args ...interface{}) jsObject {
 
 func (w wrappedObject) String() string {
 	return w.j.String()
+}
+
+func (w wrappedObject) Truthy() bool {
+	return w.j.Truthy()
 }
 
 func (w wrappedObject) Bool() bool {
