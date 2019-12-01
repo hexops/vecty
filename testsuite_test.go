@@ -53,6 +53,7 @@ func testSuite(t *testing.T) *testSuiteT {
 		bools:     &valueMocker{},
 		floats:    &valueMocker{},
 		ints:      &valueMocker{},
+		truthies:  &valueMocker{},
 	}
 	global = &objectRecorder{
 		ts:   ts,
@@ -92,9 +93,9 @@ func (v *valueMocker) get(invocation string) interface{} {
 }
 
 type testSuiteT struct {
-	t                            *testing.T
-	callbacks                    map[string]interface{}
-	strings, bools, floats, ints *valueMocker
+	t                                      *testing.T
+	callbacks                              map[string]interface{}
+	strings, bools, floats, ints, truthies *valueMocker
 
 	got    string
 	isDone bool
@@ -265,7 +266,7 @@ func (r *objectRecorder) Call(name string, args ...interface{}) jsObject {
 func (r *objectRecorder) String() string { return r.ts.strings.get(r.name).(string) }
 
 // Truthy implements the jsObject interface.
-func (r *objectRecorder) Truthy() bool { panic("not implemented") }
+func (r *objectRecorder) Truthy() bool { return r.ts.truthies.get(r.name).(bool) }
 
 // Bool implements the jsObject interface.
 func (r *objectRecorder) Bool() bool { return r.ts.bools.get(r.name).(bool) }
