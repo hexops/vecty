@@ -2,7 +2,6 @@ package vecty
 
 import (
 	"reflect"
-	"syscall/js"
 )
 
 // batch renderer singleton
@@ -1211,16 +1210,11 @@ func (e InvalidTargetError) Error() string {
 // If the Component's Render method does not return an element of the same type,
 // an error of type ElementMismatchError is returned.
 func RenderInto(selector string, c Component) error {
-	target := js.Global.Get("document").Call("querySelector", selector)
-	return RenderInto(target, c)
+	target := global.Get("document").Call("querySelector", selector)
+	return renderIntoNode(target, c)
 }
 
-// RenderIntoNode renders the given component into the existing HTML element by
-// replacing it.
-//
-// If the Component's Render method does not return an element of the same type,
-// an error of type ElementMismatchError is returned.
-func RenderIntoNode(node js.Value, c Component) error {
+func renderIntoNode(node jsObject, c Component) error {
 	if !node.Truthy() {
 		return InvalidTargetError{method: "RenderIntoNode"}
 	}
@@ -1249,7 +1243,7 @@ func RenderIntoNode(node js.Value, c Component) error {
 			return undefined
 		})
 		doc.Call("addEventListener", "DOMContentLoaded", cb)
-		return
+		return nil
 	}
 	replaceNode(nextRender.node, node)
 	mount(pendingMounts...)
@@ -1257,6 +1251,7 @@ func RenderIntoNode(node js.Value, c Component) error {
 		mount(m)
 	}
 	requestAnimationFrame(batch.render)
+	return nil
 }
 
 // SetTitle sets the title of the document.
@@ -1282,6 +1277,7 @@ type jsObject interface {
 	Delete(key string)
 	Call(name string, args ...interface{}) jsObject
 	String() string
+	Truthy() bool
 	Bool() bool
 	Int() int
 	Float() float64

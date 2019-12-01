@@ -264,6 +264,9 @@ func (r *objectRecorder) Call(name string, args ...interface{}) jsObject {
 // String implements the jsObject interface.
 func (r *objectRecorder) String() string { return r.ts.strings.get(r.name).(string) }
 
+// Truthy implements the jsObject interface.
+func (r *objectRecorder) Truthy() bool { panic("not implemented") }
+
 // Bool implements the jsObject interface.
 func (r *objectRecorder) Bool() bool { return r.ts.bools.get(r.name).(bool) }
 
