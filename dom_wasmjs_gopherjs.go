@@ -31,7 +31,13 @@ func RenderIntoNode(node js.Value, c Component) error {
 }
 
 func toLower(s string) string {
-	return valueOf(s).Call("toLowerCase").String()
+	// We must call the prototype method here to workaround a limitation of
+	// syscall/js in Go (but not GopherJS) where the following program will
+	// panic: https://gopherjs.github.io/playground/#/UxD9vDjbf0
+	//
+	// 	panic: syscall/js: call of Value.Call on string
+	//
+	return js.Global.Get("String").Get("prototype").Get("toLowerCase").Call("call", js.ValueOf(s))
 }
 
 var (
