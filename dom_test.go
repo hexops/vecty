@@ -563,7 +563,7 @@ func TestRerender_identical(t *testing.T) {
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
-	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 	ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 	// Perform the initial render of the component.
@@ -652,7 +652,7 @@ func TestRerender_change(t *testing.T) {
 
 			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 			ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
-			ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+			ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 			ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 			// Perform the initial render of the component.
@@ -757,7 +757,7 @@ func TestRerender_Nested(t *testing.T) {
 
 			ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 			ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
-			ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+			ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 			ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 			// Perform the initial render of the component.
@@ -857,7 +857,7 @@ func TestRerender_persistent(t *testing.T) {
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
-	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 	ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 	lastRenderedComponent = nil
@@ -921,7 +921,7 @@ func TestRerender_persistent_direct(t *testing.T) {
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
-	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 	ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 	lastRenderedComponent = nil
@@ -987,7 +987,7 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 			ts := testSuite(t)
 			defer ts.done()
 
-			ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+			ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 			ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 			var gotPanic string
@@ -1048,7 +1048,7 @@ func TestRenderBody_Standard_loaded(t *testing.T) {
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "loaded")
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 	ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 	RenderBody(&componentFunc{
@@ -1067,7 +1067,7 @@ func TestRenderBody_Standard_loading(t *testing.T) {
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "loading")
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 	ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 	RenderBody(&componentFunc{
@@ -1088,7 +1088,7 @@ func TestRenderBody_Nested(t *testing.T) {
 
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
-	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 	ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 	RenderBody(&componentFunc{
@@ -1130,7 +1130,7 @@ func TestKeyedChild_DifferentType(t *testing.T) {
 
 	ts.ints.mock(`global.Call("requestAnimationFrame", func)`, 0)
 	ts.strings.mock(`global.Get("document").Get("readyState")`, "complete")
-	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "body")
+	ts.strings.mock(`global.Get("document").Call("querySelector", "body").Get("nodeName")`, "BODY")
 	ts.truthies.mock(`global.Get("document").Call("querySelector", "body")`, true)
 
 	comp := &componentFunc{

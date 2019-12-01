@@ -2,6 +2,8 @@
 
 package vecty
 
+import "strings"
+
 // Stubs for building Vecty under a native GOOS and GOARCH, so that Vecty
 // type-checks, lints, auto-completes, and serves documentation under godoc.org
 // as with any other normal Go package that is not under GOOS=js and
@@ -35,6 +37,10 @@ func (h *HTML) Node() SyscallJSValue {
 // an error of type ElementMismatchError is returned.
 func RenderIntoNode(node SyscallJSValue, c Component) error {
 	return renderIntoNode("RenderIntoNode", node, c)
+}
+
+func toLower(s string) string {
+	return strings.ToLower(s)
 }
 
 var (

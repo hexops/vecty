@@ -30,6 +30,10 @@ func RenderIntoNode(node js.Value, c Component) error {
 	return renderIntoNode("RenderIntoNode", wrapObject(node), c)
 }
 
+func toLower(s string) string {
+	return valueOf(s).Call("toLowerCase").String()
+}
+
 var (
 	global    = wrapObject(js.Global())
 	undefined = wrappedObject{js.Undefined()}
