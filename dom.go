@@ -1,6 +1,9 @@
 package vecty
 
-import "reflect"
+import (
+	"reflect"
+	"syscall/js"
+)
 
 // batch renderer singleton
 var batch = &batchRenderer{idx: make(map[Component]int)}
@@ -1155,27 +1158,91 @@ func requestAnimationFrame(callback func(float64)) int {
 }
 
 // RenderBody renders the given component as the document body. The given
-// Component's Render method must return a "body" element.
+// Component's Render method must return a "body" element or a panic will
+// occur.
+//
+// This function blocks forever in order to prevent the program from exiting,
+// which would prevent components from rerendering themselves in the future.
+//
+// It is a short-handed form for writing:
+//
+// 	err := vecty.RenderInto("body", body)
+// 	if err !== nil {
+// 		panic(err)
+// 	}
+// 	select{} // run Go forever
+//
 func RenderBody(body Component) {
+	err := RenderInto("body", body)
+	if err != nil {
+		panic(err)
+	}
+	if !isTest {
+		select {} // run Go forever
+	}
+}
+
+// ElementMismatchError is returned when the element returned by a component
+// does not match what is required for rendering.
+type ElementMismatchError struct {
+	method, got, want string
+}
+
+func (e ElementMismatchError) Error() string {
+	return "vecty: " + e.method + `: expected Component.Render to return a "` + e.want + `", found "` + e.got + `"`
+}
+
+// InvalidTargetError is returned when the element targeted by a render is
+// invalid because it is null or undefined.
+type InvalidTargetError struct {
+	method string
+}
+
+func (e InvalidTargetError) Error() string {
+	return "vecty: " + e.method + `: invalid target element is null or undefined`
+}
+
+// RenderInto renders the given component into the existing HTML element found
+// by the CSS selector (e.g. "#id", ".class-name") by replacing it.
+//
+// If there is more than one element found, the first is used. If no element is
+// found, an error of type InvalidTargetError is returned.
+//
+// If the Component's Render method does not return an element of the same type,
+// an error of type ElementMismatchError is returned.
+func RenderInto(selector string, c Component) error {
+	target := js.Global.Get("document").Call("querySelector", selector)
+	return RenderInto(target, c)
+}
+
+// RenderIntoNode renders the given component into the existing HTML element by
+// replacing it.
+//
+// If the Component's Render method does not return an element of the same type,
+// an error of type ElementMismatchError is returned.
+func RenderIntoNode(node js.Value, c Component) error {
+	if !node.Truthy() {
+		return InvalidTargetError{method: "RenderIntoNode"}
+	}
 	// block batch until we're done
 	batch.scheduled = true
-	nextRender, skip, pendingMounts := renderComponent(body, nil)
+	nextRender, skip, pendingMounts := renderComponent(c, nil)
 	if skip {
-		panic("vecty: RenderBody Component.SkipRender illegally returned true")
+		panic("vecty: RenderIntoNode: Component.SkipRender illegally returned true")
 	}
-	if nextRender.tag != "body" {
-		panic("vecty: RenderBody expected Component.Render to return a body tag, found \"" + nextRender.tag + "\"")
+	expectTag := node.Get("nodeName").String()
+	if nextRender.tag != expectTag {
+		return ElementMismatchError{method: `RenderIntoNode`, got: nextRender.tag, want: expectTag}
 	}
 	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {
-		// avoid duplicate body
 		var cb jsFunc
 		cb = funcOf(func(this jsObject, args []jsObject) interface{} {
 			cb.Release()
 
-			doc.Set("body", nextRender.node)
+			replaceNode(nextRender.node, node)
 			mount(pendingMounts...)
-			if m, ok := body.(Mounter); ok {
+			if m, ok := c.(Mounter); ok {
 				mount(m)
 			}
 			requestAnimationFrame(batch.render)
@@ -1184,16 +1251,12 @@ func RenderBody(body Component) {
 		doc.Call("addEventListener", "DOMContentLoaded", cb)
 		return
 	}
-	doc.Set("body", nextRender.node)
+	replaceNode(nextRender.node, node)
 	mount(pendingMounts...)
-	if m, ok := body.(Mounter); ok {
+	if m, ok := c.(Mounter); ok {
 		mount(m)
 	}
 	requestAnimationFrame(batch.render)
-	if !isTest {
-		// run Go forever
-		select {}
-	}
 }
 
 // SetTitle sets the title of the document.
