@@ -3,8 +3,10 @@ package dispatcher
 // ID is a unique identifier representing a registered callback function.
 type ID int
 
-var idCounter ID
-var callbacks = make(map[ID]func(action interface{}))
+var (
+	idCounter ID
+	callbacks = make(map[ID]func(action interface{}))
+)
 
 // Dispatch dispatches the given action to all registered callbacks.
 func Dispatch(action interface{}) {
