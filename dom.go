@@ -1172,7 +1172,8 @@ func requestAnimationFrame(callback func(float64)) int {
 // 	select{} // run Go forever
 //
 func RenderBody(body Component) {
-	err := RenderInto("body", body)
+	target := global.Get("document").Call("querySelector", "body")
+	err := renderIntoNode("RenderBody", target, body)
 	if err != nil {
 		panic(err)
 	}
@@ -1211,22 +1212,22 @@ func (e InvalidTargetError) Error() string {
 // an error of type ElementMismatchError is returned.
 func RenderInto(selector string, c Component) error {
 	target := global.Get("document").Call("querySelector", selector)
-	return renderIntoNode(target, c)
+	return renderIntoNode("RenderInto", target, c)
 }
 
-func renderIntoNode(node jsObject, c Component) error {
+func renderIntoNode(methodName string, node jsObject, c Component) error {
 	if !node.Truthy() {
-		return InvalidTargetError{method: "RenderIntoNode"}
+		return InvalidTargetError{method: methodName}
 	}
 	// block batch until we're done
 	batch.scheduled = true
 	nextRender, skip, pendingMounts := renderComponent(c, nil)
 	if skip {
-		panic("vecty: RenderIntoNode: Component.SkipRender illegally returned true")
+		panic("vecty: " + methodName + ": Component.SkipRender illegally returned true")
 	}
 	expectTag := node.Get("nodeName").String()
 	if nextRender.tag != expectTag {
-		return ElementMismatchError{method: `RenderIntoNode`, got: nextRender.tag, want: expectTag}
+		return ElementMismatchError{method: methodName, got: nextRender.tag, want: expectTag}
 	}
 	doc := global.Get("document")
 	if doc.Get("readyState").String() == "loading" {

@@ -969,17 +969,17 @@ func TestRenderBody_ExpectsBody(t *testing.T) {
 		{
 			name:      "text",
 			render:    Text("Hello world!"),
-			wantPanic: "vecty: RenderIntoNode: expected Component.Render to return a \"body\", found \"\"", // TODO(slimsag): error message bug
+			wantPanic: "vecty: RenderBody: expected Component.Render to return a \"body\", found \"\"", // TODO(slimsag): error message bug
 		},
 		{
 			name:      "div",
 			render:    Tag("div"),
-			wantPanic: "vecty: RenderIntoNode: expected Component.Render to return a \"body\", found \"div\"",
+			wantPanic: "vecty: RenderBody: expected Component.Render to return a \"body\", found \"div\"",
 		},
 		{
 			name:      "nil",
 			render:    nil,
-			wantPanic: "vecty: RenderIntoNode: expected Component.Render to return a \"body\", found \"noscript\"",
+			wantPanic: "vecty: RenderBody: expected Component.Render to return a \"body\", found \"noscript\"",
 		},
 	}
 	for _, c := range cases {
@@ -1033,7 +1033,7 @@ func TestRenderBody_RenderSkipper_Skip(t *testing.T) {
 	got := recoverStr(func() {
 		RenderBody(comp)
 	})
-	want := "vecty: RenderIntoNode: Component.SkipRender illegally returned true"
+	want := "vecty: RenderBody: Component.SkipRender illegally returned true"
 	if got != want {
 		t.Fatalf("got panic %q want %q", got, want)
 	}

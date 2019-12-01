@@ -34,7 +34,7 @@ func (h *HTML) Node() SyscallJSValue {
 // If the Component's Render method does not return an element of the same type,
 // an error of type ElementMismatchError is returned.
 func RenderIntoNode(node SyscallJSValue, c Component) error {
-	return renderIntoNode(node, c)
+	return renderIntoNode("RenderIntoNode", node, c)
 }
 
 var (

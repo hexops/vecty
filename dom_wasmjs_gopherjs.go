@@ -27,7 +27,7 @@ func (h *HTML) Node() js.Value {
 // If the Component's Render method does not return an element of the same type,
 // an error of type ElementMismatchError is returned.
 func RenderIntoNode(node js.Value, c Component) error {
-	return renderIntoNode(wrapObject(node), c)
+	return renderIntoNode("RenderIntoNode", wrapObject(node), c)
 }
 
 var (
