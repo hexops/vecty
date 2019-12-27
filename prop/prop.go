@@ -39,7 +39,7 @@ func Autofocus(autofocus bool) vecty.Applyer {
 }
 
 func Disabled(disabled bool) vecty.Applyer {
-	return vecty.Property("alt", disabled)
+	return vecty.Property("disabled", disabled)
 }
 
 func Checked(checked bool) vecty.Applyer {
