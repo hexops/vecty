@@ -35,7 +35,7 @@ func attachLocalStorage() {
 		js.Global().Get("localStorage").Set("items", string(data))
 	})
 
-	if data := js.Global().Get("localStorage").Get("items"); data != js.Undefined() {
+	if data := js.Global().Get("localStorage").Get("items"); !data.IsUndefined() {
 		var items []*model.Item
 		if err := json.Unmarshal([]byte(data.String()), &items); err != nil {
 			println("failed to load items: " + err.Error())

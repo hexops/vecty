@@ -54,6 +54,7 @@ func testSuite(t *testing.T) *testSuiteT {
 		floats:    &valueMocker{},
 		ints:      &valueMocker{},
 		truthies:  &valueMocker{},
+		isUndefined: &valueMocker{},
 	}
 	global = &objectRecorder{
 		ts:   ts,
@@ -267,6 +268,14 @@ func (r *objectRecorder) String() string { return r.ts.strings.get(r.name).(stri
 
 // Truthy implements the jsObject interface.
 func (r *objectRecorder) Truthy() bool { return r.ts.truthies.get(r.name).(bool) }
+
+// IsUndefined implements the jsObject interface.
+func (r *objectRecorder) IsUndefined() bool { return r.ts.isUndefined.get(r.name).(bool) }
+
+// Equal implements the jsObject interface.
+func (r *objectRecorder) Equal(other jsObject) bool {
+	return r == other.(*objectRecorder)
+}
 
 // Bool implements the jsObject interface.
 func (r *objectRecorder) Bool() bool { return r.ts.bools.get(r.name).(bool) }

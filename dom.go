@@ -202,7 +202,7 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 		h.createNode()
 	}
 
-	if h.node != prev.node {
+	if !h.node.Equal(prev.node) {
 		// reconcile properties against empty prev for new nodes.
 		h.reconcileProperties(&HTML{})
 	} else {
@@ -216,7 +216,7 @@ func (h *HTML) reconcile(prev *HTML) []Mounter {
 // element.
 func (h *HTML) reconcileProperties(prev *HTML) {
 	// If nodes match, remove any outdated properties
-	if h.node == prev.node {
+	if h.node.Equal(prev.node) {
 		h.removeProperties(prev)
 	}
 
@@ -374,7 +374,7 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 		//
 		// TODO(pdf): Add tests for node equality, keyed children
 		var (
-			new     = h.node != prev.node
+			new     = !h.node.Equal(prev.node)
 			nextKey interface{}
 		)
 		keyer, isKeyer := nextChild.(Keyer)
@@ -459,7 +459,7 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 		}
 		// If our insertion node is the current previous child, advance to the
 		// next sibling.
-		if prevChildRender != nil && prevChildRender.node == h.insertBeforeNode {
+		if prevChildRender != nil && prevChildRender.node.Equal(h.insertBeforeNode) {
 			h.insertBeforeNode = h.insertBeforeNode.Get("nextSibling")
 		}
 
@@ -487,7 +487,7 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 			insertBeforeKeyedNode = h.lastRenderedChild.nextSibling()
 			// If the next node is our old node, mark key as stable, to avoid
 			// unnecessary insertion.
-			if prevChildRender != nil && prevChildRender.node == insertBeforeKeyedNode {
+			if prevChildRender != nil && prevChildRender.node.Equal(insertBeforeKeyedNode) {
 				stableKey = true
 				insertBeforeKeyedNode = nil
 			}
@@ -533,7 +533,7 @@ func (h *HTML) reconcileChildren(prev *HTML) (pendingMounts []Mounter) {
 				pendingMounts = append(pendingMounts, m)
 			}
 
-			if hasKeyedChildren && (prevChildRender != nil && prevChildRender.node == nextChildRender.node) {
+			if hasKeyedChildren && (prevChildRender != nil && prevChildRender.node.Equal(nextChildRender.node)) {
 				// We are re-using the name node. Remove the children from
 				// keyedChildren so that we don't remove it when we remove dangling
 				// children below.
@@ -631,7 +631,7 @@ func (h *HTML) nextSibling() jsObject {
 func (h *HTML) removeChild(child *HTML) {
 	// If we're removing the current insert target, use the next
 	// sibling, if any.
-	if h.insertBeforeNode != nil && h.insertBeforeNode == child.node {
+	if h.insertBeforeNode != nil && h.insertBeforeNode.Equal(child.node) {
 		h.insertBeforeNode = h.insertBeforeNode.Get("nextSibling")
 	}
 	unmount(child)
@@ -1080,7 +1080,7 @@ func mountUnmount(next, prev ComponentOrHTML) Mounter {
 		return nil
 	}
 	if prevHTML := extractHTML(prev); prevHTML != nil {
-		if nextHTML := extractHTML(next); nextHTML == nil || prevHTML.node != nextHTML.node {
+		if nextHTML := extractHTML(next); nextHTML == nil || !prevHTML.node.Equal(nextHTML.node) {
 			for _, child := range prevHTML.children {
 				unmount(child)
 			}
@@ -1279,6 +1279,8 @@ type jsObject interface {
 	Call(name string, args ...interface{}) jsObject
 	String() string
 	Truthy() bool
+	Equal(other jsObject) bool
+	IsUndefined() bool
 	Bool() bool
 	Int() int
 	Float() float64
@@ -1293,7 +1295,7 @@ func init() {
 	if global == nil {
 		panic("vecty: only GopherJS and WebAssembly compilation is supported")
 	}
-	if global.Get("document") == undefined {
+	if global.Get("document").IsUndefined() {
 		panic("vecty: only running inside a browser is supported")
 	}
 }

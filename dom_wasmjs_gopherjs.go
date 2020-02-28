@@ -38,8 +38,8 @@ func toLower(s string) string {
 }
 
 var (
-	global    = wrapObject(js.Global())
-	undefined = wrappedObject{js.Undefined()}
+	global = wrapObject(js.Global())
+	undefined = wrapObject(js.Undefined())
 )
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
@@ -73,11 +73,8 @@ func valueOf(v interface{}) jsObject {
 }
 
 func wrapObject(j js.Value) jsObject {
-	if j == js.Null() {
+	if j.IsNull() {
 		return nil
-	}
-	if j == js.Undefined() {
-		return undefined
 	}
 	return wrappedObject{j: j}
 }
@@ -105,7 +102,7 @@ func (w wrappedObject) Get(key string) jsObject {
 }
 
 func (w wrappedObject) Delete(key string) {
-	w.j.Call("delete", key)
+	w.j.Delete(key)
 }
 
 func (w wrappedObject) Call(name string, args ...interface{}) jsObject {
@@ -121,6 +118,17 @@ func (w wrappedObject) String() string {
 
 func (w wrappedObject) Truthy() bool {
 	return w.j.Truthy()
+}
+
+func (w wrappedObject) IsUndefined() bool {
+	return w.j.IsUndefined()
+}
+
+func (w wrappedObject) Equal(other jsObject) bool {
+	if w.j.IsNull() != (other == nil) {
+		return false
+	}
+	return w.j.Equal(unwrap(other).(js.Value))
 }
 
 func (w wrappedObject) Bool() bool {

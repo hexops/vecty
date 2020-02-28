@@ -1,7 +1,7 @@
 package vecty
 
 func replaceNode(newNode, oldNode jsObject) {
-	if newNode == oldNode {
+	if newNode.Equal(oldNode) {
 		return
 	}
 	oldNode.Get("parentNode").Call("replaceChild", newNode, oldNode)
