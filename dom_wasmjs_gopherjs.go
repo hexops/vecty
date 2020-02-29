@@ -39,7 +39,7 @@ func toLower(s string) string {
 
 var (
 	global    = wrapObject(js.Global())
-	undefined = wrapObject(js.Undefined())
+	undefined = wrappedObject{js.Undefined()}
 )
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
