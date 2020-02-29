@@ -94,8 +94,8 @@ func (v *valueMocker) get(invocation string) interface{} {
 }
 
 type testSuiteT struct {
-	t                                      *testing.T
-	callbacks                              map[string]interface{}
+	t                                                   *testing.T
+	callbacks                                           map[string]interface{}
 	strings, bools, floats, ints, truthies, isUndefined *valueMocker
 
 	got    string
