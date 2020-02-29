@@ -47,13 +47,13 @@ func TestMain(m *testing.M) {
 
 func testSuite(t *testing.T) *testSuiteT {
 	ts := &testSuiteT{
-		t:         t,
-		callbacks: make(map[string]interface{}),
-		strings:   &valueMocker{},
-		bools:     &valueMocker{},
-		floats:    &valueMocker{},
-		ints:      &valueMocker{},
-		truthies:  &valueMocker{},
+		t:           t,
+		callbacks:   make(map[string]interface{}),
+		strings:     &valueMocker{},
+		bools:       &valueMocker{},
+		floats:      &valueMocker{},
+		ints:        &valueMocker{},
+		truthies:    &valueMocker{},
 		isUndefined: &valueMocker{},
 	}
 	global = &objectRecorder{

@@ -38,7 +38,7 @@ func toLower(s string) string {
 }
 
 var (
-	global = wrapObject(js.Global())
+	global    = wrapObject(js.Global())
 	undefined = wrapObject(js.Undefined())
 )
 
