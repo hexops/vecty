@@ -96,7 +96,7 @@ func (v *valueMocker) get(invocation string) interface{} {
 type testSuiteT struct {
 	t                                      *testing.T
 	callbacks                              map[string]interface{}
-	strings, bools, floats, ints, truthies *valueMocker
+	strings, bools, floats, ints, truthies, isUndefined *valueMocker
 
 	got    string
 	isDone bool
@@ -274,6 +274,9 @@ func (r *objectRecorder) IsUndefined() bool { return r.ts.isUndefined.get(r.name
 
 // Equal implements the jsObject interface.
 func (r *objectRecorder) Equal(other jsObject) bool {
+	if (r == nil) != (other == nil) {
+		return false
+	}
 	return r == other.(*objectRecorder)
 }
 
