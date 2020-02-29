@@ -21,7 +21,7 @@ install:
   - npm install --global node-gyp
 
   # Linters, etc.
-  - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.17.1
+  - GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
   - go get -u github.com/haya14busa/goverage
   - go get -u mvdan.cc/gofumpt
   - go get -u mvdan.cc/gofumpt/gofumports
