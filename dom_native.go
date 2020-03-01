@@ -45,7 +45,7 @@ func toLower(s string) string {
 
 var (
 	global    jsObject
-	undefined wrappedObject
+	undefined = wrappedObject{j: &jsObjectImpl{}}
 )
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
@@ -64,6 +64,14 @@ func valueOf(v interface{}) jsObject { return valueOfImpl(v) }
 type wrappedObject struct {
 	jsObject
 	j jsObject
+}
+
+type jsObjectImpl struct {
+	jsObject
+}
+
+func (e *jsObjectImpl) Equal(other jsObject) bool {
+	return e == other.(*jsObjectImpl)
 }
 
 var (

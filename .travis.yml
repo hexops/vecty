@@ -1,8 +1,8 @@
 sudo: false
 install:
-  # Manually download and install Go 1.12 because the Travis / gimme version
-  # is broken (see https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6)
-  - wget -O go.tar.gz https://dl.google.com/go/go1.12.linux-amd64.tar.gz
+  # Manually download and install Go 1.14 because the Travis / gimme version
+  # has been broken in the past (see https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6)
+  - wget -O go.tar.gz https://dl.google.com/go/go1.14.linux-amd64.tar.gz
   - tar -C ~ -xzf go.tar.gz
   - rm go.tar.gz
   - export GOROOT=~/go
@@ -21,7 +21,7 @@ install:
   - npm install --global node-gyp
 
   # Linters, etc.
-  - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.17.1
+  - GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
   - go get -u github.com/haya14busa/goverage
   - go get -u mvdan.cc/gofumpt
   - go get -u mvdan.cc/gofumpt/gofumports
@@ -57,7 +57,8 @@ script:
   # Test with Go compiler (under amd64 and wasm architectures) and GopherJS compiler.
   - go test -race ./...
   - GO111MODULE=on GOOS=js GOARCH=wasm go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" ./...
-  - gopherjs test ./...
+  # Disabled until https://github.com/gopherjs/gopherjs/issues/962 is fixed.
+  #- gopherjs test ./...
 
   # Generate and upload coverage to codecov.io
   - goverage -covermode=atomic -coverprofile=coverage.out $(go list ./... | grep -v -e vecty/elem -e vecty/event -e vecty/example -e vecty/prop -e vecty/style)

@@ -79,7 +79,7 @@ func TestHTML_Node(t *testing.T) {
 
 	x := undefined
 	h := &HTML{node: x}
-	if h.Node() != x.j {
+	if !h.Node().Equal(x.j) {
 		t.Fatal("h.Node() != x")
 	}
 }

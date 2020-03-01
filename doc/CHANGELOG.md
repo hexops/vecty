@@ -6,6 +6,14 @@ Although v1.0.0 [is not yet out](https://github.com/gopherjs/vecty/milestone/1),
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## February 28, 2020 ([PR #256](https://github.com/gopherjs/vecty/pull/256)): indirect breaking change
+
+- Go 1.14+ is now required by Vecty. Users of older Go versions and/or GopherJS (until https://github.com/gopherjs/gopherjs/issues/962 is fixed) may wish to continue using commit `6a0a25ee5a96ce029e684c7da6333aa1f34f8f96`.
+
+## Nov 30, 2019 ([PR #249](https://github.com/gopherjs/vecty/pull/249)): minor breaking change
+
+- `vecty.RenderBody(comp)` is now a blocking function call. Users that rely on it being non-blocking can instead now use `if err := vecty.RenderInto("body", comp); err != nil { panic(err) }`
+
 ## June 30, 2019 ([PR #232](https://github.com/gopherjs/vecty/pull/232)): major breaking change
 
 - `(*HTML).Node` now returns a `syscall/js.Value` instead of `*gopherjs/js.Object`. Users will need to update to the new `syscall/js` API in their applications.
