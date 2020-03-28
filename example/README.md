@@ -9,7 +9,7 @@ If you are just getting started, we suggest using the Go 1.14+ WebAssembly suppo
 
 ## Go 1.14+ WebAssembly support
 
-Vecty requires Go 1.14+ as it makes use of [synchronous callback support](https://go-review.googlesource.com/c/go/+/142004) which is not present in earlier versions of Go. **Ensure you are running Go 1.14 or higher.**
+**Ensure you are running Go 1.14 or higher.** Vecty requires Go 1.14+ as it makes use of improvements to the `syscall/js` package which are not present in earlier versions of Go.
 
 ### Running examples
 
