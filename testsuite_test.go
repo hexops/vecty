@@ -56,7 +56,7 @@ func testSuite(t *testing.T) *testSuiteT {
 		truthies:    &valueMocker{},
 		isUndefined: &valueMocker{},
 	}
-	global = &objectRecorder{
+	globalValue = &objectRecorder{
 		ts:   ts,
 		name: "global",
 	}
@@ -218,12 +218,12 @@ func (ts *testSuiteT) addCallbacks(invocation string, args ...interface{}) {
 
 func (ts *testSuiteT) invokeCallbackRequestAnimationFrame(v float64) {
 	cb := ts.callbacks[`global.Call("requestAnimationFrame", func)`].(func(this jsObject, args []jsObject) interface{})
-	cb(undefined, []jsObject{valueOf(v)})
+	cb(undefined(), []jsObject{valueOf(v)})
 }
 
 func (ts *testSuiteT) invokeCallbackDOMContentLoaded() {
 	cb := ts.callbacks[`global.Get("document").Call("addEventListener", "DOMContentLoaded", func)`].(func(this jsObject, args []jsObject) interface{})
-	cb(undefined, nil)
+	cb(undefined(), nil)
 }
 
 // objectRecorder implements the jsObject interface by recording method

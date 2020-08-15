@@ -42,10 +42,15 @@ func toLower(s string) string {
 	return strings.ToLower(s)
 }
 
-var (
-	global    jsObject
-	undefined = wrappedObject{j: &jsObjectImpl{}}
-)
+var globalValue jsObject
+
+func global() jsObject {
+	return globalValue
+}
+
+func undefined() wrappedObject {
+	return wrappedObject{j: &jsObjectImpl{}}
+}
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
 	return funcOfImpl(fn)

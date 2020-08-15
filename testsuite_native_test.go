@@ -27,7 +27,7 @@ func init() {
 		}
 	}
 	valueOfImpl = func(v interface{}) jsObject {
-		ts := global.(*objectRecorder).ts
+		ts := global().(*objectRecorder).ts
 		name := fmt.Sprintf("valueOf(%v)", v)
 		r := &objectRecorder{ts: ts, name: name}
 		switch reflect.ValueOf(v).Kind() {

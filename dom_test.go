@@ -77,7 +77,7 @@ func TestHTML_Node(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	x := undefined
+	x := undefined()
 	h := &HTML{node: x}
 	if !h.Node().Equal(x.j) {
 		t.Fatal("h.Node() != x")
