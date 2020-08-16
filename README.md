@@ -4,7 +4,7 @@
 
 Vecty lets you build responsive and dynamic web frontends in Go using WebAssembly, competing with modern web frameworks like React & VueJS.
 
-[![Build Status](https://travis-ci.org/hexops/vecty.svg?branch=master)](https://travis-ci.org/hexops/vecty) [![GoDoc](https://godoc.org/github.com/hexops/vecty?status.svg)](https://godoc.org/github.com/hexops/vecty) [![codecov](https://img.shields.io/codecov/c/github/hexops/vecty/master.svg)](https://codecov.io/gh/hexops/vecty)
+[![Build Status](https://travis-ci.org/hexops/vecty.svg?branch=master)](https://travis-ci.org/hexops/vecty) [![PkgGoDev](https://pkg.go.dev/badge/github.com/hexops/vecty)](https://pkg.go.dev/github.com/hexops/vecty) [![GoDoc](https://godoc.org/github.com/hexops/vecty?status.svg)](https://godoc.org/github.com/hexops/vecty) [![codecov](https://img.shields.io/codecov/c/github/hexops/vecty/master.svg)](https://codecov.io/gh/hexops/vecty)
 
 Benefits
 ========
