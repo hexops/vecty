@@ -1,8 +1,8 @@
 sudo: false
 install:
-  # Manually download and install Go 1.14 because the Travis / gimme version
-  # has been broken in the past (see https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6)
-  - wget -O go.tar.gz https://dl.google.com/go/go1.14.linux-amd64.tar.gz
+  # Manually download and install because the Travis / gimme version has been broken in the past
+  # https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6)
+  - wget -O go.tar.gz https://dl.google.com/go/go1.15.linux-amd64.tar.gz
   - tar -C ~ -xzf go.tar.gz
   - rm go.tar.gz
   - export GOROOT=~/go
