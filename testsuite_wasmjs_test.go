@@ -4,9 +4,8 @@ package vecty
 
 import "syscall/js"
 
-// os/exec does not work in GOOS=js GOARCH=wasm or under GopherJS anymore, so
-// we implement the minor functionality that we need for the test suite using
-// the NodeJS API on our own.
+// os/exec does not work in GOOS=js GOARCH=wasm, so we implement the minor functionality that we
+// need for the test suite using the NodeJS API on our own.
 
 func commandOutput(command string, args ...string) (string, error) {
 	argsi := make([]interface{}, len(args))

@@ -6,6 +6,14 @@ Although v1.0.0 [is not yet out](https://github.com/gopherjs/vecty/milestone/1),
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## August 15, 2020 ([PR #265](https://github.com/gopherjs/vecty/pull/265)): Deprecated and removed official support for GopherJS
+
+For more information please see [issue #264](https://github.com/gopherjs/vecty/issues/264).
+
+If your application cannot compile wihtout GopherJS, you may continue to use the tag `v0.5.0` which is the last version of Vecty which officially supported GopherJS at the time.
+
+New versions of Vecty _may_ compile with GopherJS, but we do not officially support it and it is dependent on GopherJS being compatible with the official Go compiler.
+
 ## February 28, 2020 ([PR #256](https://github.com/gopherjs/vecty/pull/256)): indirect breaking change
 
 - Go 1.14+ is now required by Vecty. Users of older Go versions and/or GopherJS (until https://github.com/gopherjs/gopherjs/issues/962 is fixed) may wish to continue using commit `6a0a25ee5a96ce029e684c7da6333aa1f34f8f96`.

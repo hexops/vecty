@@ -28,7 +28,7 @@ Goals
 Features
 ========
 
-- Compiles to WebAssembly (via standard Go compiler) and vanilla JavaScript (via [GopherJS](https://github.com/gopherjs/gopherjs)).
+- Compiles to WebAssembly (via standard Go compiler).
 - Small bundle sizes: 0.5 MB hello world (see section below).
 - Fast expectation-based browser DOM diffing ('virtual DOM', but less resource usage).
 
@@ -61,14 +61,11 @@ Vecty uses extremely minimal dependencies and prides itself on producing very sm
 | `hellovecty` | Go + WebAssembly        | 2.3 MB      | 0.5 MB            |
 | `markdown`   | Go + WebAssembly        | 4.2 MB      | 0.9 MB            |
 | `todomvc`    | Go + WebAssembly        | 3.4 MB      | 0.7 MB            |
-| `hellovecty` | GopherJS                | 0.5 MB      | 0.1 MB            |
-| `markdown`   | GopherJS                | 2.6 MB      | 0.4 MB            |
-| `todomvc`    | GopherJS                | 1.7 MB      | 0.3 MB            |
 
 Community
 =========
 
-- Join us in the [#gopherjs](https://gophers.slack.com/messages/gopherjs/) and [#vecty](https://gophers.slack.com/messages/vecty/) channels on the [Gophers Slack](https://gophersinvite.herokuapp.com/)!
+- Join us in the [#vecty](https://gophers.slack.com/messages/vecty/) channel on the [Gophers Slack](https://gophersinvite.herokuapp.com/)!
 
 Changelog
 =========

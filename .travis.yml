@@ -1,46 +1,27 @@
 sudo: false
 install:
-  # Manually download and install Go 1.14 because the Travis / gimme version
-  # has been broken in the past (see https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6)
-  - wget -O go.tar.gz https://dl.google.com/go/go1.14.linux-amd64.tar.gz
+  # Manually download and install Go because the Travis / gimme version has been broken in the past:
+  # https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6
+  - wget -O go.tar.gz https://dl.google.com/go/go1.15.linux-amd64.tar.gz
   - tar -C ~ -xzf go.tar.gz
   - rm go.tar.gz
   - export GOROOT=~/go
-  - export GOPATH=/home/travis/gopath
   - export PATH=$GOROOT/bin:$PATH
   - go version
   - go env
 
-  # Install NodeJS 10 (GopherJS, WebAssembly)
-  - nvm install 10.10.0
-
-  # GopherJS and support tooling
-  # source-map-support for GopherJS
-  - cd / && go get -u github.com/gopherjs/gopherjs
-  - npm install -g source-map-support
-  - npm install --global node-gyp
+  # Install NodeJS (for testing WebAssembly support)
+  - nvm install 14.7.0
 
   # Linters, etc.
-  - GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+  - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
   - go get -u github.com/haya14busa/goverage
   - go get -u mvdan.cc/gofumpt
   - go get -u mvdan.cc/gofumpt/gofumports
-before_script:
-  - export NODE_PATH="/usr/local/lib/node_modules"
-
-  # Set up system calls for gopherjs test (nodejs).
-  # https://github.com/gopherjs/gopherjs/blob/master/doc/syscalls.md
-  - cd $GOPATH/src/github.com/gopherjs/gopherjs/node-syscall/
-  - node-gyp rebuild
-  - mkdir -p ~/.node_libraries/
-  - cp build/Release/syscall.node ~/.node_libraries/syscall.node
-  - cd $TRAVIS_BUILD_DIR
 script:
   # Fetch dependencies.
-  - GO111MODULE=off go get -d .
-  - GO111MODULE=on go get -d .
-  - GOOS=js GOARCH=wasm GO111MODULE=off go get -d ./...
-  - GOOS=js GOARCH=wasm GO111MODULE=on go get -d ./...
+  - go get -d .
+  - GOOS=js GOARCH=wasm go get -d ./...
 
   # Ensure consistent code style.
   - diff -u <(echo -n) <(gofumpt -d -s .)
@@ -54,11 +35,9 @@ script:
   - bash -c 'cd example && golangci-lint run ./markdown'
   - bash -c 'cd example && GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' ./...'
 
-  # Test with Go compiler (under amd64 and wasm architectures) and GopherJS compiler.
+  # Test with Go compiler (under amd64 and wasm architectures.)
   - go test -race ./...
   - GO111MODULE=on GOOS=js GOARCH=wasm go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" ./...
-  # Disabled until https://github.com/gopherjs/gopherjs/issues/962 is fixed.
-  #- gopherjs test ./...
 
   # Generate and upload coverage to codecov.io
   - goverage -covermode=atomic -coverprofile=coverage.out $(go list ./... | grep -v -e vecty/elem -e vecty/event -e vecty/example -e vecty/prop -e vecty/style)
