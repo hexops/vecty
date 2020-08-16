@@ -1,4 +1,4 @@
-// +build go1.12,!wasm,!js
+// +build !js
 
 package vecty
 
