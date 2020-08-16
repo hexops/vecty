@@ -22,12 +22,12 @@ func init() {
 		return h.node.(wrappedObject).j
 	}
 	funcOfImpl = func(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
-		return jsFuncImpl{
+		return &jsFuncImpl{
 			goFunc: fn,
 		}
 	}
 	valueOfImpl = func(v interface{}) jsObject {
-		ts := global.(*objectRecorder).ts
+		ts := global().(*objectRecorder).ts
 		name := fmt.Sprintf("valueOf(%v)", v)
 		r := &objectRecorder{ts: ts, name: name}
 		switch reflect.ValueOf(v).Kind() {

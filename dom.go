@@ -57,6 +57,17 @@ type Component interface {
 // copy itself. Vecty must internally copy components, and it does so by either
 // invoking the Copy method of the Component or, if the component does not
 // implement the Copier interface, a shallow copy is performed.
+//
+// TinyGo: If compiling your Vecty application using the experimental TinyGo
+// support (https://github.com/gopherjs/vecty/pull/243) then all components must
+// implement at least a shallow-copy Copier interface (this is not required
+// otherwise):
+//
+// 	func (c *MyComponent) Copy() vecty.Component {
+// 		cpy := *c
+// 		return &cpy
+// 	}
+//
 type Copier interface {
 	// Copy returns a copy of the component.
 	Copy() Component
@@ -166,11 +177,11 @@ func (h *HTML) createNode() {
 	case h.tag == "" && h.innerHTML != "":
 		panic("vecty: only HTML may have UnsafeHTML attribute")
 	case h.tag != "" && h.namespace == "":
-		h.node = global.Get("document").Call("createElement", h.tag)
+		h.node = global().Get("document").Call("createElement", h.tag)
 	case h.tag != "" && h.namespace != "":
-		h.node = global.Get("document").Call("createElementNS", h.namespace, h.tag)
+		h.node = global().Get("document").Call("createElementNS", h.namespace, h.tag)
 	default:
-		h.node = global.Get("document").Call("createTextNode", h.text)
+		h.node = global().Get("document").Call("createTextNode", h.text)
 	}
 }
 
@@ -219,6 +230,7 @@ func (h *HTML) reconcileProperties(prev *HTML) {
 	if h.node.Equal(prev.node) {
 		h.removeProperties(prev)
 	}
+	h.tinyGoCannotIterateNilMaps()
 
 	// Wrap event listeners
 	for _, l := range h.eventListeners {
@@ -235,7 +247,7 @@ func (h *HTML) reconcileProperties(prev *HTML) {
 				Value:  jsEvent.(wrappedObject).j,
 				Target: jsEvent.Get("target").(wrappedObject).j,
 			})
-			return undefined
+			return undefined()
 		})
 	}
 
@@ -860,7 +872,7 @@ func (b *batchRenderer) render(startTime float64) {
 
 		// Check for remaining time budget, targeting 60fps (~16ms per frame).
 		if i > 0 {
-			elapsed := global.Get("performance").Call("now").Float() - startTime
+			elapsed := global().Get("performance").Call("now").Float() - startTime
 			budgetRemaining := (1000 / 60) - elapsed
 			avgRenderTime := elapsed / float64(i)
 			// If the budget remaining is less than 2 times the average
@@ -924,6 +936,8 @@ func copyComponent(c Component) Component {
 		}
 		return cpy
 	}
+
+	tinyGoAssertCopier(c)
 
 	// Component does not implement the Copier interface, so perform a shallow
 	// copy.
@@ -1151,9 +1165,9 @@ func requestAnimationFrame(callback func(float64)) int {
 		cb.Release()
 
 		callback(args[0].Float())
-		return undefined
+		return undefined()
 	})
-	return global.Call("requestAnimationFrame", cb).Int()
+	return global().Call("requestAnimationFrame", cb).Int()
 }
 
 // RenderBody renders the given component as the document body. The given
@@ -1172,7 +1186,7 @@ func requestAnimationFrame(callback func(float64)) int {
 // 	select{} // run Go forever
 //
 func RenderBody(body Component) {
-	target := global.Get("document").Call("querySelector", "body")
+	target := global().Get("document").Call("querySelector", "body")
 	err := renderIntoNode("RenderBody", target, body)
 	if err != nil {
 		panic(err)
@@ -1211,7 +1225,7 @@ func (e InvalidTargetError) Error() string {
 // If the Component's Render method does not return an element of the same type,
 // an error of type ElementMismatchError is returned.
 func RenderInto(selector string, c Component) error {
-	target := global.Get("document").Call("querySelector", selector)
+	target := global().Get("document").Call("querySelector", selector)
 	return renderIntoNode("RenderInto", target, c)
 }
 
@@ -1229,7 +1243,7 @@ func renderIntoNode(methodName string, node jsObject, c Component) error {
 	if nextRender.tag != expectTag {
 		return ElementMismatchError{method: methodName, got: nextRender.tag, want: expectTag}
 	}
-	doc := global.Get("document")
+	doc := global().Get("document")
 	if doc.Get("readyState").String() == "loading" {
 		var cb jsFunc
 		cb = funcOf(func(this jsObject, args []jsObject) interface{} {
@@ -1241,7 +1255,7 @@ func renderIntoNode(methodName string, node jsObject, c Component) error {
 				mount(m)
 			}
 			requestAnimationFrame(batch.render)
-			return undefined
+			return undefined()
 		})
 		doc.Call("addEventListener", "DOMContentLoaded", cb)
 		return nil
@@ -1257,15 +1271,15 @@ func renderIntoNode(methodName string, node jsObject, c Component) error {
 
 // SetTitle sets the title of the document.
 func SetTitle(title string) {
-	global.Get("document").Set("title", title)
+	global().Get("document").Set("title", title)
 }
 
 // AddStylesheet adds an external stylesheet to the document.
 func AddStylesheet(url string) {
-	link := global.Get("document").Call("createElement", "link")
+	link := global().Get("document").Call("createElement", "link")
 	link.Set("rel", "stylesheet")
 	link.Set("href", url)
-	global.Get("document").Get("head").Call("appendChild", link)
+	global().Get("document").Get("head").Call("appendChild", link)
 }
 
 type jsFunc interface {
@@ -1287,15 +1301,3 @@ type jsObject interface {
 }
 
 var isTest bool
-
-func init() {
-	if isTest {
-		return
-	}
-	if global == nil {
-		panic("vecty: only WebAssembly compilation is supported")
-	}
-	if global.Get("document").IsUndefined() {
-		panic("vecty: only running inside a browser is supported")
-	}
-}

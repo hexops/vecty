@@ -42,10 +42,15 @@ func toLower(s string) string {
 	return strings.ToLower(s)
 }
 
-var (
-	global    jsObject
-	undefined = wrappedObject{j: &jsObjectImpl{}}
-)
+var globalValue jsObject
+
+func global() jsObject {
+	return globalValue
+}
+
+func undefined() wrappedObject {
+	return wrappedObject{j: &jsObjectImpl{}}
+}
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
 	return funcOfImpl(fn)
@@ -55,8 +60,8 @@ type jsFuncImpl struct {
 	goFunc func(this jsObject, args []jsObject) interface{}
 }
 
-func (j jsFuncImpl) String() string { return "func" }
-func (j jsFuncImpl) Release()       {}
+func (j *jsFuncImpl) String() string { return "func" }
+func (j *jsFuncImpl) Release()       {}
 
 func valueOf(v interface{}) jsObject { return valueOfImpl(v) }
 
