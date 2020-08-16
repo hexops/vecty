@@ -46,7 +46,7 @@ func undefined() jsObject {
 }
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
-	return jsFuncImpl{
+	return &jsFuncImpl{
 		f: js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 			wrappedArgs := make([]jsObject, len(args))
 			for i, arg := range args {
@@ -63,14 +63,14 @@ type jsFuncImpl struct {
 	goFunc func(this jsObject, args []jsObject) interface{}
 }
 
-func (j jsFuncImpl) String() string {
+func (j *jsFuncImpl) String() string {
 	// fmt.Sprint(j) would produce the actual implementation of the function in
 	// JS code which differs across WASM/GopherJS/TinyGo so we instead just
 	// return an opaque string for testing purposes.
 	return "func"
 }
 
-func (j jsFuncImpl) Release() { j.f.Release() }
+func (j *jsFuncImpl) Release() { j.f.Release() }
 
 func valueOf(v interface{}) jsObject {
 	return wrapObject(js.ValueOf(v))
