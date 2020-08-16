@@ -1287,15 +1287,3 @@ type jsObject interface {
 }
 
 var isTest bool
-
-func init() {
-	if isTest {
-		return
-	}
-	if global() == nil {
-		panic("vecty: only WebAssembly, TinyGo, and testing compilation is supported")
-	}
-	if global().Get("document").IsUndefined() {
-		panic("vecty: only running inside a browser is supported")
-	}
-}
