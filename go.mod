@@ -1,3 +1,3 @@
 module github.com/hexops/vecty
 
-go 1.12
+go 1.14

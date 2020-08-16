@@ -1,6 +1,6 @@
 module github.com/hexops/vecty/example
 
-go 1.12
+go 1.14
 
 replace github.com/hexops/vecty => ../
 
