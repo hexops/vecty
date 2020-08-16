@@ -17,7 +17,7 @@ issues:
 
   # List of regexps of issue texts to exclude, empty list by default.
   exclude:
-    # https://github.com/gopherjs/vecty/issues/226
+    # https://github.com/hexops/vecty/issues/226
     - "comment on exported function Timeout should be of the form"
 
     # errcheck: Almost all programs ignore errors on these functions and in most cases it's ok

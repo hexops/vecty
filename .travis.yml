@@ -29,9 +29,9 @@ script:
 
   # Consult golangci-lint (multiple Go linting tools).
   - golangci-lint run . ./elem/... ./event/...
-  - golangci-lint run --exclude 'exported .* should have comment .*or be unexported' ./prop/... ./style/... # https://github.com/gopherjs/vecty/issues/227
+  - golangci-lint run --exclude 'exported .* should have comment .*or be unexported' ./prop/... ./style/... # https://github.com/hexops/vecty/issues/227
   - GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' . ./elem/... ./event/...
-  - GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' --exclude 'exported .* should have comment .*or be unexported' ./prop/... ./style/... # https://github.com/gopherjs/vecty/issues/227
+  - GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' --exclude 'exported .* should have comment .*or be unexported' ./prop/... ./style/... # https://github.com/hexops/vecty/issues/227
   - bash -c 'cd example && golangci-lint run ./markdown'
   - bash -c 'cd example && GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' ./...'
 

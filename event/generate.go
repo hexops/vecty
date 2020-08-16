@@ -185,7 +185,7 @@ func main() {
 // CC-BY-SA 2.5.
 package event
 
-import "github.com/gopherjs/vecty"
+import "github.com/hexops/vecty"
 `)
 
 	for _, name := range names {

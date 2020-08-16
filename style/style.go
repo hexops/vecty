@@ -3,7 +3,7 @@ package style
 import (
 	"strconv"
 
-	"github.com/gopherjs/vecty"
+	"github.com/hexops/vecty"
 )
 
 type Size string

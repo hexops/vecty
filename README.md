@@ -4,7 +4,7 @@
 
 Vecty is a library for building responsive and dynamic web frontends in Go instead of in JavaScript, HTML & CSS. It competes with modern web frameworks like React & VueJS, and supports compilation to both WebAssembly and vanilla JavaScript.
 
-[![Build Status](https://travis-ci.org/gopherjs/vecty.svg?branch=master)](https://travis-ci.org/gopherjs/vecty) [![GoDoc](https://godoc.org/github.com/gopherjs/vecty?status.svg)](https://godoc.org/github.com/gopherjs/vecty) [![codecov](https://img.shields.io/codecov/c/github/gopherjs/vecty/master.svg)](https://codecov.io/gh/gopherjs/vecty)
+[![Build Status](https://travis-ci.org/hexops/vecty.svg?branch=master)](https://travis-ci.org/hexops/vecty) [![GoDoc](https://godoc.org/github.com/hexops/vecty?status.svg)](https://godoc.org/github.com/hexops/vecty) [![codecov](https://img.shields.io/codecov/c/github/hexops/vecty/master.svg)](https://codecov.io/gh/hexops/vecty)
 
 Benefits
 ========
@@ -35,7 +35,7 @@ Features
 Current Status
 ==============
 
-**Vecty is currently considered to be an experimental work-in-progress.** Prior to widespread production use, we must meet our [v1.0.0 milestone](https://github.com/gopherjs/vecty/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.0.0) goals, which are being completed slowly and steadily as contributors have time (Vecty is over 4 years in the making!).
+**Vecty is currently considered to be an experimental work-in-progress.** Prior to widespread production use, we must meet our [v1.0.0 milestone](https://github.com/hexops/vecty/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.0.0) goals, which are being completed slowly and steadily as contributors have time (Vecty is over 4 years in the making!).
 
 Early adopters may make use of it for real applications today as long as they are understanding and accepting of the fact that:
 
@@ -45,9 +45,9 @@ Early adopters may make use of it for real applications today as long as they ar
 	- URL-based component routing
 	- Ready-to-use component libraries (e.g. material UI)
 	- Server-side rendering
-	- And more, see [milestone: v1.0.0 ](https://github.com/gopherjs/vecty/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.0.0)
+	- And more, see [milestone: v1.0.0 ](https://github.com/hexops/vecty/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.0.0)
 - The scope of Vecty is only ~80% defined currently.
-- There are a number of important [open issues](https://github.com/gopherjs/vecty/issues).
+- There are a number of important [open issues](https://github.com/hexops/vecty/issues).
 
 For a list of projects currently using Vecty, see the [doc/projects-using-vecty.md](doc/projects-using-vecty.md) file.
 

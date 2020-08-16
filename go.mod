@@ -1,3 +1,3 @@
-module github.com/gopherjs/vecty
+module github.com/hexops/vecty
 
 go 1.12

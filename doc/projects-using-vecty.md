@@ -1,4 +1,4 @@
-# Projects using [Vecty](https://github.com/gopherjs/vecty)
+# Projects using [Vecty](https://github.com/hexops/vecty)
 
 The following projects use Vecty to render their frontend in some capacity.
 
@@ -11,4 +11,4 @@ This is just a list of applications using Vecty that we're aware of. We don't st
 | [qlql](https://github.com/gernest/qlql) | A GUI management tool for the [ql database](https://github.com/cznic/ql). |
 | [marwan.io](https://www.marwan.io/) | A portfolio website by Marwan Sulaiman. |
 
-Know of a project using Vecty that is not on this list? Please [let us know](https://github.com/gopherjs/vecty/issues/new)!
+Know of a project using Vecty that is not on this list? Please [let us know](https://github.com/hexops/vecty/issues/new)!
