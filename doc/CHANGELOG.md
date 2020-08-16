@@ -6,13 +6,28 @@ Although v1.0.0 [is not yet out](https://github.com/hexops/vecty/milestone/1), w
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
-## August 15, 2020 ([PR #265](https://github.com/hexops/vecty/pull/265)): Deprecated and removed official support for GopherJS
+## August 15, 2020 ([PR #266](https://github.com/hexops/vecty/pull/266)): minor breaking change
 
-For more information please see [issue #264](https://github.com/hexops/vecty/issues/264).
+Vecty has moved to the [github.com/hexops](https://github.com/hexops) organization. Update your import paths:
 
-If your application cannot compile wihtout GopherJS, you may continue to use the tag `v0.5.0` which is the last version of Vecty which officially supported GopherJS at the time.
+```diff
+-import "github.com/gopherjs/vecty"
++import "github.com/hexops/vecty"
+```
+
+And update your `go.mod` as required.
+
+For more information see [issue #230](https://github.com/hexops/vecty/issues/230#issuecomment-674474753).
+
+## August 15, 2020 ([PR #265](https://github.com/hexops/vecty/pull/265)): minor breaking change
+
+Deprecated and removed official support for GopherJS.
 
 New versions of Vecty _may_ compile with GopherJS, but we do not officially support it and it is dependent on GopherJS being compatible with the official Go compiler.
+
+If your application cannot compile without GopherJS, you may continue to use the tag `v0.5.0` which is the last version of Vecty which officially supported GopherJS at the time.
+
+For more information please see [issue #264](https://github.com/hexops/vecty/issues/264).
 
 ## February 28, 2020 ([PR #256](https://github.com/hexops/vecty/pull/256)): indirect breaking change
 
