@@ -2,7 +2,7 @@
 	<img src="https://github.com/vecty/vecty-logo/raw/master/horizontal_color_tagline.png" />
 </p>
 
-Vecty is a library for building responsive and dynamic web frontends in Go instead of in JavaScript, HTML & CSS. It competes with modern web frameworks like React & VueJS, and supports compilation to both WebAssembly and vanilla JavaScript.
+Vecty is a package for building responsive and dynamic web frontends in Go using WebAssembly, competing with modern web frameworks like React & VueJS.
 
 [![Build Status](https://travis-ci.org/hexops/vecty.svg?branch=master)](https://travis-ci.org/hexops/vecty) [![GoDoc](https://godoc.org/github.com/hexops/vecty?status.svg)](https://godoc.org/github.com/hexops/vecty) [![codecov](https://img.shields.io/codecov/c/github/hexops/vecty/master.svg)](https://codecov.io/gh/hexops/vecty)
 
