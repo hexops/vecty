@@ -1,25 +1,27 @@
 sudo: false
 install:
-  # Manually download and install because the Travis / gimme version has been broken in the past
-  # https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6)
+  # Manually download and install Go because the Travis / gimme version has been broken in the past:
+  # https://travis-ci.community/t/goos-js-goarch-wasm-go-run-fails-panic-newosproc-not-implemented/1651/6
   - wget -O go.tar.gz https://dl.google.com/go/go1.15.linux-amd64.tar.gz
   - tar -C ~ -xzf go.tar.gz
   - rm go.tar.gz
   - export GOROOT=~/go
-  - export GOPATH=/home/travis/gopath
   - export PATH=$GOROOT/bin:$PATH
   - go version
   - go env
 
+  # Install NodeJS (for testing WebAssembly support)
+  - nvm install 14.7.0
+
   # Linters, etc.
-  - GO111MODULE=on go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+  - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
   - go get -u github.com/haya14busa/goverage
   - go get -u mvdan.cc/gofumpt
   - go get -u mvdan.cc/gofumpt/gofumports
 script:
   # Fetch dependencies.
-  - GO111MODULE=on go get -d .
-  - GOOS=js GOARCH=wasm GO111MODULE=on go get -d ./...
+  - go get -d .
+  - GOOS=js GOARCH=wasm go get -d ./...
 
   # Ensure consistent code style.
   - diff -u <(echo -n) <(gofumpt -d -s .)
@@ -33,7 +35,7 @@ script:
   - bash -c 'cd example && golangci-lint run ./markdown'
   - bash -c 'cd example && GOOS=js GOARCH=wasm golangci-lint run --build-tags 'js wasm' ./...'
 
-  # Test with Go compiler (under amd64 and wasm architectures).
+  # Test with Go compiler (under amd64 and wasm architectures.)
   - go test -race ./...
   - GO111MODULE=on GOOS=js GOARCH=wasm go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" ./...
 
