@@ -87,7 +87,7 @@ func unwrap(value interface{}) interface{} {
 	if v, ok := value.(wrappedObject); ok {
 		return v.j
 	}
-	if v, ok := value.(jsFuncImpl); ok {
+	if v, ok := value.(*jsFuncImpl); ok {
 		return v.f
 	}
 	return value
