@@ -1,3 +1,5 @@
+// +build tinygo
+
 package vecty
 
 import "fmt"
