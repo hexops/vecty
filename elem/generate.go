@@ -105,7 +105,7 @@ func main() {
 // CC-BY-SA 2.5.
 package elem
 
-import "github.com/gopherjs/vecty"
+import "github.com/hexops/vecty"
 `)
 
 	doc.Find(".quick-links a").Each(func(i int, s *goquery.Selection) {

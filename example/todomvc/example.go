@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"syscall/js"
 
-	"github.com/gopherjs/vecty"
-	"github.com/gopherjs/vecty/example/todomvc/actions"
-	"github.com/gopherjs/vecty/example/todomvc/components"
-	"github.com/gopherjs/vecty/example/todomvc/dispatcher"
-	"github.com/gopherjs/vecty/example/todomvc/store"
-	"github.com/gopherjs/vecty/example/todomvc/store/model"
+	"github.com/hexops/vecty"
+	"github.com/hexops/vecty/example/todomvc/actions"
+	"github.com/hexops/vecty/example/todomvc/components"
+	"github.com/hexops/vecty/example/todomvc/dispatcher"
+	"github.com/hexops/vecty/example/todomvc/store"
+	"github.com/hexops/vecty/example/todomvc/store/model"
 )
 
 func main() {

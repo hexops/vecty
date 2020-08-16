@@ -26,12 +26,12 @@ func init() {
 // 		at runtime.runtimePanic (http://localhost:8081/main.wasm:wasm-function[61]:0x4472)
 // 		at runtime.nilPanic (http://localhost:8081/main.wasm:wasm-function[46]:0x3277)
 // 		at runtime.hashmapNext (http://localhost:8081/main.wasm:wasm-function[83]:0x5881)
-// 		at (*github.com/gopherjs/vecty.HTML).reconcileProperties (http://localhost:8081/main.wasm:wasm-function[198]:0x117f4)
-// 		at (*github.com/gopherjs/vecty.HTML).reconcile (http://localhost:8081/main.wasm:wasm-function[175]:0xda6c)
-// 		at github.com/gopherjs/vecty.renderComponent (http://localhost:8081/main.wasm:wasm-function[176]:0xf00d)
-// 		at github.com/gopherjs/vecty.renderIntoNode (http://localhost:8081/main.wasm:wasm-function[153]:0xbbe3)
-// 		at github.com/gopherjs/vecty.RenderBody (http://localhost:8081/main.wasm:wasm-function[147]:0xb4a8)
-// 		at github.com/gopherjs/vecty/example/hellovecty.main (http://localhost:8081/main.wasm:wasm-function[107]:0x6e36)
+// 		at (*github.com/hexops/vecty.HTML).reconcileProperties (http://localhost:8081/main.wasm:wasm-function[198]:0x117f4)
+// 		at (*github.com/hexops/vecty.HTML).reconcile (http://localhost:8081/main.wasm:wasm-function[175]:0xda6c)
+// 		at github.com/hexops/vecty.renderComponent (http://localhost:8081/main.wasm:wasm-function[176]:0xf00d)
+// 		at github.com/hexops/vecty.renderIntoNode (http://localhost:8081/main.wasm:wasm-function[153]:0xbbe3)
+// 		at github.com/hexops/vecty.RenderBody (http://localhost:8081/main.wasm:wasm-function[147]:0xb4a8)
+// 		at github.com/hexops/vecty/example/hellovecty.main (http://localhost:8081/main.wasm:wasm-function[107]:0x6e36)
 // 		at runtime.run$1 (http://localhost:8081/main.wasm:wasm-function[55]:0x40c6)
 //
 func (h *HTML) tinyGoCannotIterateNilMaps() {

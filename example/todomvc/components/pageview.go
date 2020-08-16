@@ -3,15 +3,15 @@ package components
 import (
 	"strconv"
 
-	"github.com/gopherjs/vecty"
-	"github.com/gopherjs/vecty/elem"
-	"github.com/gopherjs/vecty/event"
-	"github.com/gopherjs/vecty/example/todomvc/actions"
-	"github.com/gopherjs/vecty/example/todomvc/dispatcher"
-	"github.com/gopherjs/vecty/example/todomvc/store"
-	"github.com/gopherjs/vecty/example/todomvc/store/model"
-	"github.com/gopherjs/vecty/prop"
-	"github.com/gopherjs/vecty/style"
+	"github.com/hexops/vecty"
+	"github.com/hexops/vecty/elem"
+	"github.com/hexops/vecty/event"
+	"github.com/hexops/vecty/example/todomvc/actions"
+	"github.com/hexops/vecty/example/todomvc/dispatcher"
+	"github.com/hexops/vecty/example/todomvc/store"
+	"github.com/hexops/vecty/example/todomvc/store/model"
+	"github.com/hexops/vecty/prop"
+	"github.com/hexops/vecty/style"
 )
 
 // PageView is a vecty.Component which represents the entire page.

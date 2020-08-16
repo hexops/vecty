@@ -59,7 +59,7 @@ type Component interface {
 // implement the Copier interface, a shallow copy is performed.
 //
 // TinyGo: If compiling your Vecty application using the experimental TinyGo
-// support (https://github.com/gopherjs/vecty/pull/243) then all components must
+// support (https://github.com/hexops/vecty/pull/243) then all components must
 // implement at least a shallow-copy Copier interface (this is not required
 // otherwise):
 //
