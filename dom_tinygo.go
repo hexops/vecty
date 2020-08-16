@@ -1,5 +1,7 @@
 package vecty
 
+import "fmt"
+
 func init() {
 	if isTest {
 		return
@@ -46,4 +48,35 @@ func (h *HTML) tinyGoCannotIterateNilMaps() {
 	if h.styles == nil {
 		h.styles = map[string]string{}
 	}
+}
+
+func tinyGoAssertCopier(c Component) {
+	_, ok := c.(Copier)
+	if ok {
+		return
+	}
+	println(c)
+	panic(fmt.Sprintf(`vecty: Component %T does not implement vecty.Copier interface
+
+TinyGo does not support Vecty components that do not implement the vecty.Copier interface.
+
+## What does this mean?
+
+TinyGo currently does not have support for reflect.New: https://github.com/tinygo-org/tinygo/issues/1087
+This prevents Vecty from automatically copying your component for you using reflection.
+
+## How do I fix this?
+
+You will need to implement the 'vecty.Copier' interface on your component, e.g.:
+
+	func (c *MyComponent) Copy() vecty.Component {
+		cpy := *c
+		return &cpy
+	}
+
+## Which component?
+
+Vecty has printed as much information as it can about the component above. Unfortunately, you will need to hunt it down yourself.
+
+`, c))
 }

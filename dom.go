@@ -57,6 +57,17 @@ type Component interface {
 // copy itself. Vecty must internally copy components, and it does so by either
 // invoking the Copy method of the Component or, if the component does not
 // implement the Copier interface, a shallow copy is performed.
+//
+// TinyGo: If compiling your Vecty application using the experimental TinyGo
+// support (https://github.com/gopherjs/vecty/pull/243) then all components must
+// implement at least a shallow-copy Copier interface (this is not required
+// otherwise):
+//
+// 	func (c *MyComponent) Copy() vecty.Component {
+// 		cpy := *c
+// 		return &cpy
+// 	}
+//
 type Copier interface {
 	// Copy returns a copy of the component.
 	Copy() Component
@@ -925,6 +936,8 @@ func copyComponent(c Component) Component {
 		}
 		return cpy
 	}
+
+	tinyGoAssertCopier(c)
 
 	// Component does not implement the Copier interface, so perform a shallow
 	// copy.
