@@ -13,3 +13,5 @@ func init() {
 		panic("vecty: only running inside a browser is supported")
 	}
 }
+
+func (h *HTML) tinyGoCannotIterateNilMaps() {}

@@ -219,6 +219,7 @@ func (h *HTML) reconcileProperties(prev *HTML) {
 	if h.node.Equal(prev.node) {
 		h.removeProperties(prev)
 	}
+	h.tinyGoCannotIterateNilMaps()
 
 	// Wrap event listeners
 	for _, l := range h.eventListeners {
