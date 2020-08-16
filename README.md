@@ -51,16 +51,19 @@ Early adopters may make use of it for real applications today as long as they ar
 
 For a list of projects currently using Vecty, see the [doc/projects-using-vecty.md](doc/projects-using-vecty.md) file.
 
-Small bundle sizes
-==================
+Near-zero dependencies
+======================
 
-Vecty uses extremely minimal dependencies and prides itself on producing very small bundle sizes (mostly limited by the compiler), making it suitable for modern web development:
+Vecty has nearly zero dependencies, it only relies on `reflect` from the Go stdlib. Through this, it is able to produce the smallest bundle sizes for Go frontend applications out there, limited only by the Go compiler itself:
 
-| Example      | Compiler                | Bundle size | Compressed (gzip) |
-|--------------|-------------------------|-------------|-------------------|
-| `hellovecty` | Go + WebAssembly        | 2.3 MB      | 0.5 MB            |
-| `markdown`   | Go + WebAssembly        | 4.2 MB      | 0.9 MB            |
-| `todomvc`    | Go + WebAssembly        | 3.4 MB      | 0.7 MB            |
+| Example binary    | Compiler        | uncompressed | `gzip --best` | `brotli` |
+|-------------------|-----------------|--------------|---------------|----------|
+| `hellovecty.wasm` | `tinygo 0.14.0` | 252K         | 97K           | 81K      |
+| `hellovecty.wasm` | `go 1.15`       | 2.1M         | 587K          | 443K     |
+| `markdown.wasm`   | `go 1.15`       | 3.6M         | 1010K         | 745K     |
+| `todomvc.wasm`    | `go 1.15`       | 2.9M         | 825K          | 617K     |
+
+Note: Bundle sizes above do not scale linearly with more code/dependencies in your Vecty project. `hellovecty` is the smallest base-line bundle that the compiler can produce with just Vecty as a dependency, other examples above pull in more of the Go standard library and you would not e.g. have to pay that total cost again.
 
 Community
 =========

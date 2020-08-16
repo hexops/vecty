@@ -182,7 +182,7 @@ func (ts *testSuiteT) multiSortedDone(linesToSort ...[2]int) {
 
 	// Write what we got to disk.
 	gotFileName := path.Join("testdata", testName+".got.txt")
-	err = ioutil.WriteFile(gotFileName, []byte(got), 0777)
+	err = ioutil.WriteFile(gotFileName, []byte(got), 0o777)
 	if err != nil {
 		ts.t.Error(err)
 		return
