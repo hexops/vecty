@@ -60,8 +60,8 @@ type jsFuncImpl struct {
 	goFunc func(this jsObject, args []jsObject) interface{}
 }
 
-func (j jsFuncImpl) String() string { return "func" }
-func (j jsFuncImpl) Release()       {}
+func (j *jsFuncImpl) String() string { return "func" }
+func (j *jsFuncImpl) Release()       {}
 
 func valueOf(v interface{}) jsObject { return valueOfImpl(v) }
 

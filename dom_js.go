@@ -37,12 +37,17 @@ func toLower(s string) string {
 	return js.Global().Get("String").Get("prototype").Get("toLowerCase").Call("call", js.ValueOf(s)).String()
 }
 
+var globalValue jsObject
+
 func global() jsObject {
-	return wrapObject(js.Global())
+	if globalValue == nil {
+		globalValue = wrapObject(js.Global())
+	}
+	return globalValue
 }
 
-func undefined() jsObject {
-	return wrapObject(js.Undefined())
+func undefined() wrappedObject {
+	return wrappedObject{js.Undefined()}
 }
 
 func funcOf(fn func(this jsObject, args []jsObject) interface{}) jsFunc {

@@ -22,7 +22,7 @@ func init() {
 		return h.node.(wrappedObject).j
 	}
 	funcOfImpl = func(fn func(this jsObject, args []jsObject) interface{}) jsFunc {
-		return jsFuncImpl{
+		return &jsFuncImpl{
 			goFunc: fn,
 		}
 	}

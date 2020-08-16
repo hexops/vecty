@@ -209,7 +209,7 @@ func (ts *testSuiteT) record(invocation string) string {
 // addCallbacks adds the first function in args to ts.callbacks[invocation], if there is one.
 func (ts *testSuiteT) addCallbacks(invocation string, args ...interface{}) {
 	for _, a := range args {
-		if fi, ok := a.(jsFuncImpl); ok {
+		if fi, ok := a.(*jsFuncImpl); ok {
 			ts.callbacks[invocation] = fi.goFunc
 			return
 		}
