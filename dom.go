@@ -1293,7 +1293,7 @@ func init() {
 		return
 	}
 	if global == nil {
-		panic("vecty: only GopherJS and WebAssembly compilation is supported")
+		panic("vecty: only WebAssembly compilation is supported")
 	}
 	if global.Get("document").IsUndefined() {
 		panic("vecty: only running inside a browser is supported")

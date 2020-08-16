@@ -9,8 +9,7 @@ import "strings"
 // as with any other normal Go package that is not under GOOS=js and
 // GOARCH=wasm.
 
-// SyscallJSValue is an actual syscall/js.Value type under WebAssembly and
-// GopherJS compilation.
+// SyscallJSValue is an actual syscall/js.Value type under WebAssembly compilation.
 //
 // It is declared here just for purposes of testing Vecty under native
 // 'go test', linting, and serving documentation under godoc.org.
