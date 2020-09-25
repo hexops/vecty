@@ -10,5 +10,6 @@ This is just a list of applications using Vecty that we're aware of. We don't st
 | [Go Play Space](https://goplay.space/) | An advanced Go Playground frontend. |
 | [qlql](https://github.com/gernest/qlql) | A GUI management tool for the [ql database](https://github.com/cznic/ql). |
 | [marwan.io](https://www.marwan.io/) | A portfolio website by Marwan Sulaiman. |
+| [Vocdoni Block Explorer](https://gitlab.com/vocdoni/vocexplorer) | A custom blockchain explorer for decentralized digital governance toolkit [Vocdoni.io](https://Vocdoni.io). |
 
 Know of a project using Vecty that is not on this list? Please [let us know](https://github.com/hexops/vecty/issues/new)!
