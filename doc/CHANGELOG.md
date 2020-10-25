@@ -6,6 +6,11 @@ Although v1.0.0 [is not yet out](https://github.com/hexops/vecty/milestone/1), w
 Pre-v1.0.0 Breaking Changes
 ---------------------------
 
+## October 25, 2020
+
+* The `master` branch has been renamed to `main`.
+* `v0.6.0` has been tagged/released.
+
 ## August 15, 2020 ([PR #266](https://github.com/hexops/vecty/pull/266)): minor breaking change
 
 Vecty has moved to the [github.com/hexops](https://github.com/hexops) organization. Update your import paths:
