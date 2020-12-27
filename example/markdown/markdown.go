@@ -5,7 +5,8 @@ import (
 	"github.com/hexops/vecty/elem"
 	"github.com/hexops/vecty/event"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/slimsag/blackfriday"
+	"github.com/yuin/goldmark"
+	"bytes"
 )
 
 func main() {
@@ -63,16 +64,19 @@ type Markdown struct {
 
 // Render implements the vecty.Component interface.
 func (m *Markdown) Render() vecty.ComponentOrHTML {
-	// Render the markdown input into HTML using Blackfriday.
-	unsafeHTML := blackfriday.Run([]byte(m.Input))
+	// Render the markdown input into HTML using Goldmark.
+	var buf bytes.Buffer
+	if err := goldmark.Convert([]byte(m.Input), &buf); err != nil {
+		panic(err)
+	}
+	// The goldmark README says:
+	// "By default, goldmark does not render raw HTML or potentially dangerous links. "
+	// So, it should be ok without sanitizing.
 
-	// Sanitize the HTML.
-	safeHTML := string(bluemonday.UGCPolicy().SanitizeBytes(unsafeHTML))
-
-	// Return the HTML, which we guarantee to be safe / sanitized.
+	// Return the HTML.
 	return elem.Div(
 		vecty.Markup(
-			vecty.UnsafeHTML(safeHTML),
+			vecty.UnsafeHTML(buf.String()),
 		),
 	)
 }
