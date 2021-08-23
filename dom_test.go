@@ -1121,7 +1121,57 @@ func TestAddStylesheet(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	AddStylesheet("https://google.com/foobar.css")
+	AddStylesheet(AddStyleSheetParams{URL: "https://google.com/foobar.css"})
+}
+
+func TestAddStylesheet_with_integrity(t *testing.T) {
+	ts := testSuite(t)
+	defer ts.done()
+
+	AddStylesheet(AddStyleSheetParams{
+		URL:         "https://google.com/foobar.css",
+		Integrity:   "foo-sha",
+		CrossOrigin: OriginAnonymous,
+	})
+}
+
+func TestAddScript(t *testing.T) {
+	ts := testSuite(t)
+	defer ts.done()
+
+	AddScript(AddScriptParams{URL: "https://google.com/foobar.js"})
+}
+
+func TestAddScript_add_to_head(t *testing.T) {
+	ts := testSuite(t)
+	defer ts.done()
+
+	AddScript(AddScriptParams{
+		URL:       "https://google.com/foobar.js",
+		AddToHead: true,
+	})
+}
+
+func TestAddScript_with_integrity(t *testing.T) {
+	ts := testSuite(t)
+	defer ts.done()
+
+	AddScript(AddScriptParams{
+		URL:         "https://google.com/foobar.js",
+		Integrity:   "foo-sha",
+		CrossOrigin: OriginCredentials,
+	})
+}
+
+func TestAddScript_blocking(t *testing.T) {
+	ts := testSuite(t)
+	defer ts.done()
+
+	false := false
+	AddScript(AddScriptParams{
+		URL:   "https://google.com/foobar.js",
+		Async: &false,
+	})
 }
 
 func TestKeyedChild_DifferentType(t *testing.T) {

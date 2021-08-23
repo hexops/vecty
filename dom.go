@@ -1274,12 +1274,60 @@ func SetTitle(title string) {
 	global().Get("document").Set("title", title)
 }
 
+// CrossOrigin provides support for CORS requests (see: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin)
+type CrossOrigin string
+
+const (
+	OriginAnonymous   CrossOrigin = "anonymous"
+	OriginCredentials CrossOrigin = "use-credentials"
+)
+
+// AddStyleSheetParams configures a new external stylesheet.
+type AddStyleSheetParams struct {
+	URL         string
+	Integrity   string
+	CrossOrigin CrossOrigin
+}
+
 // AddStylesheet adds an external stylesheet to the document.
-func AddStylesheet(url string) {
+func AddStylesheet(params AddStyleSheetParams) {
 	link := global().Get("document").Call("createElement", "link")
 	link.Set("rel", "stylesheet")
-	link.Set("href", url)
+	link.Set("href", params.URL)
+	if params.Integrity != "" {
+		link.Set("integrity", params.Integrity)
+	}
+	if params.CrossOrigin != "" {
+		link.Set("crossOrigin", string(params.CrossOrigin))
+	}
 	global().Get("document").Get("head").Call("appendChild", link)
+}
+
+// AddScriptParams configures a new script tag.
+type AddScriptParams struct {
+	URL         string
+	AddToHead   bool
+	Async       *bool
+	Integrity   string
+	CrossOrigin CrossOrigin
+}
+
+// AddScript dynamically adds a script tag to either the <head> or <body> of an HTML document.
+func AddScript(params AddScriptParams) {
+	script := global().Get("document").Call("createElement", "script")
+	script.Set("src", params.URL)
+	get := "body"
+	if params.AddToHead {
+		get = "head"
+	}
+	if params.Integrity != "" {
+		script.Set("integrity", params.Integrity)
+	}
+	if params.CrossOrigin != "" {
+		script.Set("crossOrigin", string(params.CrossOrigin))
+	}
+	script.Set("async", params.Async == nil || *params.Async)
+	global().Get("document").Get(get).Call("appendChild", script)
 }
 
 type jsFunc interface {

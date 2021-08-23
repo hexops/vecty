@@ -1,0 +1,7 @@
+global.Get("document")
+global.Get("document").Call("createElement", "script")
+global.Get("document").Call("createElement", "script").Set("src", "https://google.com/foobar.js")
+global.Get("document").Call("createElement", "script").Set("async", false)
+global.Get("document")
+global.Get("document").Get("body")
+global.Get("document").Get("body").Call("appendChild", jsObject(global.Get("document").Call("createElement", "script")))
