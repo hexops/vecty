@@ -10,6 +10,11 @@ type Event struct {
 	Target js.Value
 }
 
+// IsMounted returns whether the component is mounted.
+func (h *HTML) IsMounted() bool {
+	return h.node != nil
+}
+
 // Node returns the underlying JavaScript Element or TextNode.
 //
 // It panics if it is called before the DOM node has been attached, i.e. before
