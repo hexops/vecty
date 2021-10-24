@@ -32,6 +32,11 @@ Features
 - Small bundle sizes: 0.5 MB hello world (see section below).
 - Fast expectation-based browser DOM diffing ('virtual DOM', but less resource usage).
 
+Vecty vs. Vugu
+==============
+
+If you're wondering if you should use Vecty or [Vugu](https://www.vugu.org/), consider reading [this Twitter thread](https://twitter.com/JohanBrandhorst/status/1452393594283831297) for advice from both myself and the creator of Vugu.
+
 Current Status
 ==============
 
