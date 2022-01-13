@@ -38,4 +38,5 @@ Other compilers such as [GopherJS](https://github.com/gopherjs) may work so long
 Vecty currently can only be built to run in web browsers.
 
 ## More examples
-Github user soypat has [created a repo call vecty-examples](https://github.com/soypat/vecty-examples) with examples such as a snake game and a user interface using [Material Design CSS library](https://material.io/).
+
+* [soypat's vecty-examples](https://github.com/soypat/vecty-examples), including a snake game and an example of using the [Material Design CSS library](https://material.io/)
