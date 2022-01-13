@@ -15,7 +15,7 @@ The easiest way to run the examples as WebAssembly is via [`wasmserve`](https://
 Install it (**using Go 1.14+**):
 
 ```bash
-go get -u github.com/hajimehoshi/wasmserve
+go install github.com/hajimehoshi/wasmserve@latest
 ```
 
 Then run an example:
@@ -36,3 +36,7 @@ TinyGo support is in very early stages still. Please refer to https://github.com
 Other compilers such as [GopherJS](https://github.com/gopherjs) may work so long as they are compliant with the official Go 1.14+ compiler (support modules, the `syscall/js` interface, reflection, etc.)
 
 Vecty currently can only be built to run in web browsers.
+
+## More examples
+
+* [soypat's vecty-examples](https://github.com/soypat/vecty-examples), including a snake game and an example of using the [Material Design CSS library](https://material.io/)
