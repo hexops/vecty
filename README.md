@@ -68,12 +68,15 @@ Vecty has nearly zero dependencies, it only relies on `reflect` from the Go stdl
 | `markdown.wasm`   | `go 1.15`       | 3.6M         | 1010K         | 745K     |
 | `todomvc.wasm`    | `go 1.15`       | 2.9M         | 825K          | 617K     |
 
+You can find these examples under the [example](./example) directory along with a readme on how to go about running a vecty project.
+
 Note: Bundle sizes above do not scale linearly with more code/dependencies in your Vecty project. `hellovecty` is the smallest base-line bundle that the compiler can produce with just Vecty as a dependency, other examples above pull in more of the Go standard library and you would not e.g. have to pay that total cost again.
 
 Community
 =========
 
 - Join us in the [#vecty](https://gophers.slack.com/messages/vecty/) channel on the [Gophers Slack](https://gophersinvite.herokuapp.com/)!
+- See what [projects use Vecty in the wild](https://github.com/hexops/vecty/blob/main/doc/projects-using-vecty.md)
 
 Changelog
 =========
