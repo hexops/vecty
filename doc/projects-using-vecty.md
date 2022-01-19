@@ -14,7 +14,7 @@ This is just a list of applications using Vecty that we're aware of. We don't st
 
 Know of a project using Vecty that is not on this list? Please [let us know](https://github.com/hexops/vecty/issues/new)!
 
-The following are user created packages for aiding with frontend development using vecty.
+## Libraries
 
 | Package | Description |
 |---------|-------------|
