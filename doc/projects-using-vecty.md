@@ -21,3 +21,9 @@ Know of a project using Vecty that is not on this list? Please [let us know](htt
 | [`github.com/soypat/mdc`](https://github.com/soypat/mdc) | Material Design Components for use with Vecty in a dead-simple fashion. |
 | [`github.com/vecty-components/material`](https://github.com/vecty-components/material) | Vecty Material is Vecty bindings for the material-components-web JavaScript library (MDC). |
 | [`github.com/wizenerd/ui`](https://github.com/wizenerd/ui) | Material design lite components for gopherjs and vecty |
+
+## Tools
+
+| Tool | Description |
+|---------|-------------|
+| [`github.com/soypat/vectytemplater`](https://github.com/soypat/vectytemplater) | Executable to generate a basic working vecty application. |
