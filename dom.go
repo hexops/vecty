@@ -1282,6 +1282,16 @@ func AddStylesheet(url string) {
 	global().Get("document").Get("head").Call("appendChild", link)
 }
 
+// AddScript adds an external script to the document
+func AddScript(url string, attributes map[string]interface{}) {
+	script := global().Get("document").Call("createElement", "script")
+	script.Set("src", url)
+	for k, v := range attributes {
+		script.Set(k, v)
+	}
+	global().Get("document").Get("head").Call("appendChild", script)
+}
+
 type jsFunc interface {
 	Release()
 }

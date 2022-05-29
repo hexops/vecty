@@ -1124,6 +1124,15 @@ func TestAddStylesheet(t *testing.T) {
 	AddStylesheet("https://google.com/foobar.css")
 }
 
+// TestAddScript tests that the AddScript performs the correct DOM
+// operations.
+func TestAddScript(t *testing.T) {
+	ts := testSuite(t)
+	defer ts.done()
+
+	AddScript("https://google.com/foobar.js", map[string]interface{}{"crossorigin": "anonymous"})
+}
+
 func TestKeyedChild_DifferentType(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
