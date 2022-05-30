@@ -1305,16 +1305,16 @@ func AddScript(url string, timeout time.Duration, attributes map[string]interfac
 	f = funcOf(func(this jsObject, args []jsObject) interface{} {
 		defer f.Release()
 		close(quitCh)
-		script.Delete("onload")
+		script.Call("removeEventListener", "load", f)
 		return nil
 	})
-	script.Set("onload", f)
+	script.Call("addEventListener", "load", f)
 	global().Get("document").Get("head").Call("appendChild", script)
 
 	var err error
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go func(t time.Duration) {
+	go func(t time.Duration, script jsObject, f jsFunc) {
 
 		tic := time.NewTicker(10 * time.Millisecond)
 		start := time.Now()
@@ -1327,13 +1327,15 @@ func AddScript(url string, timeout time.Duration, attributes map[string]interfac
 				break loop
 			case <-tic.C:
 				if time.Since(start) > t {
+					defer f.Release()
+					defer wg.Done()
 					err = ErrTimeout
-					wg.Done()
+					script.Call("removeEventListener", "load", f)
 					break loop
 				}
 			}
 		}
-	}(timeout)
+	}(timeout,script, f)
 	wg.Wait()
 
 	return err
