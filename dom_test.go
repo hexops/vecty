@@ -3,6 +3,7 @@ package vecty
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 type testCore struct{ Core }
@@ -1130,7 +1131,7 @@ func TestAddScript(t *testing.T) {
 	ts := testSuite(t)
 	defer ts.done()
 
-	AddScript("https://google.com/foobar.js", map[string]interface{}{"crossorigin": "anonymous"})
+	AddScript("https://google.com/foobar.js", time.Millisecond * 100,map[string]interface{}{"crossorigin": "anonymous"})
 }
 
 func TestKeyedChild_DifferentType(t *testing.T) {
