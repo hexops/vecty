@@ -65,7 +65,7 @@ Vecty has nearly zero dependencies, it only relies on `reflect` from the Go stdl
 |-------------------|-----------------|--------------|---------------|----------|
 | `hellovecty.wasm` | `tinygo 0.14.0` | 252K         | 97K           | 81K      |
 | `hellovecty.wasm` | `go 1.15`       | 2.1M         | 587K          | 443K     |
-| `markdown.wasm`   | `go 1.15`       | 3.6M         | 1010K         | 745K     |
+| `markdown.wasm`   | `go 1.19`       | 5.9M         | 1.3M          | 952K     |
 | `todomvc.wasm`    | `go 1.15`       | 2.9M         | 825K          | 617K     |
 
 You can find these examples under the [example](./example) directory along with a readme on how to go about running a vecty project.
