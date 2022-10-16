@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
+
 	"github.com/hexops/vecty"
 	"github.com/hexops/vecty/elem"
 	"github.com/hexops/vecty/event"
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/yuin/goldmark"
-	"bytes"
 )
 
 func main() {
