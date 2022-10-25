@@ -1,7 +1,10 @@
 package vecty
 
 import (
+	"errors"
 	"reflect"
+	"sync"
+	"time"
 )
 
 // batch renderer singleton
@@ -1280,6 +1283,62 @@ func AddStylesheet(url string) {
 	link.Set("rel", "stylesheet")
 	link.Set("href", url)
 	global().Get("document").Get("head").Call("appendChild", link)
+}
+
+var ErrTimeout = errors.New("timeout while obtaining script from URL")
+var ErrTimeoutGreaterThan = errors.New("timeout value has to be greater than zero")
+
+// AddScript adds an external script to the document
+func AddScript(url string, timeout time.Duration, attributes map[string]interface{}) error {
+	if timeout <= 0 {
+		return ErrTimeoutGreaterThan
+	}
+	script := global().Get("document").Call("createElement", "script")
+	script.Set("src", url)
+	for k, v := range attributes {
+		script.Set(k, v)
+	}
+
+	quitCh := make(chan struct{})
+
+	var f jsFunc
+	f = funcOf(func(this jsObject, args []jsObject) interface{} {
+		defer f.Release()
+		close(quitCh)
+		script.Call("removeEventListener", "load", f)
+		return nil
+	})
+	script.Call("addEventListener", "load", f)
+	global().Get("document").Get("head").Call("appendChild", script)
+
+	var err error
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func(t time.Duration, script jsObject, f jsFunc) {
+
+		tic := time.NewTicker(10 * time.Millisecond)
+		start := time.Now()
+	loop:
+		for {
+			select {
+			// Stop the execution of this goroutine when the script has loaded
+			case <-quitCh:
+				wg.Done()
+				break loop
+			case <-tic.C:
+				if time.Since(start) > t {
+					defer f.Release()
+					defer wg.Done()
+					err = ErrTimeout
+					script.Call("removeEventListener", "load", f)
+					break loop
+				}
+			}
+		}
+	}(timeout,script, f)
+	wg.Wait()
+
+	return err
 }
 
 type jsFunc interface {
